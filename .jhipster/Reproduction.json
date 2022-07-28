@@ -1,0 +1,31 @@
+{
+  "applications": "*",
+  "changelogDate": "20220728175840",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "reproduction",
+  "fields": [
+    {
+      "fieldName": "vitesse",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Reproduction",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "cycleDeVie",
+      "otherEntityRelationshipName": "reproduction",
+      "relationshipName": "cycleDeVie",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

@@ -1,0 +1,24 @@
+{
+  "applications": "*",
+  "changelogDate": "20220728175846",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "germination",
+  "fields": [
+    {
+      "fieldName": "tempsDeGermination",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "conditionDeGermination",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Germination",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceClass"
+}

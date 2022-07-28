@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "typeSemis": {
+      "home": {
+        "title": "Type Semis",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Type Semis erstellen",
+        "createOrEditLabel": "Type Semis erstellen oder bearbeiten",
+        "notFound": "Keine Type Semis gefunden"
+      },
+      "created": "Type Semis erstellt mit ID {{ param }}",
+      "updated": "Type Semis aktualisiert mit ID {{ param }}",
+      "deleted": "Type Semis gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Type Semis {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Type Semis"
+      },
+      "id": "ID",
+      "type": "Type",
+      "description": "Description"
+    }
+  }
+}

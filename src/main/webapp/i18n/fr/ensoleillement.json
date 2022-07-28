@@ -1,0 +1,26 @@
+{
+  "monolithApp": {
+    "ensoleillement": {
+      "home": {
+        "title": "Ensoleillements",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Ensoleillement",
+        "createOrEditLabel": "Créer ou éditer un Ensoleillement",
+        "notFound": "Aucun Ensoleillement trouvé"
+      },
+      "created": "Un nouveau Ensoleillement a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Ensoleillement avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Ensoleillement avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Ensoleillement {{ id }} ?"
+      },
+      "detail": {
+        "title": "Ensoleillement"
+      },
+      "id": "ID",
+      "orientation": "Orientation",
+      "ensoleilement": "Ensoleilement",
+      "plante": "Plante"
+    }
+  }
+}

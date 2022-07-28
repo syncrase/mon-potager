@@ -1,0 +1,110 @@
+<div>
+  <h2 id="page-heading" data-cy="PeriodeAnneeHeading">
+    <span jhiTranslate="monolithApp.periodeAnnee.home.title">Periode Annees</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="monolithApp.periodeAnnee.home.refreshListLabel">Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-periode-annee"
+        [routerLink]="['/periode-annee/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="monolithApp.periodeAnnee.home.createLabel"> Create a new Periode Annee </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="periodeAnnees?.length === 0">
+    <span jhiTranslate="monolithApp.periodeAnnee.home.notFound">No periodeAnnees found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="periodeAnnees && periodeAnnees.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
+          <th scope="col" jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="debut.nom">
+            <span jhiTranslate="monolithApp.periodeAnnee.debut">Debut</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="fin.nom">
+            <span jhiTranslate="monolithApp.periodeAnnee.fin">Fin</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let periodeAnnee of periodeAnnees; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/periode-annee', periodeAnnee.id, 'view']">{{ periodeAnnee.id }}</a>
+          </td>
+          <td>
+            <div *ngIf="periodeAnnee.debut">
+              <a [routerLink]="['/mois', periodeAnnee.debut?.id, 'view']">{{ periodeAnnee.debut?.nom }}</a>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="periodeAnnee.fin">
+              <a [routerLink]="['/mois', periodeAnnee.fin?.id, 'view']">{{ periodeAnnee.fin?.nom }}</a>
+            </div>
+          </td>
+          <td class="text-end">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/periode-annee', periodeAnnee.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/periode-annee', periodeAnnee.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(periodeAnnee)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="periodeAnnees && periodeAnnees.length > 0">
+    <div class="d-flex justify-content-center">
+      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="loadPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "mois": {
+      "home": {
+        "title": "Mois",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Mois erstellen",
+        "createOrEditLabel": "Mois erstellen oder bearbeiten",
+        "notFound": "Keine Mois gefunden"
+      },
+      "created": "Mois erstellt mit ID {{ param }}",
+      "updated": "Mois aktualisiert mit ID {{ param }}",
+      "deleted": "Mois gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Mois {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Mois"
+      },
+      "id": "ID",
+      "numero": "Numero",
+      "nom": "Nom"
+    }
+  }
+}

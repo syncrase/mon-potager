@@ -1,0 +1,27 @@
+{
+  "monolithApp": {
+    "sol": {
+      "home": {
+        "title": "Sols",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Sol erstellen",
+        "createOrEditLabel": "Sol erstellen oder bearbeiten",
+        "notFound": "Keine Sols gefunden"
+      },
+      "created": "Sol erstellt mit ID {{ param }}",
+      "updated": "Sol aktualisiert mit ID {{ param }}",
+      "deleted": "Sol gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Sol {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Sol"
+      },
+      "id": "ID",
+      "phMin": "Ph Min",
+      "phMax": "Ph Max",
+      "type": "Type",
+      "richesse": "Richesse"
+    }
+  }
+}

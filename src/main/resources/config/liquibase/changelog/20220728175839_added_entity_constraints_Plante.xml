@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <!--
+        Added the constraints for entity Plante.
+    -->
+    <changeSet id="20220728175839-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="cycle_de_vie_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__cycle_de_vie_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cycle_de_vie"/>
+
+        <addForeignKeyConstraint baseColumnNames="sol_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__sol_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sol"/>
+
+        <addForeignKeyConstraint baseColumnNames="temperature_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__temperature_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="temperature"/>
+
+        <addForeignKeyConstraint baseColumnNames="racine_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__racine_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="racine"/>
+
+        <addForeignKeyConstraint baseColumnNames="strate_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__strate_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="strate"/>
+
+        <addForeignKeyConstraint baseColumnNames="feuillage_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__feuillage_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="feuillage"/>
+
+        <addForeignKeyConstraint baseColumnNames="plante_id"
+                                 baseTableName="rel_plante__noms_vernaculaires"
+                                 constraintName="fk_rel_plante__noms_vernaculaires__plante_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="plante"/>
+
+        <addForeignKeyConstraint baseColumnNames="noms_vernaculaires_id"
+                                 baseTableName="rel_plante__noms_vernaculaires"
+                                 constraintName="fk_rel_plante__noms_vernaculaires__noms_vernaculaires_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="nom_vernaculaire"/>
+
+        <addForeignKeyConstraint baseColumnNames="plante_botanique_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__plante_botanique_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="plante"/>
+    </changeSet>
+</databaseChangeLog>

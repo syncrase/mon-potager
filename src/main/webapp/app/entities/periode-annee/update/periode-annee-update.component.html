@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-periode-annee-heading"
+        data-cy="PeriodeAnneeCreateUpdateHeading"
+        jhiTranslate="monolithApp.periodeAnnee.home.createOrEditLabel"
+      >
+        Create or edit a Periode Annee
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="row mb-3" [hidden]="editForm.get('id')!.value == null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="monolithApp.periodeAnnee.debut" for="field_debut">Debut</label>
+          <select class="form-control" id="field_debut" data-cy="debut" name="debut" formControlName="debut">
+            <option *ngIf="!editForm.get('debut')!.value" [ngValue]="null" selected></option>
+            <option
+              [ngValue]="moisOption.id === editForm.get('debut')!.value?.id ? editForm.get('debut')!.value : moisOption"
+              *ngFor="let moisOption of moisSharedCollection; trackBy: trackMoisById"
+            >
+              {{ moisOption.nom }}
+            </option>
+          </select>
+        </div>
+        <div *ngIf="editForm.get(['debut'])!.invalid && (editForm.get(['debut'])!.dirty || editForm.get(['debut'])!.touched)">
+          <small class="form-text text-danger" *ngIf="editForm.get(['debut'])?.errors?.required" jhiTranslate="entity.validation.required">
+            This field is required.
+          </small>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="monolithApp.periodeAnnee.fin" for="field_fin">Fin</label>
+          <select class="form-control" id="field_fin" data-cy="fin" name="fin" formControlName="fin">
+            <option *ngIf="!editForm.get('fin')!.value" [ngValue]="null" selected></option>
+            <option
+              [ngValue]="moisOption.id === editForm.get('fin')!.value?.id ? editForm.get('fin')!.value : moisOption"
+              *ngFor="let moisOption of moisSharedCollection; trackBy: trackMoisById"
+            >
+              {{ moisOption.nom }}
+            </option>
+          </select>
+        </div>
+        <div *ngIf="editForm.get(['fin'])!.invalid && (editForm.get(['fin'])!.dirty || editForm.get(['fin'])!.touched)">
+          <small class="form-text text-danger" *ngIf="editForm.get(['fin'])?.errors?.required" jhiTranslate="entity.validation.required">
+            This field is required.
+          </small>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

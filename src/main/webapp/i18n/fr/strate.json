@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "strate": {
+      "home": {
+        "title": "Strates",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Strate",
+        "createOrEditLabel": "Créer ou éditer un Strate",
+        "notFound": "Aucun Strate trouvé"
+      },
+      "created": "Un nouveau Strate a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Strate avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Strate avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Strate {{ id }} ?"
+      },
+      "detail": {
+        "title": "Strate"
+      },
+      "id": "ID",
+      "type": "Type"
+    }
+  }
+}

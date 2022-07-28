@@ -1,0 +1,52 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="semis">
+      <h2 data-cy="semisDetailsHeading"><span jhiTranslate="monolithApp.semis.detail.title">Semis</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ semis.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.semis.semisPleineTerre">Semis Pleine Terre</span></dt>
+        <dd>
+          <div *ngIf="semis.semisPleineTerre">
+            <a [routerLink]="['/periode-annee', semis.semisPleineTerre?.id, 'view']">{{ semis.semisPleineTerre?.id }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.semis.semisSousAbris">Semis Sous Abris</span></dt>
+        <dd>
+          <div *ngIf="semis.semisSousAbris">
+            <a [routerLink]="['/periode-annee', semis.semisSousAbris?.id, 'view']">{{ semis.semisSousAbris?.id }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.semis.typeSemis">Type Semis</span></dt>
+        <dd>
+          <div *ngIf="semis.typeSemis">
+            <a [routerLink]="['/type-semis', semis.typeSemis?.id, 'view']">{{ semis.typeSemis?.type }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.semis.germination">Germination</span></dt>
+        <dd>
+          <div *ngIf="semis.germination">
+            <a [routerLink]="['/germination', semis.germination?.id, 'view']">{{ semis.germination?.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/semis', semis.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

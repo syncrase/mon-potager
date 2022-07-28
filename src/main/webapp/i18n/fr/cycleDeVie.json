@@ -1,0 +1,32 @@
+{
+  "monolithApp": {
+    "cycleDeVie": {
+      "home": {
+        "title": "CycleDeVies",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Cycle De Vie",
+        "createOrEditLabel": "Créer ou éditer un Cycle De Vie",
+        "notFound": "Aucun Cycle De Vie trouvé"
+      },
+      "created": "Un nouveau Cycle De Vie a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Cycle De Vie avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Cycle De Vie avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Cycle De Vie {{ id }} ?"
+      },
+      "detail": {
+        "title": "Cycle De Vie"
+      },
+      "id": "ID",
+      "semis": "Semis",
+      "apparitionFeuilles": "Apparition Feuilles",
+      "floraison": "Floraison",
+      "recolte": "Recolte",
+      "croissance": "Croissance",
+      "maturite": "Maturite",
+      "plantation": "Plantation",
+      "rempotage": "Rempotage",
+      "reproduction": "Reproduction"
+    }
+  }
+}

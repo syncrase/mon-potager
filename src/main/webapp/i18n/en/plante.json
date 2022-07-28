@@ -1,0 +1,38 @@
+{
+  "monolithApp": {
+    "plante": {
+      "home": {
+        "title": "Plantes",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Plante",
+        "createOrEditLabel": "Create or edit a Plante",
+        "notFound": "No Plantes found"
+      },
+      "created": "A new Plante is created with identifier {{ param }}",
+      "updated": "A Plante is updated with identifier {{ param }}",
+      "deleted": "A Plante is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Plante {{ id }}?"
+      },
+      "detail": {
+        "title": "Plante"
+      },
+      "id": "ID",
+      "entretien": "Entretien",
+      "histoire": "Histoire",
+      "vitesseCroissance": "Vitesse Croissance",
+      "exposition": "Exposition",
+      "confusions": "Confusions",
+      "ensoleillements": "Ensoleillements",
+      "plantesPotageres": "Plantes Potageres",
+      "cycleDeVie": "Cycle De Vie",
+      "sol": "Sol",
+      "temperature": "Temperature",
+      "racine": "Racine",
+      "strate": "Strate",
+      "feuillage": "Feuillage",
+      "nomsVernaculaires": "Noms Vernaculaires",
+      "planteBotanique": "Plante Botanique"
+    }
+  }
+}

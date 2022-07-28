@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "feuillage": {
+      "home": {
+        "title": "Feuillages",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Feuillage",
+        "createOrEditLabel": "Créer ou éditer un Feuillage",
+        "notFound": "Aucun Feuillage trouvé"
+      },
+      "created": "Un nouveau Feuillage a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Feuillage avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Feuillage avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Feuillage {{ id }} ?"
+      },
+      "detail": {
+        "title": "Feuillage"
+      },
+      "id": "ID",
+      "type": "Type"
+    }
+  }
+}

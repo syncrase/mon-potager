@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "typeSemis": {
+      "home": {
+        "title": "TypeSemis",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Type Semis",
+        "createOrEditLabel": "Créer ou éditer un Type Semis",
+        "notFound": "Aucun Type Semis trouvé"
+      },
+      "created": "Un nouveau Type Semis a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Type Semis avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Type Semis avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Type Semis {{ id }} ?"
+      },
+      "detail": {
+        "title": "Type Semis"
+      },
+      "id": "ID",
+      "type": "Type",
+      "description": "Description"
+    }
+  }
+}

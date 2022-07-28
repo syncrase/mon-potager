@@ -1,0 +1,40 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="periodeAnnee">
+      <h2 data-cy="periodeAnneeDetailsHeading"><span jhiTranslate="monolithApp.periodeAnnee.detail.title">Periode Annee</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ periodeAnnee.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.periodeAnnee.debut">Debut</span></dt>
+        <dd>
+          <div *ngIf="periodeAnnee.debut">
+            <a [routerLink]="['/mois', periodeAnnee.debut?.id, 'view']">{{ periodeAnnee.debut?.nom }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.periodeAnnee.fin">Fin</span></dt>
+        <dd>
+          <div *ngIf="periodeAnnee.fin">
+            <a [routerLink]="['/mois', periodeAnnee.fin?.id, 'view']">{{ periodeAnnee.fin?.nom }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/periode-annee', periodeAnnee.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

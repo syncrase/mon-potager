@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "ressemblance": {
+      "home": {
+        "title": "Ressemblances",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Ressemblance erstellen",
+        "createOrEditLabel": "Ressemblance erstellen oder bearbeiten",
+        "notFound": "Keine Ressemblances gefunden"
+      },
+      "created": "Ressemblance erstellt mit ID {{ param }}",
+      "updated": "Ressemblance aktualisiert mit ID {{ param }}",
+      "deleted": "Ressemblance gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Ressemblance {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Ressemblance"
+      },
+      "id": "ID",
+      "description": "Description",
+      "planteRessemblant": "Plante Ressemblant"
+    }
+  }
+}

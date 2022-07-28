@@ -1,0 +1,27 @@
+{
+  "monolithApp": {
+    "semis": {
+      "home": {
+        "title": "Semis",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Semis",
+        "createOrEditLabel": "Create or edit a Semis",
+        "notFound": "No Semis found"
+      },
+      "created": "A new Semis is created with identifier {{ param }}",
+      "updated": "A Semis is updated with identifier {{ param }}",
+      "deleted": "A Semis is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Semis {{ id }}?"
+      },
+      "detail": {
+        "title": "Semis"
+      },
+      "id": "ID",
+      "semisPleineTerre": "Semis Pleine Terre",
+      "semisSousAbris": "Semis Sous Abris",
+      "typeSemis": "Type Semis",
+      "germination": "Germination"
+    }
+  }
+}

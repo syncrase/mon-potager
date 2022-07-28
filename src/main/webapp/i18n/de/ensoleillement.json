@@ -1,0 +1,26 @@
+{
+  "monolithApp": {
+    "ensoleillement": {
+      "home": {
+        "title": "Ensoleillements",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Ensoleillement erstellen",
+        "createOrEditLabel": "Ensoleillement erstellen oder bearbeiten",
+        "notFound": "Keine Ensoleillements gefunden"
+      },
+      "created": "Ensoleillement erstellt mit ID {{ param }}",
+      "updated": "Ensoleillement aktualisiert mit ID {{ param }}",
+      "deleted": "Ensoleillement gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Ensoleillement {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Ensoleillement"
+      },
+      "id": "ID",
+      "orientation": "Orientation",
+      "ensoleilement": "Ensoleilement",
+      "plante": "Plante"
+    }
+  }
+}

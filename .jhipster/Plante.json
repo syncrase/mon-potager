@@ -1,0 +1,104 @@
+{
+  "applications": "*",
+  "changelogDate": "20220728175839",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "plante",
+  "fields": [
+    {
+      "fieldName": "entretien",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "histoire",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "vitesseCroissance",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "exposition",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "Une plante est soit une plante botanique qui correspond à une unique classification (et n'est associée à aucune autre plante, elle est unique) soit une plante potagère qui correspond à une unique plante botanique",
+  "jpaMetamodelFiltering": true,
+  "name": "Plante",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "ressemblance",
+      "otherEntityRelationshipName": "planteRessemblant",
+      "relationshipName": "confusions",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "ensoleillement",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "ensoleillements",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "javadoc": "Une plante peut avoir beaucoup de variantes potagère\\nUne plante potagère ne correspond qu'à une seule plante botanique et n'est associé à aucune classification (contenu dans le plante botanique)",
+      "otherEntityName": "plante",
+      "otherEntityRelationshipName": "planteBotanique",
+      "relationshipName": "plantesPotageres",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "cycleDeVie",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "cycleDeVie",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "sol",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "sol",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "temperature",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "temperature",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "racine",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "racine",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "strate",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "strate",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "feuillage",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "feuillage",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "javadoc": "Un même nom vernaculaire peut qualifier plusieurs plantes distinctes et très différentes",
+      "otherEntityField": "nom",
+      "otherEntityName": "nomVernaculaire",
+      "otherEntityRelationshipName": "plantes",
+      "ownerSide": true,
+      "relationshipName": "nomsVernaculaires",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "plante",
+      "otherEntityRelationshipName": "plantesPotageres",
+      "relationshipName": "planteBotanique",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

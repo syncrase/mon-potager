@@ -1,0 +1,26 @@
+{
+  "monolithApp": {
+    "reproduction": {
+      "home": {
+        "title": "Reproductions",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Reproduction erstellen",
+        "createOrEditLabel": "Reproduction erstellen oder bearbeiten",
+        "notFound": "Keine Reproductions gefunden"
+      },
+      "created": "Reproduction erstellt mit ID {{ param }}",
+      "updated": "Reproduction aktualisiert mit ID {{ param }}",
+      "deleted": "Reproduction gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Reproduction {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Reproduction"
+      },
+      "id": "ID",
+      "vitesse": "Vitesse",
+      "type": "Type",
+      "cycleDeVie": "Cycle De Vie"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "monolithApp": {
+    "temperature": {
+      "home": {
+        "title": "Temperatures",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Temperature",
+        "createOrEditLabel": "Créer ou éditer un Temperature",
+        "notFound": "Aucun Temperature trouvé"
+      },
+      "created": "Un nouveau Temperature a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Temperature avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Temperature avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Temperature {{ id }} ?"
+      },
+      "detail": {
+        "title": "Temperature"
+      },
+      "id": "ID",
+      "min": "Min",
+      "max": "Max",
+      "description": "Description",
+      "rusticite": "Rusticite"
+    }
+  }
+}

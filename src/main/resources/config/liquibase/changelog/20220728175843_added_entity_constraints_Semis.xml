@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <!--
+        Added the constraints for entity Semis.
+    -->
+    <changeSet id="20220728175843-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="semis_pleine_terre_id"
+                                 baseTableName="semis"
+                                 constraintName="fk_semis__semis_pleine_terre_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="periode_annee"/>
+
+        <addForeignKeyConstraint baseColumnNames="semis_sous_abris_id"
+                                 baseTableName="semis"
+                                 constraintName="fk_semis__semis_sous_abris_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="periode_annee"/>
+
+        <addForeignKeyConstraint baseColumnNames="type_semis_id"
+                                 baseTableName="semis"
+                                 constraintName="fk_semis__type_semis_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="type_semis"/>
+
+        <addForeignKeyConstraint baseColumnNames="germination_id"
+                                 baseTableName="semis"
+                                 constraintName="fk_semis__germination_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="germination"/>
+    </changeSet>
+</databaseChangeLog>

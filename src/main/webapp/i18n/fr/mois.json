@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "mois": {
+      "home": {
+        "title": "Mois",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Mois",
+        "createOrEditLabel": "Créer ou éditer un Mois",
+        "notFound": "Aucun Mois trouvé"
+      },
+      "created": "Un nouveau Mois a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Mois avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Mois avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Mois {{ id }} ?"
+      },
+      "detail": {
+        "title": "Mois"
+      },
+      "id": "ID",
+      "numero": "Numero",
+      "nom": "Nom"
+    }
+  }
+}

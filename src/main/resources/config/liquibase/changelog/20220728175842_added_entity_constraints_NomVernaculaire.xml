@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <!--
+        Added the constraints for entity NomVernaculaire.
+    -->
+    <changeSet id="20220728175842-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="cronquist_rank_id"
+                                 baseTableName="nom_vernaculaire"
+                                 constraintName="fk_nom_vernaculaire__cronquist_rank_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cronquist_rank"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,248 @@
+
+
+
+
+//***********************************************************
+//***********************************************************
+// PlantsMS entities
+//***********************************************************
+//***********************************************************
+
+entity Mois {
+    numero Double required,
+    nom String required
+}
+
+entity PeriodeAnnee {
+}
+
+/**
+* Une plante est soit une plante botanique qui correspond à une unique classification (et n'est associée à aucune autre plante, elle est unique) soit une plante potagère qui correspond à une unique plante botanique
+*/
+entity Plante {
+    entretien String,
+    histoire String,
+    vitesseCroissance String,
+    exposition String //ombre, mi-ombre, etc
+}
+
+entity Reproduction {
+    vitesse String,
+    type String
+}
+
+entity Sol {
+    phMin Double, // ENUM,
+    phMax Double, // ENUM,
+    type String, // argileux calcaire etc ENUM
+    richesse String
+}
+
+entity NomVernaculaire {
+    nom String required,
+    description String
+}
+
+entity Semis {
+
+}
+
+// à la volée, en ligne
+entity TypeSemis {
+    type String required,
+    description String // ENUM
+}
+
+entity CycleDeVie {
+
+}
+
+entity Germination {
+    tempsDeGermination String,
+    conditionDeGermination String // ENUM
+}
+
+entity Allelopathie {
+    type String required,// symbiose ou parasitisme ou autre ENUM
+    description String,
+    impact Integer min(-10) max(10)
+}
+
+/**
+* Pour que la ressemblance soit réflexive il faut l'enregistrer 2 fois. Car si la ressemblance A ressemble à B est enregistrée, alors B ne ressemble pas à A
+*/
+entity Ressemblance {
+    description String
+}
+
+entity Ensoleillement {
+    orientation String, // nord sud etc
+    ensoleilement Double, // heures par jour
+}
+
+entity Temperature {
+    min Double,
+    max Double,
+    description String, // Gel pour fructifiction, durée de gel minimum pour fructification, ...,
+    rusticite String // ENUM
+}
+
+entity Racine {
+    type String
+}
+
+entity Strate {
+    type String
+}
+
+entity Feuillage {
+    type String
+}
+
+//***********************************************************
+//***********************************************************
+// CRONQUIST entities
+//***********************************************************
+//***********************************************************
+
+entity CronquistRank {
+    rank CronquistTaxonomikRanks required
+}
+
+entity NomVernaculaire {
+    nom String unique,
+    // nomLatin String unique // Pas nécessaire nom latin = famille + espèce
+}
+
+enum CronquistTaxonomikRanks {
+    DOMAINE (Domaine),
+    SOUSDOMAINE (SuperRegne),
+    SUPERREGNE (SuperRegne),
+    REGNE (Regne),
+    SOUSREGNE (SousRegne),
+    RAMEAU (Rameau),
+    INFRAREGNE (InfraRegne),
+    SUPEREMBRANCHEMENT (SuperEmbranchement),
+    EMBRANCHEMENT (Embranchement),
+    SOUSEMBRANCHEMENT (SousEmbranchement),
+    INFRAEMBRANCHEMENT (InfraEmbranchement),
+    MICROEMBRANCHEMENT (MicroEmbranchement),
+    SUPERCLASSE (SuperClasse),
+    CLASSE (Classe),
+    SOUSCLASSE (SousClasse),
+    INFRACLASSE (InfraClasse),
+    SUPERORDRE (SuperOrdre),
+    ORDRE (Ordre),
+    SOUSORDRE (SousOrdre),
+    INFRAORDRE (InfraOrdre),
+    MICROORDRE (MicroOrdre),
+    SUPERFAMILLE (SuperFamille),
+    FAMILLE (Famille),
+    SOUSFAMILLE (SousFamille),
+    TRIBU (Tribu),
+    SOUSTRIBU (SousTribu),
+    GENRE (Genre),
+    SOUSGENRE (SousGenre),
+    SECTION (Section),
+    SOUSSECTION (SousSection),
+    ESPECE (Espece),
+    SOUSESPECE (SousEspece),
+    VARIETE (Variete),
+    SOUSVARIETE (SousVariete),
+    FORME (Forme),
+    SOUSFORME (SousForme)
+}
+
+entity Url {
+    url String required
+}
+
+//***********************************************************
+//***********************************************************
+// PlantsMS associations
+//***********************************************************
+//***********************************************************
+
+relationship OneToMany {
+    // TODO gestion de la ressemblance
+    Plante{confusions} to Ressemblance{planteRessemblant},
+    Plante{ensoleillements} to Ensoleillement,
+
+    /** 
+    * Une plante peut avoir beaucoup de variantes potagère
+    * Une plante potagère ne correspond qu'à une seule plante botanique et n'est associé à aucune classification (contenu dans la plante botanique)
+    */
+    Plante{plantesPotageres} to Plante{planteBotanique},
+
+    Reproduction to CycleDeVie
+    
+}
+
+relationship ManyToMany {
+    /**
+    * Un même nom vernaculaire peut qualifier plusieurs plantes distinctes et très différentes
+    */
+    Plante{nomsVernaculaires(nom)} to NomVernaculaire{plantes}
+}
+
+relationship ManyToOne {
+    Plante{cycleDeVie} to CycleDeVie,
+
+    Plante{sol} to Sol,
+    Plante{temperature} to Temperature,
+    Plante{racine} to Racine,
+    Plante{strate} to Strate,
+    Plante{feuillage} to Feuillage,
+
+
+    // Plusieurs allelopathie peuvent être liées à une plante
+    // L'allélopathie n'est pas enregistré dans Plante
+    Allelopathie{cible required} to Plante,
+    Allelopathie{origine required} to Plante,
+
+    
+    Semis{semisPleineTerre} to PeriodeAnnee,
+    Semis{semisSousAbris} to PeriodeAnnee,
+    Semis{typeSemis(type)} to TypeSemis,
+    Semis{germination} to Germination,
+    
+    CycleDeVie{semis} to Semis,
+    CycleDeVie{apparitionFeuilles} to PeriodeAnnee,
+    CycleDeVie{floraison} to PeriodeAnnee,
+    CycleDeVie{recolte} to PeriodeAnnee,
+    CycleDeVie{croissance} to PeriodeAnnee,
+    CycleDeVie{maturite} to PeriodeAnnee,
+    CycleDeVie{plantation} to PeriodeAnnee,
+    CycleDeVie{rempotage} to PeriodeAnnee,
+
+    // Il peut y avoir plusieurs mois identique pour le début et pour la fin
+    PeriodeAnnee{debut(nom) required} to Mois,
+    PeriodeAnnee{fin(nom) required} to Mois
+}
+
+
+//***********************************************************
+//***********************************************************
+// CRONQUIST associations
+//***********************************************************
+//***********************************************************
+
+relationship OneToMany {
+    CronquistRank{children} to CronquistRank{parent},
+    CronquistRank{urls} to Url,
+    CronquistRank{noms required} to NomVernaculaire{cronquistRank required},
+
+}
+
+//***********************************************************
+//***********************************************************
+// Global options
+//***********************************************************
+//***********************************************************
+
+
+paginate * with pagination
+filter *
+
+
+

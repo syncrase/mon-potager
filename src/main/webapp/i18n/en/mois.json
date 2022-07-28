@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "mois": {
+      "home": {
+        "title": "Mois",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Mois",
+        "createOrEditLabel": "Create or edit a Mois",
+        "notFound": "No Mois found"
+      },
+      "created": "A new Mois is created with identifier {{ param }}",
+      "updated": "A Mois is updated with identifier {{ param }}",
+      "deleted": "A Mois is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Mois {{ id }}?"
+      },
+      "detail": {
+        "title": "Mois"
+      },
+      "id": "ID",
+      "numero": "Numero",
+      "nom": "Nom"
+    }
+  }
+}

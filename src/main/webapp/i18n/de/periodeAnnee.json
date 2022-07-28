@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "periodeAnnee": {
+      "home": {
+        "title": "Periode Annees",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Periode Annee erstellen",
+        "createOrEditLabel": "Periode Annee erstellen oder bearbeiten",
+        "notFound": "Keine Periode Annees gefunden"
+      },
+      "created": "Periode Annee erstellt mit ID {{ param }}",
+      "updated": "Periode Annee aktualisiert mit ID {{ param }}",
+      "deleted": "Periode Annee gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Periode Annee {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Periode Annee"
+      },
+      "id": "ID",
+      "debut": "Debut",
+      "fin": "Fin"
+    }
+  }
+}

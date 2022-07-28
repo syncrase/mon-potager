@@ -1,0 +1,20 @@
+{
+  "applications": "*",
+  "changelogDate": "20220728175852",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "strate",
+  "fields": [
+    {
+      "fieldName": "type",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Strate",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceClass"
+}

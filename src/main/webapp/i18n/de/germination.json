@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "germination": {
+      "home": {
+        "title": "Germinations",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Germination erstellen",
+        "createOrEditLabel": "Germination erstellen oder bearbeiten",
+        "notFound": "Keine Germinations gefunden"
+      },
+      "created": "Germination erstellt mit ID {{ param }}",
+      "updated": "Germination aktualisiert mit ID {{ param }}",
+      "deleted": "Germination gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Germination {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Germination"
+      },
+      "id": "ID",
+      "tempsDeGermination": "Temps De Germination",
+      "conditionDeGermination": "Condition De Germination"
+    }
+  }
+}

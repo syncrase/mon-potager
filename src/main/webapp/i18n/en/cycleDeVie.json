@@ -1,0 +1,32 @@
+{
+  "monolithApp": {
+    "cycleDeVie": {
+      "home": {
+        "title": "Cycle De Vies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Cycle De Vie",
+        "createOrEditLabel": "Create or edit a Cycle De Vie",
+        "notFound": "No Cycle De Vies found"
+      },
+      "created": "A new Cycle De Vie is created with identifier {{ param }}",
+      "updated": "A Cycle De Vie is updated with identifier {{ param }}",
+      "deleted": "A Cycle De Vie is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Cycle De Vie {{ id }}?"
+      },
+      "detail": {
+        "title": "Cycle De Vie"
+      },
+      "id": "ID",
+      "semis": "Semis",
+      "apparitionFeuilles": "Apparition Feuilles",
+      "floraison": "Floraison",
+      "recolte": "Recolte",
+      "croissance": "Croissance",
+      "maturite": "Maturite",
+      "plantation": "Plantation",
+      "rempotage": "Rempotage",
+      "reproduction": "Reproduction"
+    }
+  }
+}

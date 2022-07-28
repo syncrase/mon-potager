@@ -1,0 +1,25 @@
+{
+  "monolithApp": {
+    "url": {
+      "home": {
+        "title": "Urls",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Url erstellen",
+        "createOrEditLabel": "Url erstellen oder bearbeiten",
+        "notFound": "Keine Urls gefunden"
+      },
+      "created": "Url erstellt mit ID {{ param }}",
+      "updated": "Url aktualisiert mit ID {{ param }}",
+      "deleted": "Url gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Url {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Url"
+      },
+      "id": "ID",
+      "url": "Url",
+      "cronquistRank": "Cronquist Rank"
+    }
+  }
+}

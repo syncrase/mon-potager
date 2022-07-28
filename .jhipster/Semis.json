@@ -1,0 +1,41 @@
+{
+  "applications": "*",
+  "changelogDate": "20220728175843",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "semis",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Semis",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "periodeAnnee",
+      "otherEntityRelationshipName": "semis",
+      "relationshipName": "semisPleineTerre",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "periodeAnnee",
+      "otherEntityRelationshipName": "semis",
+      "relationshipName": "semisSousAbris",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityField": "type",
+      "otherEntityName": "typeSemis",
+      "otherEntityRelationshipName": "semis",
+      "relationshipName": "typeSemis",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "germination",
+      "otherEntityRelationshipName": "semis",
+      "relationshipName": "germination",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}
