@@ -1,6 +1,6 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
-import fr.syncrase.ecosyst.feature.add_plante.classification.enumeration.RankName;
+import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.InvalidRankName;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +43,8 @@ public class ScrapedRank {
      */
     @Contract(pure = true)
     private boolean checkNameValidity(String classificationLevel, @NotNull String rankName) {
-        return (!rankName.endsWith(RankName.ORDRE.getSuffix()) || Arrays.asList(new String[]{"Ordre"}).contains(classificationLevel)) &&
-            (!rankName.endsWith(RankName.FAMILLE.getSuffix()) || Arrays.asList(new String[]{"Famille"}).contains(classificationLevel));
+        return (!rankName.endsWith(CronquistTaxonomikRanks.ORDRE.getSuffix()) || Arrays.asList(new String[]{"Ordre"}).contains(classificationLevel)) &&
+            (!rankName.endsWith(CronquistTaxonomikRanks.FAMILLE.getSuffix()) || Arrays.asList(new String[]{"Famille"}).contains(classificationLevel));
     }
 
 }

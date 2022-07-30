@@ -5,18 +5,6 @@ import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
-import {ICycleDeVie} from 'app/entities/cycle-de-vie/cycle-de-vie.model';
-import {CycleDeVieService} from 'app/entities/cycle-de-vie/service/cycle-de-vie.service';
-import {ISol} from 'app/entities/sol/sol.model';
-import {SolService} from 'app/entities/sol/service/sol.service';
-import {ITemperature} from 'app/entities/temperature/temperature.model';
-import {TemperatureService} from 'app/entities/temperature/service/temperature.service';
-import {IRacine} from 'app/entities/racine/racine.model';
-import {RacineService} from 'app/entities/racine/service/racine.service';
-import {IStrate} from 'app/entities/strate/strate.model';
-import {StrateService} from 'app/entities/strate/service/strate.service';
-import {IFeuillage} from 'app/entities/feuillage/feuillage.model';
-import {FeuillageService} from 'app/entities/feuillage/service/feuillage.service';
 import {INomVernaculaire} from 'app/entities/nom-vernaculaire/nom-vernaculaire.model';
 import {NomVernaculaireService} from 'app/entities/nom-vernaculaire/service/nom-vernaculaire.service';
 import {IPlante, Plante} from "../../../entities/plante/plante.model";
@@ -32,12 +20,6 @@ export class PlanteUpdateComponent implements OnInit {
   test = 'salut';
 
   plantesSharedCollection: IPlante[] = [];
-  cycleDeViesSharedCollection: ICycleDeVie[] = [];
-  solsSharedCollection: ISol[] = [];
-  temperaturesSharedCollection: ITemperature[] = [];
-  racinesSharedCollection: IRacine[] = [];
-  stratesSharedCollection: IStrate[] = [];
-  feuillagesSharedCollection: IFeuillage[] = [];
   nomVernaculairesSharedCollection: INomVernaculaire[] = [];
 
   editForm = this.fb.group({
@@ -58,12 +40,6 @@ export class PlanteUpdateComponent implements OnInit {
 
   constructor(
     protected planteService: AddPlanteService,
-    protected cycleDeVieService: CycleDeVieService,
-    protected solService: SolService,
-    protected temperatureService: TemperatureService,
-    protected racineService: RacineService,
-    protected strateService: StrateService,
-    protected feuillageService: FeuillageService,
     protected nomVernaculaireService: NomVernaculaireService,
     protected activatedRoute: ActivatedRoute,
     protected fb: FormBuilder
@@ -92,30 +68,6 @@ export class PlanteUpdateComponent implements OnInit {
   }
 
   trackPlanteById(_index: number, item: IPlante): number {
-    return item.id!;
-  }
-
-  trackCycleDeVieById(_index: number, item: ICycleDeVie): number {
-    return item.id!;
-  }
-
-  trackSolById(_index: number, item: ISol): number {
-    return item.id!;
-  }
-
-  trackTemperatureById(_index: number, item: ITemperature): number {
-    return item.id!;
-  }
-
-  trackRacineById(_index: number, item: IRacine): number {
-    return item.id!;
-  }
-
-  trackStrateById(_index: number, item: IStrate): number {
-    return item.id!;
-  }
-
-  trackFeuillageById(_index: number, item: IFeuillage): number {
     return item.id!;
   }
 
@@ -267,18 +219,18 @@ export class PlanteUpdateComponent implements OnInit {
     return {
       ...new Plante(),
       id: this.editForm.get(['id'])!.value,
-      entretien: this.editForm.get(['entretien'])!.value,
-      histoire: this.editForm.get(['histoire'])!.value,
-      vitesseCroissance: this.editForm.get(['vitesseCroissance'])!.value,
-      exposition: this.editForm.get(['exposition'])!.value,
-      cycleDeVie: this.editForm.get(['cycleDeVie'])!.value,
-      sol: this.editForm.get(['sol'])!.value,
-      temperature: this.editForm.get(['temperature'])!.value,
-      racine: this.editForm.get(['racine'])!.value,
-      strate: this.editForm.get(['strate'])!.value,
-      feuillage: this.editForm.get(['feuillage'])!.value,
+      // entretien: this.editForm.get(['entretien'])!.value,
+      // histoire: this.editForm.get(['histoire'])!.value,
+      // vitesseCroissance: this.editForm.get(['vitesseCroissance'])!.value,
+      // exposition: this.editForm.get(['exposition'])!.value,
+      // cycleDeVie: this.editForm.get(['cycleDeVie'])!.value,
+      // sol: this.editForm.get(['sol'])!.value,
+      // temperature: this.editForm.get(['temperature'])!.value,
+      // racine: this.editForm.get(['racine'])!.value,
+      // strate: this.editForm.get(['strate'])!.value,
+      // feuillage: this.editForm.get(['feuillage'])!.value,
       nomsVernaculaires: this.editForm.get(['nomsVernaculaires'])!.value,
-      planteBotanique: this.editForm.get(['planteBotanique'])!.value,
+      // planteBotanique: this.editForm.get(['planteBotanique'])!.value,
     };
   }
 }

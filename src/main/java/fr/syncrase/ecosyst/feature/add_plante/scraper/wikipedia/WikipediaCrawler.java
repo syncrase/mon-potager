@@ -1,7 +1,6 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.classification.consistency.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.UnableToScrapClassification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -80,9 +79,6 @@ public class WikipediaCrawler {
             Element mainTable = wikipediaHtmlExtractor.extractMainTableOfClassificationFrame(encadreTaxonomique);
             cronquistClassification = cronquistClassificationBuilder.getClassification(mainTable);
 
-        } catch (ClassificationReconstructionException e) {
-            log.error("Impossible d'extraire la classification de la page");
-            e.printStackTrace();
         } catch (UnableToScrapClassification e) {
             log.error(e.getMessage());
         }
