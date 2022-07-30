@@ -1,0 +1,93 @@
+
+
+entity Plante {
+}
+
+entity NomVernaculaire {
+    nom String required,
+    description String
+}
+
+entity CronquistRank {
+    rank CronquistTaxonomikRanks required
+}
+
+entity NomVernaculaire {
+    nom String unique,
+}
+
+enum CronquistTaxonomikRanks {
+    DOMAINE (Domaine),
+    SOUSDOMAINE (SuperRegne),
+    SUPERREGNE (SuperRegne),
+    REGNE (Regne),
+    SOUSREGNE (SousRegne),
+    RAMEAU (Rameau),
+    INFRAREGNE (InfraRegne),
+    SUPEREMBRANCHEMENT (SuperEmbranchement),
+    EMBRANCHEMENT (Embranchement),
+    SOUSEMBRANCHEMENT (SousEmbranchement),
+    INFRAEMBRANCHEMENT (InfraEmbranchement),
+    MICROEMBRANCHEMENT (MicroEmbranchement),
+    SUPERCLASSE (SuperClasse),
+    CLASSE (Classe),
+    SOUSCLASSE (SousClasse),
+    INFRACLASSE (InfraClasse),
+    SUPERORDRE (SuperOrdre),
+    ORDRE (Ordre),
+    SOUSORDRE (SousOrdre),
+    INFRAORDRE (InfraOrdre),
+    MICROORDRE (MicroOrdre),
+    SUPERFAMILLE (SuperFamille),
+    FAMILLE (Famille),
+    SOUSFAMILLE (SousFamille),
+    TRIBU (Tribu),
+    SOUSTRIBU (SousTribu),
+    GENRE (Genre),
+    SOUSGENRE (SousGenre),
+    SECTION (Section),
+    SOUSSECTION (SousSection),
+    ESPECE (Espece),
+    SOUSESPECE (SousEspece),
+    VARIETE (Variete),
+    SOUSVARIETE (SousVariete),
+    FORME (Forme),
+    SOUSFORME (SousForme)
+}
+
+//***********************************************************
+//***********************************************************
+// Plants associations
+//***********************************************************
+//***********************************************************
+
+relationship ManyToMany {
+    /**
+    * Un même nom vernaculaire peut qualifier plusieurs plantes distinctes et très différentes
+    */
+    Plante{nomsVernaculaires(nom)} to NomVernaculaire{plantes}
+}
+
+//***********************************************************
+//***********************************************************
+// CRONQUIST associations
+//***********************************************************
+//***********************************************************
+
+relationship OneToMany {
+    CronquistRank{children} to CronquistRank{parent},
+    Plante{lowestClassificationRank} to CronquistRank,
+}
+
+//***********************************************************
+//***********************************************************
+// Global options
+//***********************************************************
+//***********************************************************
+
+
+paginate * with pagination
+filter *
+
+
+
