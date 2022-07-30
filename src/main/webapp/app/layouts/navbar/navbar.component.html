@@ -355,6 +355,31 @@
           </ul>
         </li>
       </ul>
+      <li
+        *jhiHasAnyAuthority="'ROLE_ADMIN'"
+        ngbDropdown
+        class="nav-item dropdown pointer"
+        display="dynamic"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="feature-menu"
+           data-cy="featureMenu">
+            <span>
+              <fa-icon icon="user-plus"></fa-icon>
+              <span jhiTranslate="global.menu.feature.main">Features</span>
+            </span>
+        </a>
+        <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="feature-menu">
+          <li>
+            <a class="dropdown-item" routerLink="feature/add-plante" routerLinkActive="active"
+               (click)="collapseNavbar()">
+              <fa-icon icon="users" [fixedWidth]="true"></fa-icon>
+              <span jhiTranslate="global.menu.feature.addPlante">Add plante</span>
+            </a>
+          </li>
+        </ul>
+      </li>
     </div>
   </div>
 </nav>

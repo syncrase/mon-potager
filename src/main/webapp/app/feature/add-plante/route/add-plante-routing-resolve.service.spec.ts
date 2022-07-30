@@ -1,20 +1,19 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import { expect } from '@jest/globals';
-import { HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import {HttpResponse} from '@angular/common/http';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
+import {of} from 'rxjs';
+import {PlanteService} from "../../../entities/plante/service/plante.service";
+import {IPlante, Plante} from "../../../entities/plante/plante.model";
+import {AddPlanteRoutingResolveService} from "./add-plante-routing-resolve.service";
 
-import { IPlante, Plante } from '../plante.model';
-import { PlanteService } from '../service/plante.service';
-
-import { PlanteRoutingResolveService } from './plante-routing-resolve.service';
 
 describe('Plante routing resolve service', () => {
   let mockRouter: Router;
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
-  let routingResolveService: PlanteRoutingResolveService;
+  let routingResolveService: AddPlanteRoutingResolveService;
   let service: PlanteService;
   let resultPlante: IPlante | undefined;
 
@@ -35,7 +34,7 @@ describe('Plante routing resolve service', () => {
     mockRouter = TestBed.inject(Router);
     jest.spyOn(mockRouter, 'navigate').mockImplementation(() => Promise.resolve(true));
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
-    routingResolveService = TestBed.inject(PlanteRoutingResolveService);
+    routingResolveService = TestBed.inject(AddPlanteRoutingResolveService);
     service = TestBed.inject(PlanteService);
     resultPlante = undefined;
   });

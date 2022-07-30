@@ -44,6 +44,10 @@
         "database": "Base de données",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
+      "feature": {
+        "main": "Fonctionnalités",
+        "addPlante": "Ajouter une plante"
+      },
       "language": "Langue"
     },
     "form": {

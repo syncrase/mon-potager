@@ -1,0 +1,10 @@
+{
+  "monolithApp": {
+    "addPlante": {
+      "home": {
+        "title": "Ajouter une plante"
+      },
+      "planteSearch": "Rechercher la plante"
+    }
+  }
+}
