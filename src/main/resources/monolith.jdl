@@ -9,7 +9,14 @@ entity NomVernaculaire {
 }
 
 entity CronquistRank {
-    rank CronquistTaxonomikRanks required
+    /**
+    * Hauteur du rang: classe, ordre, espèce, etc.
+    */
+    rank CronquistTaxonomikRanks required,
+    /**
+    * nom du rang. Ex. Plantae
+    */
+    nom String required
 }
 
 entity NomVernaculaire {
