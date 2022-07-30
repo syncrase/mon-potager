@@ -1,0 +1,31 @@
+{
+  "applications": "*",
+  "changelogDate": "20220730214927",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "plante",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Plante",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "cronquistRank",
+      "otherEntityRelationshipName": "plante",
+      "relationshipName": "lowestClassificationRank",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "javadoc": "Un même nom vernaculaire peut qualifier plusieurs plantes distinctes et très différentes",
+      "otherEntityField": "nom",
+      "otherEntityName": "nomVernaculaire",
+      "otherEntityRelationshipName": "plantes",
+      "ownerSide": true,
+      "relationshipName": "nomsVernaculaires",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

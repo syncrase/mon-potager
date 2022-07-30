@@ -1,0 +1,48 @@
+{
+  "applications": "*",
+  "changelogDate": "20220730214929",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "cronquist_rank",
+  "fields": [
+    {
+      "fieldName": "rank",
+      "fieldType": "CronquistTaxonomikRanks",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "DOMAINE (Domaine),SOUSDOMAINE (SuperRegne),SUPERREGNE (SuperRegne),REGNE (Regne),SOUSREGNE (SousRegne),RAMEAU (Rameau),INFRAREGNE (InfraRegne),SUPEREMBRANCHEMENT (SuperEmbranchement),EMBRANCHEMENT (Embranchement),SOUSEMBRANCHEMENT (SousEmbranchement),INFRAEMBRANCHEMENT (InfraEmbranchement),MICROEMBRANCHEMENT (MicroEmbranchement),SUPERCLASSE (SuperClasse),CLASSE (Classe),SOUSCLASSE (SousClasse),INFRACLASSE (InfraClasse),SUPERORDRE (SuperOrdre),ORDRE (Ordre),SOUSORDRE (SousOrdre),INFRAORDRE (InfraOrdre),MICROORDRE (MicroOrdre),SUPERFAMILLE (SuperFamille),FAMILLE (Famille),SOUSFAMILLE (SousFamille),TRIBU (Tribu),SOUSTRIBU (SousTribu),GENRE (Genre),SOUSGENRE (SousGenre),SECTION (Section),SOUSSECTION (SousSection),ESPECE (Espece),SOUSESPECE (SousEspece),VARIETE (Variete),SOUSVARIETE (SousVariete),FORME (Forme),SOUSFORME (SousForme)",
+      "javadoc": "Hauteur du rang: classe, ordre, espèce, etc."
+    },
+    {
+      "fieldName": "nom",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"],
+      "javadoc": "nom du rang. Ex. Plantae"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "CronquistRank",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "cronquistRank",
+      "otherEntityRelationshipName": "parent",
+      "relationshipName": "children",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "cronquistRank",
+      "otherEntityRelationshipName": "children",
+      "relationshipName": "parent",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "plante",
+      "otherEntityRelationshipName": "lowestClassificationRank",
+      "relationshipName": "plante",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}
