@@ -185,11 +185,7 @@ public class CronquistClassificationBuilder {
     }
 
     private void updateRank(@NotNull CronquistRank rank, String rankNomFr, String url) {
-        // TODO fix this
-        //        rank.addNameToCronquistRank(new AtomicClassificationNom().nomFr(rankNomFr));
-        //        if ((url != null) && (!url.equals(""))) {
-        //            rank.addUrl(new AtomicUrl().url(Wikipedia.getValidUrl(url)));
-        //        }
+        rank.setNom(rankNomFr);
     }
 
 }
