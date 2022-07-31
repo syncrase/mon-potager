@@ -18,7 +18,6 @@ export class SearchPlanteComponent {
 
   constructor(
     private alertService: AlertService,
-    protected planteService: AddPlanteService,
     protected activatedRoute: ActivatedRoute,
     protected router: Router,
     protected fb: FormBuilder
