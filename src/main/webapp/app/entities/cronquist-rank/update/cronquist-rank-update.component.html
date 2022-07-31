@@ -1,0 +1,88 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-cronquist-rank-heading"
+        data-cy="CronquistRankCreateUpdateHeading"
+        jhiTranslate="monolithApp.cronquistRank.home.createOrEditLabel"
+      >
+        Create or edit a Cronquist Rank
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="row mb-3" [hidden]="editForm.get('id')!.value == null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="row mb-3">
+          <label
+            class="form-label"
+            jhiTranslate="monolithApp.cronquistRank.rank"
+            for="field_rank"
+            [ngbTooltip]="'monolithApp.cronquistRank.help.rank' | translate"
+            >Rank</label
+          >
+          <select class="form-control" name="rank" formControlName="rank" id="field_rank" data-cy="rank">
+            <option [ngValue]="null">{{ 'monolithApp.CronquistTaxonomikRanks.null' | translate }}</option>
+            <option *ngFor="let cronquistTaxonomikRanks of cronquistTaxonomikRanksValues" [value]="cronquistTaxonomikRanks">
+              {{ 'monolithApp.CronquistTaxonomikRanks.' + cronquistTaxonomikRanks | translate }}
+            </option>
+          </select>
+          <div *ngIf="editForm.get('rank')!.invalid && (editForm.get('rank')!.dirty || editForm.get('rank')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('rank')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label
+            class="form-label"
+            jhiTranslate="monolithApp.cronquistRank.nom"
+            for="field_nom"
+            [ngbTooltip]="'monolithApp.cronquistRank.help.nom' | translate"
+            >Nom</label
+          >
+          <input type="text" class="form-control" name="nom" id="field_nom" data-cy="nom" formControlName="nom" />
+          <div *ngIf="editForm.get('nom')!.invalid && (editForm.get('nom')!.dirty || editForm.get('nom')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('nom')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="monolithApp.cronquistRank.parent" for="field_parent">Parent</label>
+          <select class="form-control" id="field_parent" data-cy="parent" name="parent" formControlName="parent">
+            <option [ngValue]="null"></option>
+            <option
+              [ngValue]="cronquistRankOption.id === editForm.get('parent')!.value?.id ? editForm.get('parent')!.value : cronquistRankOption"
+              *ngFor="let cronquistRankOption of cronquistRanksSharedCollection; trackBy: trackCronquistRankById"
+            >
+              {{ cronquistRankOption.id }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

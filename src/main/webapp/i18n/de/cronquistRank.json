@@ -1,0 +1,31 @@
+{
+  "monolithApp": {
+    "cronquistRank": {
+      "home": {
+        "title": "Cronquist Ranks",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Cronquist Rank erstellen",
+        "createOrEditLabel": "Cronquist Rank erstellen oder bearbeiten",
+        "notFound": "Keine Cronquist Ranks gefunden"
+      },
+      "created": "Cronquist Rank erstellt mit ID {{ param }}",
+      "updated": "Cronquist Rank aktualisiert mit ID {{ param }}",
+      "deleted": "Cronquist Rank gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Cronquist Rank {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Cronquist Rank"
+      },
+      "id": "ID",
+      "rank": "Rank",
+      "nom": "Nom",
+      "children": "Children",
+      "parent": "Parent",
+      "help": {
+        "rank": "Hauteur du rang: classe, ordre, espèce, etc.",
+        "nom": "nom du rang. Ex. Plantae"
+      }
+    }
+  }
+}
