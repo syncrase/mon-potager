@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.TreeSet;
 
 public class CronquistClassificationBranch {
 
@@ -110,6 +112,26 @@ public class CronquistClassificationBranch {
         return classificationCronquistMap.values();
     }
 
+    public TreeSet<CronquistRank> getClassificationSet() {
+        TreeSet<CronquistRank> cronquistRanks = new TreeSet<>(Comparator.comparing(CronquistRank::getRank, (rang1, rang2) -> {
+            if (rang1 == null && rang2 == null) {
+                return 0;
+            }
+            if (rang1 == null) {
+                return 1;
+            }
+            if (rang2 == null) {
+                return -1;
+            }
+            int i = rang1.isHighestRankOf(rang2) ? 1 : rang1.isSameRankOf(rang2) ? 0 : -1;
+            return i;
+        }));
+        Collection<CronquistRank> values = classificationCronquistMap.values();
+        cronquistRanks.addAll(values);
+        return cronquistRanks;
+    }
+
+
     public LinkedMap<CronquistTaxonomikRanks, CronquistRank> getClassificationBranch() {
         return classificationCronquistMap;
     }
@@ -131,19 +153,4 @@ public class CronquistClassificationBranch {
     public void inferAllRank() {
         classificationCronquistMap.forEach((rankName, rank) -> rank.setNom(rankName.getValue()));
     }
-
-    //    @Override
-    //    public CronquistClassificationBranch clone() {
-    //        try {
-    //            CronquistClassificationBranch clone = (CronquistClassificationBranch) super.clone();
-    //            for (Map.Entry<CronquistTaxonomikRanks, CronquistRank> entry : this.classificationCronquistMap.entrySet()) {
-    //                CronquistTaxonomikRanks rankName = entry.getKey();
-    //                CronquistRank iCronquistRank = entry.getValue().clone();
-    //                clone.put(rankName, iCronquistRank);
-    //            }
-    //            return clone;
-    //        } catch (CloneNotSupportedException e) {
-    //            throw new AssertionError();
-    //        }
-    //    }
 }

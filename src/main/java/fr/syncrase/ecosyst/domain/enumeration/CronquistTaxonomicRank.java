@@ -1,6 +1,7 @@
 package fr.syncrase.ecosyst.domain.enumeration;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public enum CronquistTaxonomicRank {
     DOMAINE("Domaine", null),
-    SOUSDOMAINE("SuperRegne", null),
+    SOUSDOMAINE("SousDomaine", null),
     SUPERREGNE("SuperRegne", null),
     REGNE("Regne", null),
     SOUSREGNE("SousRegne", null),
@@ -81,5 +82,17 @@ public enum CronquistTaxonomicRank {
         } else {
             return null;
         }
+    }
+
+    public boolean isHighestRankOf(@NotNull CronquistTaxonomikRanks rang) {
+        return this.ordinal() < rang.ordinal();
+    }
+
+    public boolean isHighestRankOrEqualOf(@NotNull CronquistTaxonomikRanks rang) {
+        return this.ordinal() <= rang.ordinal();
+    }
+
+    public boolean isSameRankOf(@NotNull CronquistTaxonomikRanks rang) {
+        return this.ordinal() == rang.ordinal();
     }
 }

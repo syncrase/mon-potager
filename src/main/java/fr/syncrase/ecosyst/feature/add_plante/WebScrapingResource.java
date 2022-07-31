@@ -1,6 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante;
 
 import fr.syncrase.ecosyst.domain.Plante;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,16 @@ public class WebScrapingResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} resulting plante.
      */
     @GetMapping("/plantes/scrap")
-    public ResponseEntity<Plante> scrapPlant(@RequestParam String name) {
+    public ResponseEntity<Plante> scrapPlant(@RequestParam String name)  {
         log.debug("REST request to look for {} on the internet", name);
         Plante plante = null;
         try {
             plante = webScrapingService.scrapPlant(name);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (NonExistentWikiPageException | PlantNotFoundException e) {
+            log.warn("{}: Unable to find a wiki page for {}", e.getClass(), name);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok().body(plante);
     }

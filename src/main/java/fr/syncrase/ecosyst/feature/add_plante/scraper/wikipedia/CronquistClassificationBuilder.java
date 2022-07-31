@@ -18,7 +18,7 @@ public class CronquistClassificationBuilder {
 
     private final Logger log = LoggerFactory.getLogger(CronquistClassificationBuilder.class);
     CronquistClassificationBranch cronquistClassification;
-    WikipediaHtmlExtractor wikipediaHtmlExtractor;
+    WikipediaClassificationExtractor wikipediaClassificationExtractor;
 
     /**
      * Extract extractClassification from the wikipedia extractClassification table
@@ -26,22 +26,22 @@ public class CronquistClassificationBuilder {
      * @param mainTable extractClassification table
      * @return The generated extractClassification object
      */
-    public CronquistClassificationBranch getClassification(@NotNull Element mainTable) throws UnableToScrapClassification {
+    public CronquistClassificationBranch getClassificationFromHtml(@NotNull Element mainTable) throws UnableToScrapClassification {
 
         cronquistClassification = new CronquistClassificationBranch();
-        wikipediaHtmlExtractor = new WikipediaHtmlExtractor();
-        Elements elementsDeClassification = wikipediaHtmlExtractor.extractClassificationElements(mainTable);
+        wikipediaClassificationExtractor = new WikipediaClassificationExtractor();
+        Elements elementsDeClassification = wikipediaClassificationExtractor.extractClassificationElements(mainTable);
 
         for (Element classificationItem : elementsDeClassification) {
             setCronquistTaxonomyItemFromElement(classificationItem);// TODO remove side effect
         }
 
-        Map<String, ScrapedRank> rangTaxonMap = wikipediaHtmlExtractor.extractionRangsTaxonomiquesInferieurs(mainTable);
+        Map<String, ScrapedRank> rangTaxonMap = wikipediaClassificationExtractor.extractionRangsTaxonomiquesInferieurs(mainTable);
         if (rangTaxonMap.keySet().size() > 0) {
             rangTaxonMap.forEach((classificationLevel, rangValues) -> setCronquistTaxonomyItem(rangValues));
         }
         cronquistClassification.clearTail();
-        cronquistClassification.inferAllRank();
+        //cronquistClassification.inferAllRank();
         return cronquistClassification;
     }
 
@@ -51,13 +51,13 @@ public class CronquistClassificationBuilder {
      * @param classificationItem row of the taxonomy table which contains taxonomy rank and name
      */
     private void setCronquistTaxonomyItemFromElement(Element classificationItem) {
-        String classificationLevel = wikipediaHtmlExtractor.extractClassificationLevel(classificationItem);
+        String classificationLevel = wikipediaClassificationExtractor.extractClassificationLevel(classificationItem);
         ScrapedRank scrapedRankData;
         try {
             scrapedRankData = new ScrapedRank(
                 classificationLevel,
-                wikipediaHtmlExtractor.extractRankName(classificationItem),
-                wikipediaHtmlExtractor.extractUrl(classificationItem)
+                wikipediaClassificationExtractor.extractRankName(classificationItem),
+                wikipediaClassificationExtractor.extractUrl(classificationItem)
             );
             setCronquistTaxonomyItem(scrapedRankData);
         } catch (InvalidRankName e) {

@@ -1,6 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.UnableToScrapClassification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,16 +17,16 @@ public class WikipediaCrawler {
 
     private final Logger log = LoggerFactory.getLogger(WikipediaCrawler.class);
 
-    WikipediaHtmlExtractor wikipediaHtmlExtractor;
+    WikipediaClassificationExtractor wikipediaClassificationExtractor;
 
     public WikipediaCrawler() {
-        wikipediaHtmlExtractor = new WikipediaHtmlExtractor();
+        wikipediaClassificationExtractor = new WikipediaClassificationExtractor();
     }
 
-    public @Nullable CronquistClassificationBranch extractClassificationFromWiki(String urlWiki) {
+    public @Nullable CronquistClassificationBranch extractClassificationFromWiki(@NotNull String urlWiki) {
         try {
             log.info("Get classification from : " + urlWiki);
-            Elements encadreTaxonomique = wikipediaHtmlExtractor.extractEncadreDeClassification(urlWiki);
+            Elements encadreTaxonomique = wikipediaClassificationExtractor.extractEncadreDeClassification(urlWiki);
 
             CronquistClassificationBranch cronquistClassificationBranch = extractPremiereClassification(encadreTaxonomique);
             return cronquistClassificationBranch;
@@ -33,6 +34,8 @@ public class WikipediaCrawler {
             log.error("La page Wikipedia ne répond pas {}\n. Vérifier la connexion internet!", urlWiki);
         } catch (IOException e) {
             log.error("Problème d'accès lors de l'extraction des données de la page Wikipedia {}", urlWiki);
+        } catch (NonExistentWikiPageException e) {
+            log.error("La page Wikipedia {} n'existe pas", urlWiki);
         }
         return null;
     }
@@ -41,7 +44,7 @@ public class WikipediaCrawler {
         // TODO Contient plusieurs classifications, en général Cronquist et APGN
         // TODO dans l'état actuel des choses, je ne garde que la PREMIERE section !
 
-        switch (wikipediaHtmlExtractor.extractTypeOfMainClassification(encadreTaxonomique)) {
+        switch (wikipediaClassificationExtractor.extractTypeOfMainClassification(encadreTaxonomique)) {
             case "APG III":
                 log.info("APG III to be implemented");
                 break;
@@ -76,8 +79,8 @@ public class WikipediaCrawler {
         CronquistClassificationBuilder cronquistClassificationBuilder = new CronquistClassificationBuilder();
         CronquistClassificationBranch cronquistClassification = null;
         try {
-            Element mainTable = wikipediaHtmlExtractor.extractMainTableOfClassificationFrame(encadreTaxonomique);
-            cronquistClassification = cronquistClassificationBuilder.getClassification(mainTable);
+            Element mainTable = wikipediaClassificationExtractor.extractMainTableOfClassificationFrame(encadreTaxonomique);
+            cronquistClassification = cronquistClassificationBuilder.getClassificationFromHtml(mainTable);
 
         } catch (UnableToScrapClassification e) {
             log.error(e.getMessage());

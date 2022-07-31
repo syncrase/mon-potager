@@ -1,9 +1,9 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.InvalidRankName;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.UnableToScrapClassification;
 import org.jetbrains.annotations.NotNull;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,13 +16,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-public class WikipediaHtmlExtractor {
+public class WikipediaClassificationExtractor extends WikipediaConnector {
     public static final String LIST_SELECTOR_2 = "div.mw-category-group ul li a[href]";
     public static final String LIST_SELECTOR_1 = "div.CategoryTreeItem a[href]";
     public static final String HREF = "href";
     public static final String CLASSIFICATION_SELECTOR = "div.infobox_v3.large.taxobox_v3.plante.bordered";
     public static final String MAIN_CLASSIFICATION_SELECTOR = "table.taxobox_classification caption a";
-    private final Logger log = LoggerFactory.getLogger(WikipediaHtmlExtractor.class);
+    private final Logger log = LoggerFactory.getLogger(WikipediaClassificationExtractor.class);
 
     /**
      * @param item       Element from which the contained string is extract
@@ -158,8 +158,8 @@ public class WikipediaHtmlExtractor {
         return listItem.attr(HREF);
     }
 
-    public Elements extractEncadreDeClassification(String urlWiki) throws IOException {
-        return Jsoup.connect(urlWiki).get().select(CLASSIFICATION_SELECTOR);
+    public Elements extractEncadreDeClassification(String urlWiki) throws IOException, NonExistentWikiPageException {
+        return getDocumentOf(urlWiki).select(CLASSIFICATION_SELECTOR);
     }
 
     public @NotNull String extractTypeOfMainClassification(@NotNull Elements encadreTaxonomique) {
