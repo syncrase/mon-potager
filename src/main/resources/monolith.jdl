@@ -82,8 +82,17 @@ relationship ManyToMany {
 //***********************************************************
 
 relationship OneToMany {
+    /**
+    * Défini une branche de classification de Cronquist
+    */
     CronquistRank{children} to CronquistRank{parent},
-    Plante{lowestClassificationRank} to CronquistRank,
+}
+
+relationship ManyToOne {
+    /**
+    * Le nom latin d'une plante est la composition du genre et de l'espèce. De ce fait une plante est associée au minimum avec une espèce (ou tout autre rang entre l'epsèce et le sous-genre)
+    */
+    Plante{cronquistRank} to CronquistRank,
 }
 
 //***********************************************************
