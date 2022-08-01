@@ -1,4 +1,4 @@
-package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
+package fr.syncrase.ecosyst.feature.add_plante.models;
 
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.InvalidRankName;

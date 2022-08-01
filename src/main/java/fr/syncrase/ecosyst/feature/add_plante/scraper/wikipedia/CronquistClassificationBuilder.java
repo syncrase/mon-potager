@@ -2,6 +2,7 @@ package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
+import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.InvalidRankName;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.UnableToScrapClassification;

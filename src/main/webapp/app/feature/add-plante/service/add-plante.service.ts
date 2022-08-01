@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {ApplicationConfigService} from 'app/core/config/application-config.service';
-import {IPlante} from "../../../entities/plante/plante.model";
+import {IScrapedPlante} from "../scraped-plant.model";
 
-export type EntityResponseType = HttpResponse<IPlante>;
-export type EntityArrayResponseType = HttpResponse<IPlante[]>;
+export type EntityResponseType = HttpResponse<IScrapedPlante>;
+export type EntityArrayResponseType = HttpResponse<IScrapedPlante[]>;
 
 @Injectable({providedIn: 'root'})
 export class AddPlanteService {
@@ -15,7 +15,7 @@ export class AddPlanteService {
   }
 
   search(plante: string): Observable<EntityResponseType> {
-    return this.http.get<IPlante>(`${this.resourceUrl}/scrap`, {observe: 'response', params: {name: plante}});
+    return this.http.get<IScrapedPlante>(`${this.resourceUrl}/scrap`, {observe: 'response', params: {name: plante}});
   }
 
 }

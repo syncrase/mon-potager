@@ -64,6 +64,10 @@ public enum CronquistTaxonomicRank {
         return suffix;
     }
 
+    /**
+     *
+     * @return le parent s'il en a un, sinon null
+     */
     @Contract(pure = true)
     public @Nullable CronquistTaxonomikRanks getRangSuperieur() {
         int parentOrdinal = this.ordinal() - 1;

@@ -1,4 +1,4 @@
-package fr.syncrase.ecosyst.feature.add_plante;
+package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions;
 
 public class PlantNotFoundException extends Throwable {
     public PlantNotFoundException(String name) {

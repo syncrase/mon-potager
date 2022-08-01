@@ -1,7 +1,8 @@
 package fr.syncrase.ecosyst.feature.add_plante;
 
-import fr.syncrase.ecosyst.domain.Plante;
+import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.PlantNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,9 @@ public class WebScrapingResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} resulting plante.
      */
     @GetMapping("/plantes/scrap")
-    public ResponseEntity<Plante> scrapPlant(@RequestParam String name)  {
+    public ResponseEntity<ScrapedPlant> scrapPlant(@RequestParam String name)  {
         log.debug("REST request to look for {} on the internet", name);
-        Plante plante = null;
+        ScrapedPlant plante = null;
         try {
             plante = webScrapingService.scrapPlant(name);
         } catch (IOException e) {

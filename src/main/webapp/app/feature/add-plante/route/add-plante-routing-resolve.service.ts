@@ -3,12 +3,12 @@ import {HttpResponse} from '@angular/common/http';
 import {ActivatedRouteSnapshot, Resolve, Router} from '@angular/router';
 import {EMPTY, Observable, of} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
-import {IPlante, Plante} from "../../../entities/plante/plante.model";
 import {AddPlanteService} from "../service/add-plante.service";
 import {AlertService} from "../../../core/util/alert.service";
+import {IScrapedPlante, ScrapedPlante} from "../scraped-plant.model";
 
 @Injectable({providedIn: 'root'})
-export class AddPlanteRoutingResolveService implements Resolve<IPlante> {
+export class AddPlanteRoutingResolveService implements Resolve<IScrapedPlante> {
 
   constructor(
     protected service: AddPlanteService,
@@ -17,11 +17,11 @@ export class AddPlanteRoutingResolveService implements Resolve<IPlante> {
   ) {
   }
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IPlante> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IScrapedPlante> | Observable<never> {
     const planteName = route.params['planteName'];
     if (planteName) {
       return this.service.search(planteName).pipe(
-        mergeMap((plante: HttpResponse<Plante>) => {
+        mergeMap((plante: HttpResponse<ScrapedPlante>) => {
           switch (plante.status) {
             case 200:
               return plante.body ? of(plante.body) : this.redirectTo404();
@@ -36,7 +36,7 @@ export class AddPlanteRoutingResolveService implements Resolve<IPlante> {
         })
       );
     }
-    return of(new Plante());
+    return of(new ScrapedPlante());
   }
 
   private redirectTo404(): Observable<never> {

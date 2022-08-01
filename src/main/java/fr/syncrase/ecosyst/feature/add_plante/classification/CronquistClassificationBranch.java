@@ -6,10 +6,7 @@ import liquibase.repackaged.org.apache.commons.collections4.map.LinkedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.TreeSet;
+import java.util.*;
 
 public class CronquistClassificationBranch {
 
@@ -106,6 +103,18 @@ public class CronquistClassificationBranch {
 
     public CronquistRank getRangDeBase() {
         return classificationCronquistMap.get(classificationCronquistMap.lastKey());
+    }
+
+    public CronquistRank getNestedClassification() {
+        CronquistRank rank, tmpRank;
+        rank = classificationCronquistMap.get(classificationCronquistMap.lastKey());
+        tmpRank = rank;
+        while (tmpRank.getRank().getRangSuperieur() != null) {
+            classificationCronquistMap.get(tmpRank.getRank().getRangSuperieur()).addChildren(tmpRank);
+            tmpRank.setParent(classificationCronquistMap.get(tmpRank.getRank().getRangSuperieur()));
+            tmpRank = tmpRank.getParent();
+        }
+        return rank;
     }
 
     public Collection<CronquistRank> getClassification() {
