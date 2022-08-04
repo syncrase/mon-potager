@@ -1,13 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpResponse} from '@angular/common/http';
-import {FormBuilder} from '@angular/forms';
+import {AbstractControl, FormBuilder} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
-import {INomVernaculaire, NomVernaculaire} from 'app/entities/nom-vernaculaire/nom-vernaculaire.model';
 import {AddPlanteService} from "../service/add-plante.service";
-import {IPlante, Plante} from "../../../entities/plante/plante.model";
+import {IScrapedPlante, ScrapedPlante} from "../scraped-plant.model";
+import {CronquistRank, ICronquistRank} from "../../../entities/cronquist-rank/cronquist-rank.model";
+import {CronquistTaxonomikRanks} from "../../../entities/enumerations/cronquist-taxonomik-ranks.model";
 
 @Component({
   selector: 'jhi-plante-update',
@@ -16,12 +17,12 @@ import {IPlante, Plante} from "../../../entities/plante/plante.model";
 export class PlanteUpdateComponent implements OnInit {
   isSaving = false;
 
-  // nomVernaculairesSharedCollection: INomVernaculaire[] = [];
-
   editForm = this.fb.group({
     id: [],
     nomsVernaculaires: [],
+    cronquist: this.fb.array([]),
   });
+  cronquistRanks: ICronquistRank[] | null | undefined;
 
   constructor(
     protected planteService: AddPlanteService,
@@ -52,22 +53,7 @@ export class PlanteUpdateComponent implements OnInit {
     }
   }
 
-  trackNomVernaculaireById(_index: number, item: INomVernaculaire): string {
-    return item.nom!;
-  }
-
-  getSelectedNomVernaculaire(option: INomVernaculaire, selectedVals?: INomVernaculaire[]): INomVernaculaire {
-    if (selectedVals) {
-      for (const selectedVal of selectedVals) {
-        if (option.id === selectedVal.id) {
-          return selectedVal;
-        }
-      }
-    }
-    return option;
-  }
-
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IPlante>>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IScrapedPlante>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -86,18 +72,52 @@ export class PlanteUpdateComponent implements OnInit {
     this.isSaving = false;
   }
 
-  protected updateForm(plante: IPlante): void {
+  protected cronquistRanksAsObject(cronquistRanks: ICronquistRank[]): any {
+    const classif: {
+      [key: string]: any
+    } = {};
+    const keys = Object.keys(CronquistTaxonomikRanks);
+    for (const cronquistRank of cronquistRanks) {
+      const found = keys.find(key => key.valueOf() === cronquistRank.rank?.valueOf());
+      if (found) {
+        classif[found] = cronquistRank.nom;
+      }
+    }
+    return classif;
+  }
+
+  protected updateForm(plante: IScrapedPlante): void {
     this.editForm.patchValue({
       id: plante.id,
       nomsVernaculaires: plante.nomsVernaculaires?.map(nv => nv.nom).join(', '),
     });
+    this.editForm.setControl('cronquist', this.fb.group(this.cronquistRanksAsObject(plante.lowestClassificationRanks!)));
+    this.cronquistRanks = plante.lowestClassificationRanks;
   }
 
-  protected createFromForm(): IPlante {
+  protected createFromForm(): IScrapedPlante {
     return {
-      ...new Plante(),
+      ...new ScrapedPlante(),
       id: this.editForm.get(['id'])!.value,
       nomsVernaculaires: this.editForm.get(['nomsVernaculaires'])!.value.split(',').map((nv: string) => nv.trim()),
+      lowestClassificationRanks: this.objectAsCronquistRanks(this.editForm.get(['cronquist'])!.value),
     };
+  }
+
+  protected objectAsCronquistRanks(param: AbstractControl | null): ICronquistRank[] {
+    const classification: ICronquistRank[] = [];
+    // eslint-disable-next-line guard-for-in
+    for (const n in CronquistTaxonomikRanks) {
+      const rank = new CronquistRank();
+      rank.rank = CronquistTaxonomikRanks[n as keyof typeof CronquistTaxonomikRanks];
+      if (param) {
+        rank.nom = (param as any)[n]!;
+      }
+      const receivedRank = this.cronquistRanks?.find(cr => cr.rank === n);
+      rank.id = receivedRank?.id
+      classification.push(rank);
+    }
+
+    return classification;
   }
 }

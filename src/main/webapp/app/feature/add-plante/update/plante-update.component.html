@@ -23,6 +23,32 @@
                     [readonly]="false"></textarea>
         </div>
 
+
+        <div class="table-responsive" id="entities" *ngIf="cronquistRanks && cronquistRanks.length > 0">
+          <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+            <tr>
+              <th scope="col">
+                <span jhiTranslate="monolithApp.cronquistRank.rank">Rank</span>
+                <fa-icon icon="sort"></fa-icon>
+              </th>
+              <th scope="col"><span jhiTranslate="monolithApp.cronquistRank.nom">Nom</span>
+                <fa-icon icon="sort"></fa-icon>
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let cronquistRank of cronquistRanks; let i = index" data-cy="entityTable"
+                [formGroupName]="'cronquist'">
+              <td
+                jhiTranslate="{{ 'monolithApp.CronquistTaxonomikRanks.' + cronquistRank.rank }}">{{ cronquistRank.rank }}</td>
+              <input type="text" class="form-control" name="{{cronquistRank.nom}}" id="field_{{cronquistRank.nom}}"
+                     data-cy="nom" formControlName="{{cronquistRank.rank}}"/>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
 
       <div>
