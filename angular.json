@@ -101,7 +101,6 @@
   },
   "defaultProject": "monolith",
   "cli": {
-    "analytics": false,
     "cache": {
       "enabled": true,
       "path": "./target/angular/",
