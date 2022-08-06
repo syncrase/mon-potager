@@ -14,9 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.filter.LongFilter;
+import tech.jhipster.service.filter.StringFilter;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CronquistReader {
@@ -32,13 +33,12 @@ public class CronquistReader {
     @Contract(pure = true)
     public CronquistClassificationBranch findExistingPartOfThisClassification(@NotNull CronquistClassificationBranch classification) throws ClassificationReconstructionException, MoreThanOneResultException {
         CronquistClassificationBranch existingClassification = null;
-        Iterator<CronquistRank> rankIterator = classification.iterator();// TODO vérifier que je pars du rang le plus bas
-        CronquistRank cronquistRank;
-        while (rankIterator.hasNext()) {
-            cronquistRank = findExistingRank(rankIterator.next());
-            if (cronquistRank != null) {
-                existingClassification = findExistingClassification(cronquistRank);
-                assert existingClassification != null;
+
+        for (CronquistRank cronquistRank : classification) {
+            CronquistRank existingRank = findExistingRank(cronquistRank);
+            if (existingRank != null) {
+                existingClassification = findExistingClassification(existingRank);
+                assert Objects.requireNonNull(existingClassification).size() != 0;
                 break;// I got it!
             }
         }
@@ -53,7 +53,7 @@ public class CronquistReader {
      */
     @Contract(pure = true)
     @Nullable
-    public CronquistClassificationBranch findExistingClassification(@NotNull CronquistRank cronquistRank) throws ClassificationReconstructionException, MoreThanOneResultException {
+    public CronquistClassificationBranch findExistingClassification(@NotNull CronquistRank cronquistRank) throws MoreThanOneResultException {
         CronquistRank existingRank = findExistingRank(cronquistRank);
         if (existingRank != null) {
             return new CronquistClassificationBranch(existingRank);
@@ -83,11 +83,10 @@ public class CronquistReader {
             idFilter.setEquals(cronquistRank.getId());
             rankCrit.setId(idFilter);
         }
-
-        if (cronquistRank.getRank() != null) {
-            CronquistRankCriteria.CronquistTaxonomikRanksFilter rankFilter = new CronquistRankCriteria.CronquistTaxonomikRanksFilter();
-            rankFilter.setEquals(cronquistRank.getRank());
-            rankCrit.setRank(rankFilter);
+        if (Objects.nonNull(cronquistRank.getNom())) {
+            StringFilter nomFilter = new StringFilter();
+            nomFilter.setEquals(cronquistRank.getNom());
+            rankCrit.setNom(nomFilter);
         }
 
         rankCrit.setDistinct(true);
@@ -100,10 +99,5 @@ public class CronquistReader {
             default:
                 throw new MoreThanOneResultException("Provided criteria do not correspond to only one result : " + cronquistRank);
         }
-    }
-
-    public Boolean isRankExists(CronquistRank scrapedRank) {
-        // TODO to be implemented
-        return Boolean.FALSE;
     }
 }

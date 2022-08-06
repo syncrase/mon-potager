@@ -1,11 +1,14 @@
 package fr.syncrase.ecosyst.feature.add_plante.repository;
 
+import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.repository.CronquistRankRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Iterator;
 
 @Service
 public class CronquistWriter {
@@ -26,8 +29,11 @@ public class CronquistWriter {
             return null;
         }
 
-        // TODO Check children and parent
-        cronquistRankRepository.saveAll(newClassification);
+        newClassification.setConsistantParenthood();
+        Iterator<CronquistRank> iterator = newClassification.getClassificationSet().descendingIterator();
+        while(iterator.hasNext()){
+            cronquistRankRepository.save(iterator.next());
+        }
         return newClassification;
     }
 }

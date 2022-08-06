@@ -91,7 +91,8 @@ public class ClassificationConsistencyService {
 
                 boolean scrapedRankIsSignificant = !CronquistClassificationBranch.isRangDeLiaison(scrapedRank);
                 if (scrapedRankIsSignificant) {
-                    Boolean isRankExists = cronquistReader.isRankExists(scrapedRank);
+                    CronquistRank cronquistRank = cronquistReader.queryForCronquistRank(scrapedRank);
+                    boolean isRankExists = cronquistRank != null;
                     // Si le nom scrape n'existe pas en base → pas de souci pour l'ajouter
                     // S'il existe en base, il doit être porté par le rang existant. Sinon conflit à gérer
                     if (isRankExists && !scrapedRank.getNom().equals(existingRank.getNom())) {

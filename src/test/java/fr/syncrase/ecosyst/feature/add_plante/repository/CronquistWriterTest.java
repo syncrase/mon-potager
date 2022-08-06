@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(classes = MonolithApp.class)
 class CronquistWriterTest {
 
@@ -23,6 +21,8 @@ class CronquistWriterTest {
         Assertions.assertNotNull(cronquistClassificationBranch, "La classification conflictuel doit exister");
         Assertions.assertEquals(27, cronquistClassificationBranch.size(), "La classification à insérer doit posséder 27 éléments");
         Assertions.assertEquals("Allium", cronquistClassificationBranch.getRang(CronquistTaxonomikRanks.GENRE).getNom(), "Le genre doit être Allium");
+        // setConsistantParenthood
+        Assertions.assertNotNull(cronquistClassificationBranch.getRang(CronquistTaxonomikRanks.GENRE).getParent(), "Le genre Allium doit posséder un parent");
         Assertions.assertEquals("Liliaceae", cronquistClassificationBranch.getRang(CronquistTaxonomikRanks.FAMILLE).getNom(), "La famille doit être Liliaceae");
         Assertions.assertEquals("Liliales", cronquistClassificationBranch.getRang(CronquistTaxonomikRanks.ORDRE).getNom(), "La famille doit être Liliales");
         Assertions.assertEquals("Liliidae", cronquistClassificationBranch.getRang(CronquistTaxonomikRanks.SOUSCLASSE).getNom(), "La famille doit être Liliidae");

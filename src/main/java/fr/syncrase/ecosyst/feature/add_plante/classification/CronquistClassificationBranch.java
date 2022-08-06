@@ -43,7 +43,7 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         this();
         CronquistRank currentRank = cronquistRank;
         while (currentRank != null) {
-            classificationCronquist.add(currentRank);
+            add(currentRank);
             currentRank = currentRank.getParent();
         }
         this.clearTail();
@@ -53,6 +53,21 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         this();
         this.addAll(classificationCronquist);
         this.clearTail();
+    }
+
+    /**
+     * Each rank must own a parent (Invariant)
+     */
+    public void setConsistantParenthood() {
+        Iterator<CronquistRank> iterator = classificationCronquist.descendingIterator();
+        CronquistRank current, parent = null;
+        while (iterator.hasNext()) {
+            current = iterator.next();
+            if (parent != null) {
+                current.setParent(parent);
+            }
+            parent = current;
+        }
     }
 
     //private static Comparator<CronquistRank> getCronquistRankComparator() {
@@ -68,6 +83,7 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     //        }
     //        return rang1.isHighestRankOf(rang2) ? 1 : rang1.isSameRankOf(rang2) ? 0 : -1;
     //    });
+
     //}
 
     @Deprecated
