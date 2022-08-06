@@ -1,6 +1,6 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 

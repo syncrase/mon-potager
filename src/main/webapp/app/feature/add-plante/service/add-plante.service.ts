@@ -18,4 +18,8 @@ export class AddPlanteService {
     return this.http.get<IScrapedPlante>(`${this.resourceUrl}/scrap`, {observe: 'response', params: {name: plante}});
   }
 
+
+  save(plante: IScrapedPlante): Observable<EntityResponseType> {
+    return this.http.post<IScrapedPlante>(`${this.resourceUrl}/save`, plante, {observe: 'response'});
+  }
 }

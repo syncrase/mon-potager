@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 @Table(name = "cronquist_rank")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class CronquistRank implements Serializable {
+public class CronquistRank implements Serializable, Comparable {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,11 +63,11 @@ public class CronquistRank implements Serializable {
     @Schema(description = "Défini une branche de classification de Cronquist")
     @OneToMany(mappedBy = "parent")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "classification", "children", "parent" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"classification", "children", "parent"}, allowSetters = true)
     private Set<CronquistRank> children = new HashSet<>();
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "classification", "children", "parent" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"classification", "children", "parent"}, allowSetters = true)
     private CronquistRank parent;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -190,10 +190,28 @@ public class CronquistRank implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "CronquistRank{" +
+        return getNom() != null ? "CronquistRank{" +
             "id=" + getId() +
             ", rank='" + getRank() + "'" +
             ", nom='" + getNom() + "'" +
-            "}";
+            "}" : String.valueOf(getRank());
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof CronquistRank) {
+            CronquistRank cronquistRank = (CronquistRank) o;
+            if (this.getRank() == null && cronquistRank.getRank() == null) {
+                return 0;
+            }
+            if (this.getRank() == null) {
+                return 1;
+            }
+            if (cronquistRank.getRank() == null) {
+                return -1;
+            }
+            return this.getRank().isHighestRankOf(cronquistRank.getRank()) ? 1 : this.getRank().isSameRankOf(cronquistRank.getRank()) ? 0 : -1;
+        }
+        return 0;
     }
 }

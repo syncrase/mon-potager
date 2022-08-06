@@ -1,7 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.models;
 
-import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.NomVernaculaire;
+import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +9,7 @@ import java.util.Set;
 public class ScrapedPlant {
 
     private Long id;
-    private Set<CronquistRank> lowestClassificationRanks = new HashSet<>();
+    private CronquistClassificationBranch cronquistClassificationBranch;
     private Set<NomVernaculaire> nomsVernaculaires = new HashSet<>();
 
     public Long getId() {
@@ -25,16 +25,16 @@ public class ScrapedPlant {
         this.id = id;
     }
 
-    public Set<CronquistRank> getLowestClassificationRanks() {
-        return this.lowestClassificationRanks;
+    public CronquistClassificationBranch getCronquistClassificationBranch() {
+        return this.cronquistClassificationBranch;
     }
 
-    public void setLowestClassificationRanks(Set<CronquistRank> lowestClassificationRanks) {
-        this.lowestClassificationRanks = lowestClassificationRanks;
+    public void setCronquistClassificationBranch(CronquistClassificationBranch cronquistClassificationBranch) {
+        this.cronquistClassificationBranch = cronquistClassificationBranch;
     }
 
-    public ScrapedPlant lowestClassificationRanks(Set<CronquistRank> lowestClassificationRanks) {
-        this.lowestClassificationRanks = lowestClassificationRanks;
+    public ScrapedPlant cronquistClassificationBranch(CronquistClassificationBranch cronquistClassificationBranch) {
+        this.cronquistClassificationBranch = cronquistClassificationBranch;
         return this;
     }
 

@@ -56,13 +56,11 @@ public enum CronquistTaxonomicRank {
         return value;
     }
 
-    private final String suffix;
-
-    private static final CronquistTaxonomikRanks[] allRanks = values();
-
     public String getSuffix() {
         return suffix;
     }
+
+    private static final CronquistTaxonomikRanks[] allRanks = values();
 
     /**
      *

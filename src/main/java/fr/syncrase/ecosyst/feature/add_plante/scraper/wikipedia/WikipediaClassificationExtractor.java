@@ -1,9 +1,9 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedRank;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.InvalidRankName;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.UnableToScrapClassification;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.InvalidRankName;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.UnableToScrapClassification;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

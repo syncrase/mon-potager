@@ -1,7 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.models;
 
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.InvalidRankName;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.InvalidRankName;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

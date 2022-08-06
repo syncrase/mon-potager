@@ -1,8 +1,8 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.NonExistentWikiPageException;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exceptions.UnableToScrapClassification;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.UnableToScrapClassification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Element;
@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
-public class WikipediaCrawler {
+public class WikipediaScraper {
 
-    private final Logger log = LoggerFactory.getLogger(WikipediaCrawler.class);
+    private final Logger log = LoggerFactory.getLogger(WikipediaScraper.class);
 
     WikipediaClassificationExtractor wikipediaClassificationExtractor;
 
-    public WikipediaCrawler() {
+    public WikipediaScraper() {
         wikipediaClassificationExtractor = new WikipediaClassificationExtractor();
     }
 
@@ -27,7 +27,6 @@ public class WikipediaCrawler {
         try {
             log.info("Get classification from : " + urlWiki);
             Elements encadreTaxonomique = wikipediaClassificationExtractor.extractEncadreDeClassification(urlWiki);
-
             CronquistClassificationBranch cronquistClassificationBranch = extractPremiereClassification(encadreTaxonomique);
             return cronquistClassificationBranch;
         } catch (SocketTimeoutException e) {
@@ -81,11 +80,9 @@ public class WikipediaCrawler {
         try {
             Element mainTable = wikipediaClassificationExtractor.extractMainTableOfClassificationFrame(encadreTaxonomique);
             cronquistClassification = cronquistClassificationBuilder.getClassificationFromHtml(mainTable);
-
         } catch (UnableToScrapClassification e) {
             log.error(e.getMessage());
         }
-
         log.info("Created Cronquist classification : " + cronquistClassification);
         return cronquistClassification;
     }

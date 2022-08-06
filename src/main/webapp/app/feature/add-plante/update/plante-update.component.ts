@@ -46,11 +46,7 @@ export class PlanteUpdateComponent implements OnInit {
   save(): void {
     this.isSaving = true;
     const plante = this.createFromForm();
-    if (plante.id !== undefined) {
-      // this.subscribeToSaveResponse(this.planteService.update(plante));
-    } else {
-      // this.subscribeToSaveResponse(this.planteService.create(plante));
-    }
+    this.subscribeToSaveResponse(this.planteService.save(plante));
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IScrapedPlante>>): void {
