@@ -10,20 +10,22 @@ entity NomVernaculaire {
 
 entity CronquistRank {
     /**
-    * Hauteur du rang: classe, ordre, espèce, etc.
+    * Hauteur du rang : classe, ordre, espèce, etc.
     */
-    rank CronquistTaxonomikRanks required,
+    rank CronquistTaxonomicRank required,
     /**
-    * nom du rang. Ex. Plantae
+    * Nom du rang. Ex. Plantae<br/>
+    * Nom requis, car peut-être un rang de liaison ne possédant pas de nom (null)<br/>
+    * Doit être unique
     */
-    nom String required
+    nom String unique
 }
 
 entity NomVernaculaire {
     nom String unique,
 }
 
-enum CronquistTaxonomikRanks {
+enum CronquistTaxonomicRank {
     DOMAINE (Domaine),
     SOUSDOMAINE (SuperRegne),
     SUPERREGNE (SuperRegne),
@@ -90,7 +92,7 @@ relationship OneToMany {
 
 relationship ManyToOne {
     /**
-    * Le nom latin d'une plante est la composition du genre et de l'espèce. De ce fait une plante est associée au minimum avec une espèce (ou tout autre rang entre l'epsèce et le sous-genre)
+    * Le nom latin d'une plante est la composition du genre et de l'espèce. De ce fait une plante est associée au minimum avec une espèce (ou tout autre rang entre l'espèce et le sous-genre).
     */
     Plante{cronquistRank} to CronquistRank,
 }
