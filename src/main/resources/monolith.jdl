@@ -15,9 +15,8 @@ entity CronquistRank {
     rank CronquistTaxonomikRanks required,
     /**
     * nom du rang. Ex. Plantae
-    * Nom requis car peut être un rang de liaison ne possédant pas de nom
     */
-    nom String
+    nom String required
 }
 
 entity NomVernaculaire {
