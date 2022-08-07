@@ -4,6 +4,7 @@ import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
@@ -65,7 +66,7 @@ public class AddPlanteResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} resulting plante.
      */
-    @PostMapping("/plantes/scrap")
+    @PostMapping("/plantes/save")
     public ResponseEntity<ScrapedPlant> savePlant(@RequestBody @NotNull ScrapedPlant plante) {
         log.debug("REST request to save Plante : {}", plante.getNomsVernaculaires().stream().map(NomVernaculaire::getNom).collect(Collectors.joining(", ")));
 
@@ -88,17 +89,31 @@ public class AddPlanteResource {
         /*
          * Modification de la base pour qu'il n'y ait plus de conflit possible
          */
-
+        ClassificationConflict resolvedConflicts = null;
+        if (conflicts.getConflictedClassifications().size() == 0) {
+            try {
+                resolvedConflicts = classificationConsistencyService.resolveInconsistency(conflicts);
+            } catch (InconsistencyResolverException | MoreThanOneResultException e) {
+                return ResponseEntity.internalServerError().body(plante.cronquistClassificationBranch(conflicts.getNewClassification()));
+            }
+        } else {
+            resolvedConflicts = conflicts;
+        }
 
 
 
         /*
          * Enregistrement de la nouvelle classification
          */
-        CronquistClassificationBranch savedClassification = cronquistWriter.saveClassification(conflicts.getNewClassification());
-        plante.setCronquistClassificationBranch(savedClassification);
-
+        if (resolvedConflicts.getConflictedClassifications().size() == 0) {
+            CronquistClassificationBranch savedClassification = cronquistWriter.saveClassification(conflicts.getNewClassification());
+            plante.setCronquistClassificationBranch(savedClassification);
+        }
+        //else {
+        //    // Il y a encore un conflit qui n'a pas été résolu. Je le renvoie à l'utilisateur
+        //}
         return ResponseEntity.ok().body(plante);
+
     }
 
 }

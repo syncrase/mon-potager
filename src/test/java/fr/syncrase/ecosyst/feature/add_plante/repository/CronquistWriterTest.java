@@ -25,9 +25,10 @@ class CronquistWriterTest {
      *     <li>Les rang taxonomiques portent les noms attendu</li>
      *     <li>Chaque élément possède bien un enfant correspondant au rang inférieur</li>
      *     <li>Chaque élément possède bien un parent correspondant au rang supérieur</li>
-     *     <li></li>
-     *     <li></li>
-     * </ul>
+     * </ul><br/>
+     * <p>
+     * L'enregistrement d'une classification sémantiquement identique, mais dont la consistence n'a pas été vérifiée doit lancer une exception
+     * </p>
      */
     @Test
     void saveClassification() {

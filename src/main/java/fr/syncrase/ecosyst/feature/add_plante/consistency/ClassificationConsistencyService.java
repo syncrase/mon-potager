@@ -5,11 +5,15 @@ import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassifica
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
+import fr.syncrase.ecosyst.repository.CronquistRankRepository;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 /**
  * Service for check the consistency of a {@link CronquistClassificationBranch}
@@ -21,66 +25,24 @@ public class ClassificationConsistencyService {
 
     private final CronquistReader cronquistReader;
 
+    private CronquistRankRepository cronquistRankRepository;
+
     public ClassificationConsistencyService(CronquistReader cronquistReader) {
         this.cronquistReader = cronquistReader;
     }
 
     /**
      * Read-only database access<br/>
-     * Check if any inconsistency exists<br/>
-     * Garanti l'invariant : le nom d'un rang est unique quel que soit le rang<br/>
-     * Le rank que je cherche à enregistrer existe déjà :<br/>
-     * <ul>
-     *     <li>par son nom → je récupère l'id du rank enregistré pour le mettre dans le rank à enregistrer.</li>
-     *     <li>en tant que rang de liaison → je récupère l'id du rank enregistré pour le mettre dans le rank à enregistrer (le nom sera mis à jour)</li>
-     * </ul>
+     * <p>
+     * Find the larger classification which already exists. From the lowest rank of this classification to the top classification,
+     * the consistency of each is challenged in order to guarantee that the passed classification can be safely inserted without break any invariant
+     * </p>
      *
-     * @param toSaveCronquistClassification the classification I want to save in the database
-     * @return the list of saved classifications which are in conflict with the passed classification
+     * @param toSaveCronquistClassification Classification que l'on souhaite enregistrer en base de données, celle-ci est copiée et synchronisée avec la BDD afin de satisfaire tous les invariants
+     * @return La classification dont les rangs ont été comparés avec la base de données. S'il n'y a aucun conflit, la classification peut être enregistrée telle qu'elle.
      */
     @Contract(pure = true)
     public ClassificationConflict checkConsistency(CronquistClassificationBranch toSaveCronquistClassification) throws ClassificationReconstructionException, MoreThanOneResultException {
-        // Assign IDs of already existing ranks
-        ClassificationConflict synchronizedClassification = getInsertionReadyAndConflictedRanks(toSaveCronquistClassification);
-
-
-        if (synchronizedClassification.getConflictedClassifications().size() != 0) {
-            // Trying to resolve conflict
-            //Collection<ClassificationConflict> resolvedConflicts = conflicts.stream().peek(classificationConflict -> {
-            //    /*
-            //     * Les différents cas à gérer lors de la résolution :
-            //     * cas complexes :
-            //     * - on déduit de la classification à enregistrer que deux classifications divergentes déjà enregistrées ont une partie en commun → merge des branches (changement d'id pour l'une et suppression pour l'autre)
-            //     */
-            //    // Return null if the conflict remain unresolved OR the resolved classification
-            //    Collection<CronquistClassificationBranch> conflict = classificationConsistencyService.resolveConflict(classificationConflict);
-            //    if (conflict != null) {
-            //        classificationConflict.setConflictedClassifications(conflict);
-            //    }
-            //});
-            // If the conflict cannot be resolved, // TODO return something to the user in order to let him resolve the conflict
-        }
-
-        return synchronizedClassification;
-    }
-
-    /**
-     * From the lowest rank of the passed classification
-     * Read the database to find if a name exists
-     * If yes, get the ID. This way :
-     * <ul>
-     *     <li>connection rank in the database will become significant rank on saving</li>
-     *     <li>connection rank in classification to be saved become significant rank during the execution of the method</li>
-     * </ul>
-     * In the case of a significant rank in the classification to be saved already in another classification segment, this is a conflict which will require a merge management.
-     *
-     * @param toSaveCronquistClassification
-     * @return
-     */
-    @Contract(pure = true)
-    private @NotNull ClassificationConflict getInsertionReadyAndConflictedRanks(@NotNull CronquistClassificationBranch toSaveCronquistClassification)
-        throws ClassificationReconstructionException, MoreThanOneResultException {
-
         ClassificationConflict synchronizationResult = new ClassificationConflict();
         CronquistClassificationBranch scrapedClassification = new CronquistClassificationBranch(toSaveCronquistClassification);// TODO clone this
         CronquistClassificationBranch existingClassification = cronquistReader.findExistingPartOfThisClassification(scrapedClassification);
@@ -88,34 +50,181 @@ public class ClassificationConsistencyService {
             for (CronquistRank existingRank : existingClassification) {
                 CronquistRank scrapedRank;
                 scrapedRank = scrapedClassification.getRang(existingRank.getRank());
+                updateScrapedRankOrAddConflict(synchronizationResult, existingRank, scrapedRank);
+            }
+        }
+        synchronizationResult.setNewClassification(scrapedClassification);
+        return synchronizationResult;
+    }
 
-                boolean scrapedRankIsSignificant = !CronquistClassificationBranch.isRangDeLiaison(scrapedRank);
-                if (scrapedRankIsSignificant) {
-                    CronquistRank cronquistRank = cronquistReader.queryForCronquistRank(scrapedRank);
-                    boolean isRankExists = cronquistRank != null;
-                    // Si le nom scrape n'existe pas en base → pas de souci pour l'ajouter
-                    // S'il existe en base, il doit être porté par le rang existant. Sinon conflit à gérer
-                    if (isRankExists && !scrapedRank.getNom().equals(existingRank.getNom())) {
-                        synchronizationResult.addConflict(scrapedRank, existingRank);
-                    } else {
-                        scrapedRank.setId(existingRank.getId());
-                    }
-                    continue;
-                }
-                boolean uniquementLeRangExistantEstSignificatif = CronquistClassificationBranch.isRangDeLiaison(scrapedRank) && !CronquistClassificationBranch.isRangDeLiaison(existingRank);
-                if (uniquementLeRangExistantEstSignificatif) {
-                    scrapedRank.setId(existingRank.getId());
-                    continue;
-                }
-                boolean lesDeuxRangsSontDesRangsDeLiaison = CronquistClassificationBranch.isRangDeLiaison(scrapedRank) && CronquistClassificationBranch.isRangDeLiaison(existingRank);
-                if (lesDeuxRangsSontDesRangsDeLiaison) {
-                    scrapedRank.setId(existingRank.getId());
-                }
+    /**
+     * Check if any inconsistency exists<br/>
+     * The more complexe use case is in the case of a significant rank in the classification to be saved already exists in another classification segment, this is a conflict which will require a merge management.
+     * <p>
+     * <table border="2">
+     *   <thead>
+     *     <tr>
+     *       <th>scraped rank</th>
+     *       <th>existing rank</th>
+     *       <th>Action</th>
+     *     </tr>
+     *    </thead>
+     *    <tbody>
+     *      <tr>
+     *        <td>significatif</td>
+     *        <td>significatif</td>
+     *        <td>
+     *          <u>Gestion de deux rangs significatifs</u><br/>
+     *          <ul>
+     *            <li>Si les noms sont les mêmes -> copie de l'ID du rang existant dans le rang à insérer</li>
+     *            <li>Si les deux noms sont différents. Détermination (plus tard) du bon nom pour ce rang
+     *                  <ul>
+     *                      <li>Si le rang à ajouter existe déjà -> Détermination du bon nom PUIS merge des deux branches de classification</li>
+     *                      <li>Si le rang à ajouter n'existe pas -> Détermination du bon nom</li>
+     *                  </ul>
+     *            </li>
+     *          </ul>
+     *        </td>
+     *      </tr>
+     *      <tr>
+     *        <td>significatif</td>
+     *        <td>liaison</td>
+     *        <td>
+     *            <u>Le rang existant devient significatif</u>
+     *            <br/>
+     *            <ul>
+     *              <li>Si le rang à ajouter existe déjà -> cela signifie que deux branches de classification se trouve être la même. La fusion de ces deux branches et nécessaire pour assurer la consistance des données</li>
+     *              <li>Si le rang à ajouter n'existe pas -> copie de l'ID du rang existant dans le rang à insérer</li>
+     *            </ul>
+     *      </td>
+     *      </tr>
+     *      <tr>
+     *        <td><hr>liaison</td>
+     *        <td><hr>significatif</td>
+     *        <td><hr>Le rang de liaison à ajouter se trouve être un rang significatif. Copie de l'ID et du nom</td>
+     *      </tr>
+     *      <tr>
+     *        <td><hr>liaison</td>
+     *        <td><hr>liaison</td>
+     *        <td><hr>Copie de l'ID du rang existant dans le rang à insérer</td>
+     *      </tr>
+     *      <tr>
+     *      </tr>
+     *   </tbody>
+     * </table>
+     *
+     * @param synchronizationResult objet dans le lequel les conflits sont ajoutés
+     * @param existingRank          Rang existant en base de données. Doit posséder un ID
+     * @param scrapedRank           Rang scrapé dont il faut vérifier qu'il pourra être enregistré en base de données sans briser les invariants
+     * @throws MoreThanOneResultException Dans le cas où la base de données est déjà inconsistante, car un nom retourne plusieurs résultats (ne pourra jamais arriver parce qu'une contrainte en base l'interdit).
+     */
+    private void updateScrapedRankOrAddConflict(@NotNull ClassificationConflict synchronizationResult, @NotNull CronquistRank existingRank, @NotNull CronquistRank scrapedRank) throws MoreThanOneResultException {
+        if (existingRank.getId() == null) {
+            log.error("Impossible de vérifier la consistance du rang scrapé : le rang existant reçu est null!");
+            return;
+        }
+        boolean connectionScrapedRank = CronquistClassificationBranch.isRangDeLiaison(scrapedRank);
+        boolean existingRankIsSignificant = !CronquistClassificationBranch.isRangDeLiaison(existingRank);
+        boolean bothSignificativeWithTheSameName = existingRankIsSignificant && !connectionScrapedRank && Objects.equals(scrapedRank.getNom(), existingRank.getNom());
+
+        if (connectionScrapedRank || bothSignificativeWithTheSameName) {
+            scrapedRank.setId(existingRank.getId());
+            scrapedRank.setNom(existingRank.getNom());
+            return;
+        }
+
+        if (existingRankIsSignificant) {
+            synchronizationResult.addConflict(scrapedRank, existingRank);
+        } else {
+            CronquistRank existingRank1 = cronquistReader.findExistingRank(scrapedRank);
+            if (existingRank1 != null) {
+                synchronizationResult.addConflict(scrapedRank, existingRank);
+            } else {
+                scrapedRank.setId(existingRank.getId());
+            }
+        }
+    }
+
+    @Contract(pure = true)
+    public ClassificationConflict resolveInconsistency(@NotNull ClassificationConflict conflicts) throws InconsistencyResolverException, MoreThanOneResultException {
+        ClassificationConflict resolvedConflicts = new ClassificationConflict();
+        resolvedConflicts.setNewClassification(resolvedConflicts.getNewClassification());
+
+
+        for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {
+            if (!conflictualRank.getRank1().getRank().equals(conflictualRank.getRank2().getRank())) {
+                throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two ranks of the same taxonomic rank");
+            }
+            if (Objects.equals(conflictualRank.getRank1().getNom(), conflictualRank.getRank2().getNom())) {
+                throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two conflicted ranks, with at least not the same name");
+            }
+            resolvedConflicts.addConflict(manageConflict(conflictualRank));
+        }
+
+        return resolvedConflicts;
+    }
+
+    private @Nullable ConflictualRank manageConflict(@NotNull ConflictualRank conflictualRank) throws MoreThanOneResultException, InconsistencyResolverException {
+        boolean isRankOneSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getRank1());
+        boolean isRankTwoSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getRank2());
+
+        CronquistRank rank1 = cronquistReader.findExistingRank(conflictualRank.getRank1());
+        CronquistRank rank2 = cronquistReader.findExistingRank(conflictualRank.getRank2());
+
+        // Si l'un des deux est un rang de liaison, les deux rangs doivent être mergé
+        if (!isRankTwoSignificant && isRankOneSignificant || !isRankOneSignificant && isRankTwoSignificant) {
+            // Le rang non null est forcément celui qui possède un nom
+            // L'autre est donc forcément le rang de liaison
+            CronquistRank rankWhichReceivingChildren = rank1 != null ? rank1 : rank2;
+            CronquistRank rankWhichWillBeMergedIntoTheOther = rank1 == null ? conflictualRank.getRank1() : conflictualRank.getRank2();
+
+            if (!mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
+                return conflictualRank;
+            } else {
+                return null;
             }
         }
 
-        synchronizationResult.setNewClassification(scrapedClassification);
-        // Retourne la classification contenue tous les IDs trouvés en base de données + tous les rangs taxonomique conflictuels
-        return synchronizationResult;
+
+        CronquistRank validatedRank = null;
+        if (rank1 != null && rank2 != null) {
+            // Détermination de quel rang utiliser pour le merge
+            validatedRank = rank1;// TODO implémenter le scraping pour checker les deux noms. EN ATTENDANT on considère que le rank1 porte le bon nom de rang
+        }
+        // Résolution des conflits
+        // Détermination, merge, etc
+        return conflictualRank;// TODO construct new conflict based on the previous revolving process
+    }
+
+    /**
+     * @param rankWhichReceivingChildren        rank which will receive children
+     * @param rankWhichWillBeMergedIntoTheOther rank which will be deleted like the upper connection classification segment
+     * @return true if the merge succeeded, false otherwise
+     * @throws InconsistencyResolverException when passed ranks cannot be merged because of lack of data
+     */
+    private boolean mergeTheseRanks(CronquistRank rankWhichReceivingChildren, CronquistRank rankWhichWillBeMergedIntoTheOther) throws InconsistencyResolverException {
+        if (rankWhichReceivingChildren == null || rankWhichWillBeMergedIntoTheOther == null) {
+            throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two not null ranks");
+        }
+        if (rankWhichWillBeMergedIntoTheOther.getId() == null) {
+            throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with connection name identified");
+        }
+        int childrenQuantity = rankWhichWillBeMergedIntoTheOther.getChildren().size() + rankWhichReceivingChildren.getChildren().size();
+        // Ajout du parent à tous les enfants
+        rankWhichWillBeMergedIntoTheOther.getChildren().forEach(child -> child.setParent(rankWhichReceivingChildren));
+        // Ajout des enfants au nouveau parent
+        rankWhichReceivingChildren.getChildren().addAll(rankWhichWillBeMergedIntoTheOther.getChildren());
+
+        // Suppression de la branch de liaison
+        CronquistRank goingToBeDeletedRank;
+        do {
+            goingToBeDeletedRank = rankWhichWillBeMergedIntoTheOther;
+            log.debug("Suppression du rang de liaison obsolète id={} ", goingToBeDeletedRank.getId());
+            cronquistRankRepository.deleteById(goingToBeDeletedRank.getId());
+            goingToBeDeletedRank = goingToBeDeletedRank.getParent();
+        } while (CronquistClassificationBranch.isRangDeLiaison(goingToBeDeletedRank));
+
+        CronquistRank save = cronquistRankRepository.save(rankWhichReceivingChildren);
+        return save.getChildren().size() == childrenQuantity;
     }
 }

@@ -2,6 +2,7 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,8 +13,8 @@ import java.util.Set;
  */
 public class ClassificationConflict {
     /**
-     * Represent the whole classifications with which a conflict will occur of I'm trying to save the classification.
-     * If this list is empty, there will be no conflict on saving
+     * A set of ranks which have the same name. The determination of which is the correct one must be performed<br/>
+     * If this list is empty, there will be no conflict on saving. The consistency is guaranteed
      */
     Set<ConflictualRank> conflictedClassifications;
 
@@ -42,25 +43,18 @@ public class ClassificationConflict {
         this.newClassification = newClassification;
     }
 
-    public void addConflict(CronquistRank scrapedRank, CronquistRank existingRank) {
+    public void addConflict(@NotNull CronquistRank scrapedRank, @NotNull CronquistRank existingRank) {
         ConflictualRank conflict = new ConflictualRank(scrapedRank, existingRank);
+        conflictedClassifications.add(conflict);
     }
 
-    private class ConflictualRank {
-        private final CronquistRank existingRank;
-        private final CronquistRank scrapedRank;
+    public void addAllConflicts(Set<ConflictualRank> conflict) {
+        conflictedClassifications.addAll(conflict);
+    }
 
-        public ConflictualRank(CronquistRank scrapedRank, CronquistRank existingRank) {
-            this.scrapedRank = scrapedRank;
-            this.existingRank = existingRank;
-        }
-
-        public CronquistRank getExistingRank() {
-            return existingRank;
-        }
-
-        public CronquistRank getScrapedRank() {
-            return scrapedRank;
+    public void addConflict(ConflictualRank conflict) {
+        if (conflict != null) {
+            conflictedClassifications.add(conflict);
         }
     }
 }
