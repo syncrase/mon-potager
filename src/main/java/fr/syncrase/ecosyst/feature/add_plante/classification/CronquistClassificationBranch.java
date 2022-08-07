@@ -5,6 +5,8 @@ import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -13,6 +15,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public final class CronquistClassificationBranch extends TreeSet<CronquistRank> implements Iterable<CronquistRank>, Set<CronquistRank> {
+
+    private final Logger log = LoggerFactory.getLogger(CronquistClassificationBranch.class);
 
     /**
      * Deux rangs taxonomiques sont séparés par d'autres rangs dont on ne connait pas forcément le nom.<br>
@@ -60,12 +64,16 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
      */
     public void setConsistantParenthood() {
         Iterator<CronquistRank> iterator = classificationCronquist.descendingIterator();
+        if (!iterator.hasNext()) {
+            log.error("Cannot define an consistent parenthood on an empty classification");
+        }
         CronquistRank current, parent = null;
+        current = iterator.next();
+        parent = current;
         while (iterator.hasNext()) {
             current = iterator.next();
-            if (parent != null) {
-                current.setParent(parent);
-            }
+            parent.getChildren().add(current);
+            current.setParent(parent);
             parent = current;
         }
     }

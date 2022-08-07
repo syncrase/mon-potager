@@ -100,9 +100,15 @@ public class ClassificationConsistencyService {
                     } else {
                         scrapedRank.setId(existingRank.getId());
                     }
+                    continue;
                 }
                 boolean uniquementLeRangExistantEstSignificatif = CronquistClassificationBranch.isRangDeLiaison(scrapedRank) && !CronquistClassificationBranch.isRangDeLiaison(existingRank);
                 if (uniquementLeRangExistantEstSignificatif) {
+                    scrapedRank.setId(existingRank.getId());
+                    continue;
+                }
+                boolean lesDeuxRangsSontDesRangsDeLiaison = CronquistClassificationBranch.isRangDeLiaison(scrapedRank) && CronquistClassificationBranch.isRangDeLiaison(existingRank);
+                if (lesDeuxRangsSontDesRangsDeLiaison) {
                     scrapedRank.setId(existingRank.getId());
                 }
             }
