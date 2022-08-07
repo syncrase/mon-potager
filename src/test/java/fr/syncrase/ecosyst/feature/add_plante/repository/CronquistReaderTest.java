@@ -32,12 +32,21 @@ class CronquistReaderTest {
 
     @Test
     void findExistingRank_doNotReturnAnInexistantRank() throws MoreThanOneResultException {
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch alliumClassification = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
 
         CronquistRank lowestRank = ClassificationBranchRepository.ALDROVANDA.getClassification().getLowestRank();
         @Nullable CronquistRank existingClassification = cronquistReader.findExistingRank(lowestRank);
 
-        Assertions.assertNull(existingClassification, "Aucun ne doit être retourné");
+        Assertions.assertNull(existingClassification, lowestRank + " ne doit pas être retourné car n'a pas été enregistré");
+
+
+        existingClassification = cronquistReader.findExistingRank(ClassificationBranchRepository.ALLIUM.getClassification().getLowestRank());
+        Assertions.assertNotNull(existingClassification, "La classification qui vient juste d'être enregistrée doit être disponible en base");
+
+        cronquistWriter.removeClassification(alliumClassification);
+
+        existingClassification = cronquistReader.findExistingRank(ClassificationBranchRepository.ALLIUM.getClassification().getLowestRank());
+        Assertions.assertNull(existingClassification, "La classification qui vient juste d'être supprimée ne doit plus petre disponible en base");
     }
 
     @Test

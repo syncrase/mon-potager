@@ -8,7 +8,7 @@ import {finalize} from 'rxjs/operators';
 import {AddPlanteService} from "../service/add-plante.service";
 import {IScrapedPlante, ScrapedPlante} from "../scraped-plant.model";
 import {CronquistRank, ICronquistRank} from "../../../entities/cronquist-rank/cronquist-rank.model";
-import {CronquistTaxonomikRanks} from "../../../entities/enumerations/cronquist-taxonomik-ranks.model";
+import {CronquistTaxonomicRank} from "../../../entities/enumerations/cronquist-taxonomik-ranks.model";
 
 @Component({
   selector: 'jhi-plante-update',
@@ -72,7 +72,7 @@ export class PlanteUpdateComponent implements OnInit {
     const classif: {
       [key: string]: any
     } = {};
-    const keys = Object.keys(CronquistTaxonomikRanks);
+    const keys = Object.keys(CronquistTaxonomicRank);
     for (const cronquistRank of cronquistRanks) {
       const found = keys.find(key => key.valueOf() === cronquistRank.rank?.valueOf());
       if (found) {
@@ -103,9 +103,9 @@ export class PlanteUpdateComponent implements OnInit {
   protected objectAsCronquistRanks(param: AbstractControl | null): ICronquistRank[] {
     const classification: ICronquistRank[] = [];
     // eslint-disable-next-line guard-for-in
-    for (const n in CronquistTaxonomikRanks) {
+    for (const n in CronquistTaxonomicRank) {
       const rank = new CronquistRank();
-      rank.rank = CronquistTaxonomikRanks[n as keyof typeof CronquistTaxonomikRanks];
+      rank.rank = CronquistTaxonomicRank[n as keyof typeof CronquistTaxonomicRank];
       if (param) {
         rank.nom = (param as any)[n]!;
       }

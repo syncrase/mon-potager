@@ -36,4 +36,21 @@ public class CronquistWriter {
         }
         return newClassification;
     }
+
+    public void removeClassification(CronquistClassificationBranch classificationToRemove) {
+        log.info(String.format("Delete the classification %s", classificationToRemove));
+        if (classificationToRemove.getClassificationSet() == null || classificationToRemove.getClassificationSet().size() == 0) {
+            log.error("No classification to delete");
+            return;
+        }
+
+
+        cronquistRankRepository.deleteAll(classificationToRemove.getClassificationSet());
+
+        //Iterator<CronquistRank> iterator = classificationToRemove.getClassificationSet().descendingIterator();
+        //while(iterator.hasNext()){
+        //    cronquistRankRepository.save(iterator.next());
+        //}
+
+    }
 }

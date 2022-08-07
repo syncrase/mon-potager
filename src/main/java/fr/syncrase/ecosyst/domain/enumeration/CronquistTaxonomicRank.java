@@ -46,6 +46,7 @@ public enum CronquistTaxonomicRank {
     SOUSFORME("SousForme", null);
 
     private final String value;
+    private final String suffix;
 
     CronquistTaxonomicRank(String value, String suffix) {
         this.value = value;
@@ -60,14 +61,13 @@ public enum CronquistTaxonomicRank {
         return suffix;
     }
 
-    private static final CronquistTaxonomikRanks[] allRanks = values();
+    private static final CronquistTaxonomicRank[] allRanks = values();
 
     /**
-     *
      * @return le parent s'il en a un, sinon null
      */
     @Contract(pure = true)
-    public @Nullable CronquistTaxonomikRanks getRangSuperieur() {
+    public @Nullable CronquistTaxonomicRank getRangSuperieur() {
         int parentOrdinal = this.ordinal() - 1;
         if (parentOrdinal > -1) {
             return allRanks[parentOrdinal];
@@ -77,7 +77,7 @@ public enum CronquistTaxonomicRank {
     }
 
     @Contract(pure = true)
-    public @Nullable CronquistTaxonomikRanks getRangInferieur() {
+    public @Nullable CronquistTaxonomicRank getRangInferieur() {
         int childOrdinal = this.ordinal() + 1;
         if (childOrdinal < allRanks.length) {
             return allRanks[childOrdinal];
@@ -86,15 +86,15 @@ public enum CronquistTaxonomicRank {
         }
     }
 
-    public boolean isHighestRankOf(@NotNull CronquistTaxonomikRanks rang) {
+    public boolean isHighestRankOf(@NotNull CronquistTaxonomicRank rang) {
         return this.ordinal() < rang.ordinal();
     }
 
-    public boolean isHighestRankOrEqualOf(@NotNull CronquistTaxonomikRanks rang) {
+    public boolean isHighestRankOrEqualOf(@NotNull CronquistTaxonomicRank rang) {
         return this.ordinal() <= rang.ordinal();
     }
 
-    public boolean isSameRankOf(@NotNull CronquistTaxonomikRanks rang) {
+    public boolean isSameRankOf(@NotNull CronquistTaxonomicRank rang) {
         return this.ordinal() == rang.ordinal();
     }
 }

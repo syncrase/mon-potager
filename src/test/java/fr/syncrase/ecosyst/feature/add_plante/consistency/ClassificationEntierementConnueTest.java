@@ -2,7 +2,7 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
+import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
@@ -44,12 +44,12 @@ public class ClassificationEntierementConnueTest {
          */
         ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALLIUM.getClassification());
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
-        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.REGNE).getNom(), "Le règne doit être Plantae");
-        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.SOUSREGNE).getId(), "Le sous-règne doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Tracheobionta", conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.SOUSREGNE).getNom(), "Le sous-règne doit être Tracheobionta");
-        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.EMBRANCHEMENT).getId(), "L'embranchement doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
+        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
+        Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");
+        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getId(), "Le sous-règne doit avoir été récupéré de la base de données");
+        Assertions.assertEquals("Tracheobionta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Le sous-règne doit être Tracheobionta");
+        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getId(), "L'embranchement doit avoir été récupéré de la base de données");
+        Assertions.assertEquals("Magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
 
 
         /*
@@ -57,7 +57,6 @@ public class ClassificationEntierementConnueTest {
          */
         CronquistClassificationBranch secondCronquistClassificationBranch = cronquistWriter.saveClassification(conflicts.getNewClassification());
 
-        Assertions.assertSame(firstCronquistClassificationBranch, secondCronquistClassificationBranch, "Les deux classifications doivent être identiques");
         Assertions.assertEquals(firstCronquistClassificationBranch.size(), secondCronquistClassificationBranch.size(), "Les deux classifications doivent avoir la même taille");
         Iterator<CronquistRank> iterator1 = firstCronquistClassificationBranch.iterator();
         Iterator<CronquistRank> iterator2 = secondCronquistClassificationBranch.iterator();
@@ -65,8 +64,14 @@ public class ClassificationEntierementConnueTest {
             CronquistRank next1 = iterator1.next();
             CronquistRank next2 = iterator2.next();
             Assertions.assertEquals(next1.getId(), next2.getId(), "Les IDs de chacun des éléments de la classification doivent être égaux (" + next1 + " diffère de " + next2 + ")");
+            Assertions.assertEquals(next1.getRank(), next2.getRank(), "Les deux rangs doivent être du même rang taxonomique (" + next1 + " diffère de " + next2 + ")");
+            Assertions.assertEquals(next1.getParent(), next2.getParent(), "Les deux rangs doivent posséder le même parent (" + next1 + " diffère de " + next2 + ")");
+            Assertions.assertEquals(next1.getChildren(), next2.getChildren(), "Les deux rangs doivent posséder les mêmes enfants (" + next1 + " diffère de " + next2 + ")");
+            Assertions.assertEquals(next1.getNom(), next2.getNom(), "Les deux rangs doivent posséder le même nom (" + next1 + " diffère de " + next2 + ")");
         }
 
+
+        cronquistWriter.removeClassification(firstCronquistClassificationBranch);
     }
 
 }

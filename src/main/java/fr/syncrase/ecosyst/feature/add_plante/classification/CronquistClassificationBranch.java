@@ -1,7 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.classification;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
+import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -114,8 +114,8 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
      * Invariant : la taille maximum d'une classification de cronquist est de 34 rangs taxonomiques
      */
     private void initDefaultValues() {
-        CronquistTaxonomikRanks[] rangsDisponibles = CronquistTaxonomikRanks.values();
-        for (CronquistTaxonomikRanks hauteurDeRangEnCours : rangsDisponibles) {
+        CronquistTaxonomicRank[] rangsDisponibles = CronquistTaxonomicRank.values();
+        for (CronquistTaxonomicRank hauteurDeRangEnCours : rangsDisponibles) {
             classificationCronquist.add(getDefaultRank(hauteurDeRangEnCours));
         }
     }
@@ -126,7 +126,7 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
      * @param rangTaxonomique rang taxonomique du rang retourné
      * @return le rang dont le nom est le nom des rangs de liaison et dont le rang taxonomique est le rang passé en paramètre
      */
-    private CronquistRank getDefaultRank(CronquistTaxonomikRanks rangTaxonomique) {
+    private CronquistRank getDefaultRank(CronquistTaxonomicRank rangTaxonomique) {
         // TODO déplacer dans la classe CronquistRank
         return new CronquistRank().rank(rangTaxonomique).nom(DEFAULT_NAME_FOR_CONNECTOR_RANK);
     }
@@ -152,11 +152,11 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         return Objects.equals(rangCible.getNom(), DEFAULT_NAME_FOR_CONNECTOR_RANK);
     }
 
-    private void removeTaxon(@NotNull CronquistTaxonomikRanks nomDuRangEnCours) {
+    private void removeTaxon(@NotNull CronquistTaxonomicRank nomDuRangEnCours) {
         classificationCronquist.removeIf(cronquistRank -> cronquistRank.getRank().equals(nomDuRangEnCours));
     }
 
-    public CronquistRank getRang(CronquistTaxonomikRanks rang) {
+    public CronquistRank getRang(CronquistTaxonomicRank rang) {
         if (rang != null) {
             CronquistRank ceiling = classificationCronquist.ceiling(new CronquistRank().rank(rang));
             if (ceiling == null || !ceiling.getRank().isSameRankOf(rang)) {

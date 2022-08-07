@@ -1,7 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
 import fr.syncrase.ecosyst.MonolithApp;
-import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
+import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
@@ -39,13 +39,17 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
         ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALDROVANDA.getClassification());
 
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
-        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.REGNE).getNom(), "Le règne doit être Plantae");
-        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.SOUSREGNE).getId(), "Le sous-règne doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Tracheobionta", conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.SOUSREGNE).getNom(), "Le sous-règne doit être Tracheobionta");
-        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.EMBRANCHEMENT).getId(), "L'embranchement doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomikRanks.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
 
+        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
+        Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");
+
+        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getId(), "Le sous-règne doit avoir été récupéré de la base de données");
+        Assertions.assertEquals("Tracheobionta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Le sous-règne doit être Tracheobionta");
+
+        Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getId(), "L'embranchement doit avoir été récupéré de la base de données");
+        Assertions.assertEquals("Magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
+
+        cronquistWriter.removeClassification(cronquistClassificationBranch);
     }
 
 }

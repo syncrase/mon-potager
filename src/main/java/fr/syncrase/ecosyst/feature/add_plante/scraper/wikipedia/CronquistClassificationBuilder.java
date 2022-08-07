@@ -1,7 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomikRanks;
+import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.InvalidRankName;
@@ -72,109 +72,109 @@ public class CronquistClassificationBuilder {
     private void setCronquistTaxonomyItem(@NotNull ScrapedRank rangValues) {
         switch (rangValues.getClassificationLevel()) {
             case "Super-Règne":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SUPERREGNE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SUPERREGNE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Règne":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.REGNE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.REGNE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-règne":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSREGNE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSREGNE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Rameau":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.RAMEAU), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.RAMEAU), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Infra-règne":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.INFRAREGNE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.INFRAREGNE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Super-division":
             case "Super-embranchement":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SUPEREMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SUPEREMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Division":
             case "Embranchement":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.EMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.EMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-division":
             case "Sous-embranchement":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSEMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSEMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Infra-embranchement":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.INFRAEMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.INFRAEMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Micro-embranchement":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.MICROEMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.MICROEMBRANCHEMENT), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Super-classe":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SUPERCLASSE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SUPERCLASSE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Classe":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.CLASSE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.CLASSE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-classe":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSCLASSE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSCLASSE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Infra-classe":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.INFRACLASSE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.INFRACLASSE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Super-ordre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SUPERORDRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SUPERORDRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Ordre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.ORDRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.ORDRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-ordre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSORDRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSORDRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Infra-ordre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.INFRAORDRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.INFRAORDRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Micro-ordre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.MICROORDRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.MICROORDRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Super-famille":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SUPERFAMILLE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SUPERFAMILLE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Famille":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.FAMILLE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.FAMILLE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-famille":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSFAMILLE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSFAMILLE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Tribu":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.TRIBU), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.TRIBU), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-tribu":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSTRIBU), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSTRIBU), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Genre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.GENRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.GENRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-genre":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSGENRE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSGENRE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Section":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SECTION), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SECTION), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-section":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSSECTION), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSSECTION), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Espèce":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.ESPECE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.ESPECE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-espèce":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSESPECE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSESPECE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Variété":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.VARIETE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.VARIETE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-variété":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSVARIETE), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSVARIETE), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Forme":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.FORME), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.FORME), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "Sous-forme":
-                updateRank(cronquistClassification.getRang(CronquistTaxonomikRanks.SOUSFORME), rangValues.getTaxonName(), rangValues.getUrl());
+                updateRank(cronquistClassification.getRang(CronquistTaxonomicRank.SOUSFORME), rangValues.getTaxonName(), rangValues.getUrl());
                 break;
             case "":
                 log.warn("ATTENTION Le niveau du rang extrait du wiki est une chaine vide");

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
@@ -56,8 +54,8 @@ public class JsonMockGeneratorTest {
     @Test
     void testMethod() throws ClassificationReconstructionException, MoreThanOneResultException {
 
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
-
-        ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALDROVANDA.getClassification());
+        //CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+        //
+        //ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALDROVANDA.getClassification());
     }
 }

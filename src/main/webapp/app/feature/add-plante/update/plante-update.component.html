@@ -41,7 +41,7 @@
             <tr *ngFor="let cronquistRank of cronquistRanks; let i = index" data-cy="entityTable"
                 [formGroupName]="'cronquist'">
               <td
-                jhiTranslate="{{ 'monolithApp.CronquistTaxonomikRanks.' + cronquistRank.rank }}">{{ cronquistRank.rank }}</td>
+                jhiTranslate="{{ 'monolithApp.CronquistTaxonomicRank.' + cronquistRank.rank }}">{{ cronquistRank.rank }}</td>
               <input type="text" class="form-control" name="{{cronquistRank.nom}}" id="field_{{cronquistRank.nom}}"
                      data-cy="nom" formControlName="{{cronquistRank.rank}}"/>
             </tr>
