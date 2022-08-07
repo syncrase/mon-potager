@@ -3,6 +3,7 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
+import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import fr.syncrase.ecosyst.repository.CronquistRankRepository;
@@ -24,11 +25,13 @@ public class ClassificationConsistencyService {
     private final Logger log = LoggerFactory.getLogger(ClassificationConsistencyService.class);
 
     private final CronquistReader cronquistReader;
+    private final CronquistWriter cronquistWriter;
 
     private CronquistRankRepository cronquistRankRepository;
 
-    public ClassificationConsistencyService(CronquistReader cronquistReader) {
+    public ClassificationConsistencyService(CronquistReader cronquistReader, CronquistWriter cronquistWriter) {
         this.cronquistReader = cronquistReader;
+        this.cronquistWriter = cronquistWriter;
     }
 
     /**
@@ -170,15 +173,16 @@ public class ClassificationConsistencyService {
 
         CronquistRank rank1 = cronquistReader.findExistingRank(conflictualRank.getRank1());
         CronquistRank rank2 = cronquistReader.findExistingRank(conflictualRank.getRank2());
-
-        // Si l'un des deux est un rang de liaison, les deux rangs doivent être mergé
+        rank1 = rank1 != null && rank1.getNom() != null ? rank1 : null;
+        rank2 = rank2 != null && rank2.getNom() != null ? rank2 : null;
+        // Si l'un des deux est un rang de liaison, les deux rangs doivent être fusionnés
         if (!isRankTwoSignificant && isRankOneSignificant || !isRankOneSignificant && isRankTwoSignificant) {
             // Le rang non null est forcément celui qui possède un nom
             // L'autre est donc forcément le rang de liaison
             CronquistRank rankWhichReceivingChildren = rank1 != null ? rank1 : rank2;
             CronquistRank rankWhichWillBeMergedIntoTheOther = rank1 == null ? conflictualRank.getRank1() : conflictualRank.getRank2();
 
-            if (!mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
+            if (!cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
                 return conflictualRank;
             } else {
                 return null;
@@ -196,35 +200,4 @@ public class ClassificationConsistencyService {
         return conflictualRank;// TODO construct new conflict based on the previous revolving process
     }
 
-    /**
-     * @param rankWhichReceivingChildren        rank which will receive children
-     * @param rankWhichWillBeMergedIntoTheOther rank which will be deleted like the upper connection classification segment
-     * @return true if the merge succeeded, false otherwise
-     * @throws InconsistencyResolverException when passed ranks cannot be merged because of lack of data
-     */
-    private boolean mergeTheseRanks(CronquistRank rankWhichReceivingChildren, CronquistRank rankWhichWillBeMergedIntoTheOther) throws InconsistencyResolverException {
-        if (rankWhichReceivingChildren == null || rankWhichWillBeMergedIntoTheOther == null) {
-            throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two not null ranks");
-        }
-        if (rankWhichWillBeMergedIntoTheOther.getId() == null) {
-            throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with connection name identified");
-        }
-        int childrenQuantity = rankWhichWillBeMergedIntoTheOther.getChildren().size() + rankWhichReceivingChildren.getChildren().size();
-        // Ajout du parent à tous les enfants
-        rankWhichWillBeMergedIntoTheOther.getChildren().forEach(child -> child.setParent(rankWhichReceivingChildren));
-        // Ajout des enfants au nouveau parent
-        rankWhichReceivingChildren.getChildren().addAll(rankWhichWillBeMergedIntoTheOther.getChildren());
-
-        // Suppression de la branch de liaison
-        CronquistRank goingToBeDeletedRank;
-        do {
-            goingToBeDeletedRank = rankWhichWillBeMergedIntoTheOther;
-            log.debug("Suppression du rang de liaison obsolète id={} ", goingToBeDeletedRank.getId());
-            cronquistRankRepository.deleteById(goingToBeDeletedRank.getId());
-            goingToBeDeletedRank = goingToBeDeletedRank.getParent();
-        } while (CronquistClassificationBranch.isRangDeLiaison(goingToBeDeletedRank));
-
-        CronquistRank save = cronquistRankRepository.save(rankWhichReceivingChildren);
-        return save.getChildren().size() == childrenQuantity;
-    }
 }

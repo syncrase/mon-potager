@@ -93,8 +93,12 @@ public class AddPlanteResource {
         if (conflicts.getConflictedClassifications().size() == 0) {
             try {
                 resolvedConflicts = classificationConsistencyService.resolveInconsistency(conflicts);
+                resolvedConflicts = classificationConsistencyService.checkConsistency(resolvedConflicts.getNewClassification());
             } catch (InconsistencyResolverException | MoreThanOneResultException e) {
-                return ResponseEntity.internalServerError().body(plante.cronquistClassificationBranch(conflicts.getNewClassification()));
+                log.warn("{}: Unable to construct a classification for {}", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());
+                return ResponseEntity.internalServerError().build();
+            } catch (ClassificationReconstructionException e) {
+                throw new RuntimeException(e);
             }
         } else {
             resolvedConflicts = conflicts;
