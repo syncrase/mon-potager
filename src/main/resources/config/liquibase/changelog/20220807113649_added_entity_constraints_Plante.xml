@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <!--
+        Added the constraints for entity Plante.
+    -->
+    <changeSet id="20220807113649-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="cronquist_rank_id"
+                                 baseTableName="plante"
+                                 constraintName="fk_plante__cronquist_rank_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cronquist_rank"/>
+
+        <addForeignKeyConstraint baseColumnNames="plante_id"
+                                 baseTableName="rel_plante__noms_vernaculaires"
+                                 constraintName="fk_rel_plante__noms_vernaculaires__plante_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="plante"/>
+
+        <addForeignKeyConstraint baseColumnNames="noms_vernaculaires_id"
+                                 baseTableName="rel_plante__noms_vernaculaires"
+                                 constraintName="fk_rel_plante__noms_vernaculaires__noms_vernaculaires_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="nom_vernaculaire"/>
+    </changeSet>
+</databaseChangeLog>
