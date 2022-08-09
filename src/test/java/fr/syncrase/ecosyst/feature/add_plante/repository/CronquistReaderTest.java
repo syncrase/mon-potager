@@ -7,6 +7,7 @@ import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchReposito
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import org.jetbrains.annotations.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,11 @@ class CronquistReaderTest {
 
     @Autowired
     CronquistReader cronquistReader;
+
+    @AfterEach
+    void tearDown() {
+        cronquistWriter.removeAll();
+    }
 
     @Test
     void findExistingPartOfThisClassification() throws ClassificationReconstructionException, MoreThanOneResultException {
@@ -43,10 +49,6 @@ class CronquistReaderTest {
         existingClassification = cronquistReader.findExistingRank(ClassificationBranchRepository.ALLIUM.getClassification().getLowestRank());
         Assertions.assertNotNull(existingClassification, "La classification qui vient juste d'être enregistrée doit être disponible en base");
 
-        cronquistWriter.removeClassification(alliumClassification);
-
-        existingClassification = cronquistReader.findExistingRank(ClassificationBranchRepository.ALLIUM.getClassification().getLowestRank());
-        Assertions.assertNull(existingClassification, "La classification qui vient juste d'être supprimée ne doit plus petre disponible en base");
     }
 
     @Test

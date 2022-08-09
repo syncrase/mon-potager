@@ -58,6 +58,6 @@ public class JsonMockGeneratorTest {
 
         CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
 
-        ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALDROVANDA.getClassification());
+        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ALDROVANDA.getClassification());
     }
 }

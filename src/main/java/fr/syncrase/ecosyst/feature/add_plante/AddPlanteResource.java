@@ -77,7 +77,7 @@ public class AddPlanteResource {
         CronquistClassificationBranch toSaveCronquistClassification = new CronquistClassificationBranch(plante.getCronquistClassificationBranch());
         ClassificationConflict conflicts;
         try {
-            conflicts = classificationConsistencyService.checkConsistency(toSaveCronquistClassification);
+            conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(toSaveCronquistClassification);
         } catch (ClassificationReconstructionException e) {
             log.warn("{}: Unable to construct a classification for {}", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());
             return ResponseEntity.internalServerError().build();
@@ -93,7 +93,7 @@ public class AddPlanteResource {
         if (conflicts.getConflictedClassifications().size() == 0) {
             try {
                 resolvedConflicts = classificationConsistencyService.resolveInconsistency(conflicts);
-                resolvedConflicts = classificationConsistencyService.checkConsistency(resolvedConflicts.getNewClassification());
+                resolvedConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
             } catch (InconsistencyResolverException | MoreThanOneResultException e) {
                 log.warn("{}: Unable to construct a classification for {}", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());
                 return ResponseEntity.internalServerError().build();

@@ -8,12 +8,15 @@ import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchReposito
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.Set;
+import java.util.SortedSet;
 
 @SpringBootTest(classes = MonolithApp.class)
 public class SimpleClassificationMergeTest {
@@ -24,10 +27,15 @@ public class SimpleClassificationMergeTest {
     @Autowired
     private ClassificationConsistencyService classificationConsistencyService;
 
+    @AfterEach
+    void tearDown() {
+        cronquistWriter.removeAll();
+    }
 
     @Test
     public void checkConsistency_mergeWithoutNameConflict() throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException {
 
+        // TODO récupérer les résultats de chacune des méthodes pour les mocker et valider unitairement chacun des comportements escompté
         // Règne 	Plantae
         //Sous-règne 	Tracheobionta
         //Division 	Magnoliophyta
@@ -36,10 +44,8 @@ public class SimpleClassificationMergeTest {
         //Ordre 	Santalales
         //Famille 	Santalaceae
         //Genre Arjona
-        CronquistClassificationBranch arjonaClassification = cronquistWriter.saveClassification(ClassificationBranchRepository.ARJONA.getClassification());
+        CronquistClassificationBranch arjonaClassification = enregistrementDeLaClassificationArjona();
 
-
-        // La Atalaya appartient à la sous-classe des Rosidae, mais on ne le sait pas à partir des informations reçues. On le découvre quand on enregistre Cossinia
         // Règne 	Plantae
         //Sous-règne 	(+Tracheobionta déduit du précédent)
         //Division 	Magnoliophyta
@@ -48,12 +54,8 @@ public class SimpleClassificationMergeTest {
         //Ordre 	Sapindales
         //Famille 	Sapindaceae
         //Genre Atalaya
-        ClassificationConflict atalayaConflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ATALAYA.getClassification());
-        Assertions.assertEquals(0, atalayaConflicts.getConflictedClassifications().size(), "Il ne doit pas y avoir de conflit");
-        CronquistRank atalayaSousRegne = atalayaConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE);
-        Assertions.assertEquals("Tracheobionta", atalayaSousRegne.getNom(), "La classification atalaya doit posséder le sous-règne Tracheobionta mais est égal à " + atalayaSousRegne);
-        CronquistClassificationBranch atalayaClassification = cronquistWriter.saveClassification(atalayaConflicts.getNewClassification());
-
+        // La Atalaya appartient à la sous-classe des Rosidae, mais on ne le sait pas à partir des informations reçues. On le découvre quand on enregistre Cossinia
+        CronquistClassificationBranch atalayaClassification = synchronisationEtEnregistrementDeLaClassificationAtalaya();
 
         // Règne 	Plantae
         //Sous-règne 	Tracheobionta
@@ -63,27 +65,57 @@ public class SimpleClassificationMergeTest {
         //Ordre 	Sapindales
         //Famille 	Sapindaceae
         //Genre Cossinia
-        ClassificationConflict cossiniaPinnataConflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.COSSINIA_PINNATA.getClassification());
+        // La synchronisation de Cossinia relève un conflit au niveau de la sous-classe de sa classification.
+        // Ce conflit fait l'objet d'une résolution se faisant par le merge des segments de classification (déplacement d'enfant et suppression de classification ascendante).
+        synchronisationPuisMergeEtSynchronisationPostMergePuisEnregistrementDeLaClassificationCossiniaPinnata(arjonaClassification, atalayaClassification);
+    }
+
+    private void synchronisationPuisMergeEtSynchronisationPostMergePuisEnregistrementDeLaClassificationCossiniaPinnata(
+        @NotNull CronquistClassificationBranch arjonaClassification,
+        @NotNull CronquistClassificationBranch atalayaClassification
+    )
+        throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException {
+        ClassificationConflict cossiniaPinnataConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.COSSINIA_PINNATA.getClassification());
         Assertions.assertEquals(1, cossiniaPinnataConflicts.getConflictedClassifications().size(), "Il doit y avoir un conflit");
+        Assertions.assertNotNull(cossiniaPinnataConflicts.getNewClassification(), "La classification faisant l'objet des conflits ne doit pas être null");
 
-        ClassificationConflict resolvedConflicts = classificationConsistencyService.resolveInconsistency(cossiniaPinnataConflicts);// La base est mise à jour pour accepter la nouvelle classification
-        Assertions.assertEquals(0, atalayaConflicts.getConflictedClassifications().size(), "Il ne doit plus y avoir de conflit");
-        // Je vérifie que la classification pre-checkconsistency manque de plusieurs IDs
-        // TODO assert
-        fail("To be implemented");
-        ClassificationConflict checkedThenResolvedThenCheckedClassification = classificationConsistencyService.checkConsistency(resolvedConflicts.getNewClassification());
-        Assertions.assertEquals(0, cossiniaPinnataConflicts.getConflictedClassifications().size(),
-            "Il doit pas y avoir de conflit quand on règle les conflits d'une classification qui n'a pas de conflit");
-        // Je vérifie que tout ce qui causais problème a été corrigé
+        ClassificationConflict resolvedCossiniaPinnataConflicts = classificationConsistencyService.resolveInconsistency(cossiniaPinnataConflicts);// La base est mise à jour pour accepter la nouvelle classification
+        Assertions.assertEquals(0, resolvedCossiniaPinnataConflicts.getConflictedClassifications().size(), "Il ne doit plus y avoir de conflit");
+        Assertions.assertNotNull(resolvedCossiniaPinnataConflicts.getNewClassification(), "La classification faisant l'objet des conflits ne doit pas être null");
 
+        SortedSet<CronquistRank> mustBeRemovedRanks = atalayaClassification.subSet(atalayaClassification.getRang(CronquistTaxonomicRank.ORDRE), atalayaClassification.getRang(CronquistTaxonomicRank.SUPERCLASSE));
+        // TODO se construire des mocks offrant plusieurs rangs de liaisons ascendants et descendant afin de bien tester la suppression des rang et le changement d'enfant au bon endroit de la classification => 2 rang de liaison ascendant et autant en descendant
+        for (CronquistRank r : mustBeRemovedRanks) {
+            Assertions.assertNull(cronquistReader.findExistingRank(r), "Le rang " + r + " doit avoir été supprimé");
+        }
 
-        // On récupère atalaya pour vérifier que sa branche de classification à bien intégré la sous-classe rosidae
+        Set<CronquistRank> childrenOfArjona = cronquistReader.findChildrenOf(arjonaClassification.getRang(CronquistTaxonomicRank.SOUSCLASSE).getId());
+        Set<CronquistRank> previouslySavedChildrenOfAtalaya = atalayaClassification.getRang(CronquistTaxonomicRank.SOUSCLASSE).getChildren();
+        Assertions.assertTrue(
+            childrenOfArjona.containsAll(
+                previouslySavedChildrenOfAtalaya
+            ),
+            "Les enfants du rang de liaison mergé avec Rosidae doivent tous avoir été ajouté aux enfants de la sous-classe");
 
-        // TODO documenter l'erreur: could not initialize proxy - no Session
-        // https://stackoverflow.com/questions/21574236/how-to-fix-org-hibernate-lazyinitializationexception-could-not-initialize-prox
-        // https://www.baeldung.com/hibernate-initialize-proxy-exception
+        Assertions.assertNull(
+            resolvedCossiniaPinnataConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSCLASSE).getId(),
+            "Rosidae (de la classification en conflit) ne doit pas posséder d'ID");
+        ClassificationConflict resolvedCossiniaPinnataConflictsAfterConsistencyCheck = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.COSSINIA_PINNATA.getClassification());
+        Assertions.assertNotNull(
+            resolvedCossiniaPinnataConflictsAfterConsistencyCheck.getNewClassification().getRang(CronquistTaxonomicRank.SOUSCLASSE).getId(),
+            "Rosidae (de la classification en conflit) doit dorénavant posséder un ID");
+    }
 
+    private CronquistClassificationBranch synchronisationEtEnregistrementDeLaClassificationAtalaya() throws ClassificationReconstructionException, MoreThanOneResultException {
+        ClassificationConflict atalayaConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ATALAYA.getClassification());
+        Assertions.assertEquals(0, atalayaConflicts.getConflictedClassifications().size(), "Il ne doit pas y avoir de conflit");
+        CronquistRank atalayaSousRegne = atalayaConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE);
+        Assertions.assertEquals("Tracheobionta", atalayaSousRegne.getNom(), "La classification atalaya doit posséder le sous-règne Tracheobionta mais est égal à " + atalayaSousRegne);
+        return cronquistWriter.saveClassification(atalayaConflicts.getNewClassification());
+    }
 
+    private CronquistClassificationBranch enregistrementDeLaClassificationArjona() {
+        return cronquistWriter.saveClassification(ClassificationBranchRepository.ARJONA.getClassification());
     }
 
 }

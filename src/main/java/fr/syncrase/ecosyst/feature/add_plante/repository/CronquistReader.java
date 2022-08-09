@@ -2,7 +2,6 @@ package fr.syncrase.ecosyst.feature.add_plante.repository;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import fr.syncrase.ecosyst.service.CronquistRankQueryService;
 import fr.syncrase.ecosyst.service.criteria.CronquistRankCriteria;
@@ -16,8 +15,10 @@ import org.springframework.stereotype.Service;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class CronquistReader {
@@ -30,8 +31,15 @@ public class CronquistReader {
         this.cronquistRankQueryService = cronquistRankQueryService;
     }
 
+    /**
+     * Find the larger classification which already exists. Starting the lowest rank of this classification to the top classification
+     *
+     * @param classification The classification looked for in the database
+     * @return The first existing classification
+     * @throws MoreThanOneResultException May not arrive. That would be mean that the database contains inconsistant data
+     */
     @Contract(pure = true)
-    public CronquistClassificationBranch findExistingPartOfThisClassification(@NotNull CronquistClassificationBranch classification) throws ClassificationReconstructionException, MoreThanOneResultException {
+    public CronquistClassificationBranch findExistingPartOfThisClassification(@NotNull CronquistClassificationBranch classification) throws MoreThanOneResultException {
         CronquistClassificationBranch existingClassification = null;
 
         for (CronquistRank cronquistRank : classification) {
@@ -72,6 +80,18 @@ public class CronquistReader {
             return null;
         }
         return queryForCronquistRank(cronquistRank);
+    }
+
+    @Contract(pure = true)
+    public Set<CronquistRank> findChildrenOf(@NotNull Long id) {
+        CronquistRankCriteria rankCrit = new CronquistRankCriteria();
+
+        LongFilter idFilter = new LongFilter();
+        idFilter.setEquals(id);
+        rankCrit.setParentId(idFilter);
+
+        rankCrit.setDistinct(true);
+        return new HashSet<>(cronquistRankQueryService.findByCriteria(rankCrit));
     }
 
     @Contract(pure = true)

@@ -8,6 +8,7 @@ import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchReposito
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,11 @@ public class RankNameConflictTest {
 
     @Autowired
     private ClassificationConsistencyService classificationConsistencyService;
+
+    @AfterEach
+    void tearDown() {
+        cronquistWriter.removeAll();
+    }
 
 
     @Test
@@ -48,7 +54,7 @@ public class RankNameConflictTest {
         //Ordre 	Hamamelidales
         //Famille 	Hamamelidaceae
         //Genre Distylium
-        ClassificationConflict distyliumConflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.DISTYLIUM.getClassification());
+        ClassificationConflict distyliumConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.DISTYLIUM.getClassification());
 
         Assertions.assertEquals(1, distyliumConflicts.getConflictedClassifications().size(), "Il doit exister un conflit");
         Optional<ConflictualRank> conflictualRank = distyliumConflicts.getConflictedClassifications().stream().findFirst();

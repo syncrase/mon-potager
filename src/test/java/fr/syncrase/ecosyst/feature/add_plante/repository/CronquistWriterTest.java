@@ -5,6 +5,7 @@ import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ class CronquistWriterTest {
 
     @Autowired
     CronquistWriter cronquistWriter;
+
+    @AfterEach
+    void tearDown() {
+        cronquistWriter.removeAll();
+    }
 
     /**
      * Enregistrement d'une classification dans une base vide. Vérifie que :
@@ -72,6 +78,5 @@ class CronquistWriterTest {
         Assertions.assertTrue(actualMessage.contains(expectedMessagePart1) && actualMessage.contains(expectedMessagePart2));
 
 
-        cronquistWriter.removeClassification(cronquistClassificationBranch);
     }
 }

@@ -7,6 +7,7 @@ import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchReposito
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
 
     @Autowired
     private ClassificationConsistencyService classificationConsistencyService;
+
+    @AfterEach
+    void tearDown() {
+        cronquistWriter.removeAll();
+    }
 
 
     @Test
@@ -36,7 +42,7 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
         //Genre Aldrovanda
         CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
 
-        ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALDROVANDA.getClassification());
+        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ALDROVANDA.getClassification());
 
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
 
@@ -49,7 +55,6 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getId(), "L'embranchement doit avoir été récupéré de la base de données");
         Assertions.assertEquals("Magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
 
-        cronquistWriter.removeClassification(cronquistClassificationBranch);
     }
 
 }

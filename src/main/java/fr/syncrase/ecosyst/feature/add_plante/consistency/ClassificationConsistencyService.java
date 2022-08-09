@@ -37,15 +37,22 @@ public class ClassificationConsistencyService {
     /**
      * Read-only database access<br/>
      * <p>
-     * Find the larger classification which already exists. From the lowest rank of this classification to the top classification,
-     * the consistency of each is challenged in order to guarantee that the passed classification can be safely inserted without break any invariant
-     * </p>
+     * In order to guarantee that the returned classification can be safely inserted without break any invariant. Each rank is synchronized :
+     * <ul>
+     *     <li>existing ranks get an ID</li>
+     *     <li>Already named rank get a name and an ID</li>
+     * </ul><br/>
+     * Conflicts occur when the passed classification
+     * <ul>
+     *     <li>name a rank with another name</li>
+     *     <li>name a rank with an already existing rank, but in another place</li>
+     * </ul>
      *
      * @param toSaveCronquistClassification Classification que l'on souhaite enregistrer en base de données, celle-ci est copiée et synchronisée avec la BDD afin de satisfaire tous les invariants
      * @return La classification dont les rangs ont été comparés avec la base de données. S'il n'y a aucun conflit, la classification peut être enregistrée telle qu'elle.
      */
     @Contract(pure = true)
-    public ClassificationConflict checkConsistency(CronquistClassificationBranch toSaveCronquistClassification) throws ClassificationReconstructionException, MoreThanOneResultException {
+    public ClassificationConflict getSynchronizedClassificationAndConflicts(CronquistClassificationBranch toSaveCronquistClassification) throws ClassificationReconstructionException, MoreThanOneResultException {
         ClassificationConflict synchronizationResult = new ClassificationConflict();
         CronquistClassificationBranch scrapedClassification = new CronquistClassificationBranch(toSaveCronquistClassification);// TODO clone this
         CronquistClassificationBranch existingClassification = cronquistReader.findExistingPartOfThisClassification(scrapedClassification);
@@ -151,7 +158,7 @@ public class ClassificationConsistencyService {
     @Contract(pure = true)
     public ClassificationConflict resolveInconsistency(@NotNull ClassificationConflict conflicts) throws InconsistencyResolverException, MoreThanOneResultException {
         ClassificationConflict resolvedConflicts = new ClassificationConflict();
-        resolvedConflicts.setNewClassification(resolvedConflicts.getNewClassification());
+        resolvedConflicts.setNewClassification(conflicts.getNewClassification());
 
 
         for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {

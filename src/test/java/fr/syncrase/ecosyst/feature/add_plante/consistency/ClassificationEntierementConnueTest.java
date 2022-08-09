@@ -8,6 +8,7 @@ import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchReposito
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class ClassificationEntierementConnueTest {
 
     @Autowired
     private ClassificationConsistencyService classificationConsistencyService;
+
+    @AfterEach
+    void tearDown() {
+        cronquistWriter.removeAll();
+    }
 
     @Test
     public void checkConsistencyDUneClassificationEnregistreeDeuxFois() throws ClassificationReconstructionException, MoreThanOneResultException {
@@ -42,7 +48,7 @@ public class ClassificationEntierementConnueTest {
         /*
          * Vérification de la consistance pour un autre objet sémantiquement le même
          */
-        ClassificationConflict conflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ALLIUM.getClassification());
+        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ALLIUM.getClassification());
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
         Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");
@@ -70,8 +76,6 @@ public class ClassificationEntierementConnueTest {
             Assertions.assertEquals(next1.getNom(), next2.getNom(), "Les deux rangs doivent posséder le même nom (" + next1 + " diffère de " + next2 + ")");
         }
 
-
-        cronquistWriter.removeClassification(firstCronquistClassificationBranch);
     }
 
 }
