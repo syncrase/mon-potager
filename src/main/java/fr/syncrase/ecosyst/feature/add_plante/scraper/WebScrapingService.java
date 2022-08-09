@@ -5,8 +5,8 @@ import fr.syncrase.ecosyst.domain.Plante;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.WikipediaResolver;
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.WikipediaScraper;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.PlantNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +36,15 @@ public class WebScrapingService {
             WikipediaScraper wikipediaScraper = new WikipediaScraper();
             cronquistClassificationBranch = wikipediaScraper.extractClassificationFromWiki(url);
         } else {
-            throw new PlantNotFoundException(name);
+            log.info("Plante not found");
+            return null;
         }
 
-        assert cronquistClassificationBranch != null;
+        if (cronquistClassificationBranch == null) {
+            log.info("Plante not found");
+            return null;
+        }
+
         ScrapedPlant plante = new ScrapedPlant()
             .addNomsVernaculaires(new NomVernaculaire().nom(name))
             .cronquistClassificationBranch(cronquistClassificationBranch);

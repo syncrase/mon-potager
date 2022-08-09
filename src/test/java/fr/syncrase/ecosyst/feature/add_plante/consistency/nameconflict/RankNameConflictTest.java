@@ -1,9 +1,13 @@
-package fr.syncrase.ecosyst.feature.add_plante.consistency;
+package fr.syncrase.ecosyst.feature.add_plante.consistency.nameconflict;
 
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.ConflictualRank;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
@@ -34,7 +38,7 @@ public class RankNameConflictTest {
 
 
     @Test
-    public void checkConsistency_conflictOnTheOrder() throws ClassificationReconstructionException, MoreThanOneResultException {
+    public void checkConsistency_conflictOnTheOrder() throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException {
 
         // Règne 	Plantae
         //Sous-règne 	Tracheobionta
@@ -59,12 +63,13 @@ public class RankNameConflictTest {
         Assertions.assertEquals(1, distyliumConflicts.getConflictedClassifications().size(), "Il doit exister un conflit");
         Optional<ConflictualRank> conflictualRank = distyliumConflicts.getConflictedClassifications().stream().findFirst();
         if (conflictualRank.isPresent()) {
-            Assertions.assertEquals(conflictualRank.get().getRank2().getRank(), conflictualRank.get().getRank1().getRank(), "Ce sont les ordres qui doivent entrer en conflit");
+            Assertions.assertEquals(conflictualRank.get().getExisting().getRank(), conflictualRank.get().getScraped().getRank(), "Les rang en conflit doivent être du même rang taxonomique");
+            Assertions.assertEquals(CronquistTaxonomicRank.ORDRE, conflictualRank.get().getScraped().getRank(), "Ce sont les ordres qui doivent entrer en conflit");
         } else {
             fail();
         }
 
-
+        ClassificationConflict classificationConflict = classificationConsistencyService.resolveInconsistency(distyliumConflicts);
         // TODO résolution: vérifier que je trouve le bon nom et que le merge à été fait
         cronquistWriter.removeClassification(corylopsisClassification);
         //cronquistWriter.removeClassification(firstCronquistClassificationBranch);

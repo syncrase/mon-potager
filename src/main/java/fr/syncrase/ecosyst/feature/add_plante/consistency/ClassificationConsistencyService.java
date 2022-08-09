@@ -2,11 +2,14 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
+import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
-import fr.syncrase.ecosyst.repository.CronquistRankRepository;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.WebScrapingService;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.PlantNotFoundException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -26,12 +30,14 @@ public class ClassificationConsistencyService {
 
     private final CronquistReader cronquistReader;
     private final CronquistWriter cronquistWriter;
+    private final WebScrapingService webScrapingService;
 
     private CronquistRankRepository cronquistRankRepository;
 
-    public ClassificationConsistencyService(CronquistReader cronquistReader, CronquistWriter cronquistWriter) {
+    public ClassificationConsistencyService(CronquistReader cronquistReader, CronquistWriter cronquistWriter, WebScrapingService webScrapingService) {
         this.cronquistReader = cronquistReader;
         this.cronquistWriter = cronquistWriter;
+        this.webScrapingService = webScrapingService;
     }
 
     /**
@@ -89,8 +95,8 @@ public class ClassificationConsistencyService {
      *            <li>Si les noms sont les mêmes -> copie de l'ID du rang existant dans le rang à insérer</li>
      *            <li>Si les deux noms sont différents. Détermination (plus tard) du bon nom pour ce rang
      *                  <ul>
-     *                      <li>Si le rang à ajouter existe déjà -> Détermination du bon nom PUIS merge des deux branches de classification</li>
-     *                      <li>Si le rang à ajouter n'existe pas -> Détermination du bon nom</li>
+     *                      <li>Si le rang à ajouter existe déjà -> Détermination du bon nom PUIS merge des deux branches de classification (cas A1)</li>
+     *                      <li>Si le rang à ajouter n'existe pas -> Détermination du bon nom (cas A2)</li>
      *                  </ul>
      *            </li>
      *          </ul>
@@ -103,7 +109,7 @@ public class ClassificationConsistencyService {
      *            <u>Le rang existant devient significatif</u>
      *            <br/>
      *            <ul>
-     *              <li>Si le rang à ajouter existe déjà -> cela signifie que deux branches de classification se trouve être la même. La fusion de ces deux branches et nécessaire pour assurer la consistance des données</li>
+     *              <li>Si le rang à ajouter existe déjà -> cela signifie que deux branches de classification se trouve être la même. La fusion de ces deux branches et nécessaire pour assurer la consistance des données (cas B)</li>
      *              <li>Si le rang à ajouter n'existe pas -> copie de l'ID du rang existant dans le rang à insérer</li>
      *            </ul>
      *      </td>
@@ -162,10 +168,10 @@ public class ClassificationConsistencyService {
 
 
         for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {
-            if (!conflictualRank.getRank1().getRank().equals(conflictualRank.getRank2().getRank())) {
+            if (!conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank())) {
                 throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two ranks of the same taxonomic rank");
             }
-            if (Objects.equals(conflictualRank.getRank1().getNom(), conflictualRank.getRank2().getNom())) {
+            if (Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())) {
                 throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two conflicted ranks, with at least not the same name");
             }
             resolvedConflicts.addConflict(manageConflict(conflictualRank));
@@ -175,19 +181,21 @@ public class ClassificationConsistencyService {
     }
 
     private @Nullable ConflictualRank manageConflict(@NotNull ConflictualRank conflictualRank) throws MoreThanOneResultException, InconsistencyResolverException {
-        boolean isRankOneSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getRank1());
-        boolean isRankTwoSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getRank2());
+        boolean scrapedRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getScraped());
+        boolean isExistingRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting());
 
-        CronquistRank rank1 = cronquistReader.findExistingRank(conflictualRank.getRank1());
-        CronquistRank rank2 = cronquistReader.findExistingRank(conflictualRank.getRank2());
-        rank1 = rank1 != null && rank1.getNom() != null ? rank1 : null;
-        rank2 = rank2 != null && rank2.getNom() != null ? rank2 : null;
-        // Si l'un des deux est un rang de liaison, les deux rangs doivent être fusionnés
-        if (!isRankTwoSignificant && isRankOneSignificant || !isRankOneSignificant && isRankTwoSignificant) {
+        CronquistRank scrapedRank = cronquistReader.findExistingRank(conflictualRank.getScraped());
+        CronquistRank existingRank = cronquistReader.findExistingRank(conflictualRank.getExisting());
+        scrapedRank = getNullIfConnectionRank(scrapedRank);
+        existingRank = getNullIfConnectionRank(existingRank);
+
+        // Si l'un des deux est un rang de liaison (OU EXCLUSIF), les deux rangs doivent être fusionnés. Cas B
+        if (!isExistingRankSignificant) {
+        //if (!isExistingRankSignificant && scrapedRankSignificant || !scrapedRankSignificant && isExistingRankSignificant) {
             // Le rang non null est forcément celui qui possède un nom
             // L'autre est donc forcément le rang de liaison
-            CronquistRank rankWhichReceivingChildren = rank1 != null ? rank1 : rank2;
-            CronquistRank rankWhichWillBeMergedIntoTheOther = rank1 == null ? conflictualRank.getRank1() : conflictualRank.getRank2();
+            CronquistRank rankWhichReceivingChildren = scrapedRank != null ? scrapedRank : existingRank;
+            CronquistRank rankWhichWillBeMergedIntoTheOther = scrapedRank == null ? conflictualRank.getScraped() : conflictualRank.getExisting();
 
             if (!cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
                 return conflictualRank;
@@ -196,15 +204,39 @@ public class ClassificationConsistencyService {
             }
         }
 
+        // Cas A1 & A2. Détermination du bon rang dans tous les cas puis merge dans le cas 2 (les deux rangs sont significatifs et existent déjà)
 
+        // TODO détermination. Deux cas : scrapedRank est le bon (mettre à jour la base) ou existing est le bon (rien à faire)
+        ScrapedPlant plante;
+        String nom = conflictualRank.getScraped().getNom();
+        plante = scrapTheRank(nom);
+        plante = plante;
+
+        // TODO merge
         CronquistRank validatedRank = null;
-        if (rank1 != null && rank2 != null) {
+        if (scrapedRank != null && existingRank != null) {
             // Détermination de quel rang utiliser pour le merge
-            validatedRank = rank1;// TODO implémenter le scraping pour checker les deux noms. EN ATTENDANT on considère que le rank1 porte le bon nom de rang
+            validatedRank = scrapedRank;// TODO implémenter le scraping pour checker les deux noms. EN ATTENDANT on considère que le scrapedRank porte le bon nom de rang
         }
         // Résolution des conflits
         // Détermination, merge, etc
         return conflictualRank;// TODO construct new conflict based on the previous revolving process
+    }
+
+    private @Nullable ScrapedPlant scrapTheRank(String nom) {
+        try {
+            return webScrapingService.scrapPlant(nom);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NonExistentWikiPageException | PlantNotFoundException e) {
+            log.warn("{}: Unable to find a wiki page for {}", e.getClass(), nom);
+            return null;
+        }
+    }
+
+    @Nullable
+    private static CronquistRank getNullIfConnectionRank(CronquistRank rank1) {
+        return rank1 != null && rank1.getNom() != null ? rank1 : null;
     }
 
 }

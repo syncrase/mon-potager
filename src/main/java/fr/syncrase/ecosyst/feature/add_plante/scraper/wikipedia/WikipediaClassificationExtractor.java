@@ -21,7 +21,7 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
     public static final String LIST_SELECTOR_2 = "div.mw-category-group ul li a[href]";
     public static final String LIST_SELECTOR_1 = "div.CategoryTreeItem a[href]";
     public static final String HREF = "href";
-    public static final String CLASSIFICATION_SELECTOR = "div.infobox_v3.large.taxobox_v3.plante.bordered";
+    public static final String[] CLASSIFICATION_SELECTOR = {"div.infobox_v3.large.taxobox_v3.plante.bordered", "table.infobox_v3.large.taxobox_v3.plante.bordered"};
     public static final String MAIN_CLASSIFICATION_SELECTOR = "table.taxobox_classification caption a";
     private final Logger log = LoggerFactory.getLogger(WikipediaClassificationExtractor.class);
 
@@ -160,7 +160,12 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
     }
 
     public Elements extractEncadreDeClassification(String urlWiki) throws IOException, NonExistentWikiPageException {
-        return getDocumentOf(urlWiki).select(CLASSIFICATION_SELECTOR);
+        Elements encadreTaxonomique = null;
+        for (String xpath : WikipediaClassificationExtractor.CLASSIFICATION_SELECTOR) {
+            encadreTaxonomique = getDocumentOf(urlWiki).select(xpath);
+            if (encadreTaxonomique.size() != 0) return encadreTaxonomique;
+        }
+        return null;
     }
 
     public @NotNull String extractTypeOfMainClassification(@NotNull Elements encadreTaxonomique) {

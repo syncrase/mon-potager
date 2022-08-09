@@ -1,9 +1,12 @@
-package fr.syncrase.ecosyst.feature.add_plante.consistency;
+package fr.syncrase.ecosyst.feature.add_plante.consistency.simplemerge;
 
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;

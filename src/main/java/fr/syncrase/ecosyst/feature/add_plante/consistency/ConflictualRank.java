@@ -4,19 +4,27 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 
 public class ConflictualRank {
-    private final CronquistRank rank1;
-    private final CronquistRank rank2;
+    private CronquistRank scraped;
+    private CronquistRank existing;
 
-    public ConflictualRank(CronquistRank rank2, CronquistRank rank1) {
-        this.rank2 = rank2;
-        this.rank1 = rank1;
+    public ConflictualRank() {
     }
 
-    public CronquistRank getRank1() {
-        return rank1;
+    public CronquistRank getScraped() {
+        return scraped;
     }
 
-    public CronquistRank getRank2() {
-        return rank2;
+    public CronquistRank getExisting() {
+        return existing;
+    }
+
+    public ConflictualRank scrapedRank(CronquistRank scraped) {
+        this.scraped = scraped;
+        return this;
+    }
+
+    public ConflictualRank existing(CronquistRank existing) {
+        this.existing = existing;
+        return this;
     }
 }

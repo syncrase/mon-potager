@@ -44,7 +44,7 @@ public class ClassificationConflict {
     }
 
     public void addConflict(@NotNull CronquistRank scrapedRank, @NotNull CronquistRank existingRank) {
-        ConflictualRank conflict = new ConflictualRank(scrapedRank, existingRank);
+        ConflictualRank conflict = new ConflictualRank().existing(existingRank).scrapedRank(scrapedRank);
         conflictedClassifications.add(conflict);
     }
 

@@ -27,13 +27,13 @@ public class WikipediaResolver extends WikipediaConnector {
         Elements encadreTaxonomique = null;
         Document document = getDocumentOf(url);
 
-        // If I found a page containing a classification
-        encadreTaxonomique = document.select(WikipediaClassificationExtractor.CLASSIFICATION_SELECTOR);
-        if (encadreTaxonomique.size() != 0) {
-            return document.location();
+        // If I found a div or table containing a classification
+        for (String xpath : WikipediaClassificationExtractor.CLASSIFICATION_SELECTOR) {
+            encadreTaxonomique = document.select(xpath);
+            if (encadreTaxonomique.size() != 0) return document.location();
         }
 
-        // If not, trying to find an url containing the plant's name
+        // TODO If not, trying to find an url containing the plant's name
 
         return null;
     }
