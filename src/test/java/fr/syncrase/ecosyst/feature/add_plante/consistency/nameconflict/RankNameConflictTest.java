@@ -63,7 +63,7 @@ public class RankNameConflictTest {
         Assertions.assertEquals(1, distyliumConflicts.getConflictedClassifications().size(), "Il doit exister un conflit");
         Optional<ConflictualRank> conflictualRank = distyliumConflicts.getConflictedClassifications().stream().findFirst();
         if (conflictualRank.isPresent()) {
-            Assertions.assertEquals(conflictualRank.get().getExisting().getRank(), conflictualRank.get().getScraped().getRank(), "Les rang en conflit doivent être du même rang taxonomique");
+            Assertions.assertEquals(conflictualRank.get().getExisting().getRank(), conflictualRank.get().getScraped().getRank(), "Les rangs en conflit doivent être du même rang taxonomique");
             Assertions.assertEquals(CronquistTaxonomicRank.ORDRE, conflictualRank.get().getScraped().getRank(), "Ce sont les ordres qui doivent entrer en conflit");
         } else {
             fail();

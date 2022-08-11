@@ -161,11 +161,12 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
 
     public Elements extractEncadreDeClassification(String urlWiki) throws IOException, NonExistentWikiPageException {
         Elements encadreTaxonomique = null;
+        Document wikiPageHtml = getDocumentOf(urlWiki);
         for (String xpath : WikipediaClassificationExtractor.CLASSIFICATION_SELECTOR) {
-            encadreTaxonomique = getDocumentOf(urlWiki).select(xpath);
-            if (encadreTaxonomique.size() != 0) return encadreTaxonomique;
+            encadreTaxonomique = wikiPageHtml.select(xpath);
+            if (encadreTaxonomique.size() != 0) break;
         }
-        return null;
+        return encadreTaxonomique;
     }
 
     public @NotNull String extractTypeOfMainClassification(@NotNull Elements encadreTaxonomique) {
@@ -174,13 +175,21 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
         if (taxoTitles.size() == 0) {
             return "No extractClassification";
         }
-        String taxoTitle = taxoTitles.get(0)// ne contient qu'un seul titre
+        String taxoTitle = taxoTitles.get(0)// peut contenir plusieurs titres s'il y a plusieurs classifications
             .childNode(0)// TextNode
             .toString();
 
         // Récupère le nom de l'encadré : ['Classification', 'Classification APG III (2009)']
         if (taxoTitle.contains("APG III")) {
             return "APG III";
+        }
+        if (taxoTitle.equals("Classification de Cronquist (1981)")) {// table.taxobox_classification caption a
+            Elements mainTitle = encadreTaxonomique.select("table.taxobox_classification");
+            // Dans le cas Asparagaceae
+            if (mainTitle.next().hasClass("floatleft") && mainTitle.next().next().text().contains("Taxon inexistant en Classification de Cronquist (1981)")) {
+                return "No Cronquist";
+            }
+            return "Cronquist";
         }
         if (taxoTitle.contains("Cronquist")) {
             Elements small = encadreTaxonomique.select("small");
@@ -190,7 +199,7 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
             return "Cronquist";
         }
 
-        // Récupère les clés de classification de la première table
+        // Récupère les clés de classification de la première table. Pour voir si je trouve le mot "Clade".
         Elements tables = encadreTaxonomique.select("table.taxobox_classification");
         Element mainTable = tables.get(0);
         Elements taxoKeys = mainTable.select("tbody tr th a");
