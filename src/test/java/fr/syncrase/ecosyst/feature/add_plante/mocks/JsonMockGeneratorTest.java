@@ -39,7 +39,7 @@ public class JsonMockGeneratorTest {
 
     @Test
     void getJsonObject() throws IOException, NonExistentWikiPageException, PlantNotFoundException {
-        @Nullable ScrapedPlant plante = webScrapingService.scrapPlant("Cossinia");
+        @Nullable ScrapedPlant plante = webScrapingService.scrapPlant("Agave_lechuguilla");
         // TODO extract as json in order to reuse it without send any request
         if (plante != null) {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

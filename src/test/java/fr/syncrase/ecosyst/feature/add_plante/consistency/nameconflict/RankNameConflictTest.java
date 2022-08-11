@@ -9,6 +9,7 @@ import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsiste
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ConflictualRank;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
@@ -24,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(classes = MonolithApp.class)
 public class RankNameConflictTest {
+
+    @Autowired
+    CronquistReader cronquistReader;
 
     @Autowired
     CronquistWriter cronquistWriter;
@@ -64,62 +68,23 @@ public class RankNameConflictTest {
         Optional<ConflictualRank> conflictualRank = distyliumConflicts.getConflictedClassifications().stream().findFirst();
         if (conflictualRank.isPresent()) {
             Assertions.assertEquals(conflictualRank.get().getExisting().getRank(), conflictualRank.get().getScraped().getRank(), "Les rangs en conflit doivent être du même rang taxonomique");
-            Assertions.assertEquals(CronquistTaxonomicRank.ORDRE, conflictualRank.get().getScraped().getRank(), "Ce sont les ordres qui doivent entrer en conflit");
+            Assertions.assertEquals(CronquistTaxonomicRank.ORDRE, conflictualRank.get().getScraped().getRank(), "Ce sont les ordres qui sont censés entrer en conflit");
         } else {
             fail();
         }
 
-        ClassificationConflict classificationConflict = classificationConsistencyService.resolveInconsistency(distyliumConflicts);
-        // TODO résolution: vérifier que je trouve le bon nom et que le merge à été fait
-        cronquistWriter.removeClassification(corylopsisClassification);
-        //cronquistWriter.removeClassification(firstCronquistClassificationBranch);
-    }
+        ClassificationConflict resolvedDistyliumConflicts = classificationConsistencyService.resolveInconsistency(distyliumConflicts);
+        Assertions.assertEquals(0, resolvedDistyliumConflicts.getConflictedClassifications().size(), "Le conflit doit avoir été résolu");
 
-    @Test
-    public void checkConsistency_mergeWithoutNameConflict() throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException {
+        // Resynchronisation avec la base
+        ClassificationConflict synchronizedResolvedDistyliumConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedDistyliumConflicts.getNewClassification());
+        Assertions.assertEquals(0, synchronizedResolvedDistyliumConflicts.getConflictedClassifications().size(), "Le conflit doit avoir été résolu");
+        Assertions.assertEquals("Hamamelidales", synchronizedResolvedDistyliumConflicts.getNewClassification().getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
 
-        // Règne 	Plantae
-        //Sous-règne 	Tracheobionta
-        //Division 	Magnoliophyta
-        //Classe 	Magnoliopsida
-        //Sous-classe 	Rosidae
-        //Ordre 	Santalales
-        //Famille 	Santalaceae
-        //Genre Arjona
-        CronquistClassificationBranch arjonaClassification = cronquistWriter.saveClassification(ClassificationBranchRepository.ARJONA.getClassification());
-
-
-        // La Atalaya appartient à la sous-classe des Rosidae, mais on ne le sait pas à partir des informations reçues. On le découvre quand on enregistre Cossinia
-        // Règne 	Plantae
-        //Sous-règne 	(+Tracheobionta déduit du précédent)
-        //Division 	Magnoliophyta
-        //Classe 	Magnoliopsida
-        //Sous-classe 	(+Rosidae déduis du suivant)
-        //Ordre 	Sapindales
-        //Famille 	Sapindaceae
-        //Genre Atalaya
-        ClassificationConflict atalayaConflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.ATALAYA.getClassification());
-        Assertions.assertEquals(0, atalayaConflicts.getConflictedClassifications().size(), "Il ne doit pas y avoir de conflit");
-        CronquistRank atalayaSousRegne = atalayaConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE);
-        Assertions.assertEquals("Tracheobionta", atalayaSousRegne.getNom(), "La classification atalaya doit posséder le sous-règne Tracheobionta mais est égal à " + atalayaSousRegne);
-        CronquistClassificationBranch atalayaClassification = cronquistWriter.saveClassification(atalayaConflicts.getNewClassification());
-
-
-        // Règne 	Plantae
-        //Sous-règne 	Tracheobionta
-        //Division 	Magnoliophyta
-        //Classe 	Magnoliopsida
-        //Sous-classe 	Rosidae
-        //Ordre 	Sapindales
-        //Famille 	Sapindaceae
-        //Genre Cossinia
-        ClassificationConflict cossiniaPinnataConflicts = classificationConsistencyService.checkConsistency(ClassificationBranchRepository.COSSINIA_PINNATA.getClassification());
-        Assertions.assertEquals(1, cossiniaPinnataConflicts.getConflictedClassifications().size(), "Il doit y avoir un conflit");
-
-        ClassificationConflict resolvedConflicts = classificationConsistencyService.resolveInconsistency(cossiniaPinnataConflicts);// La base est mise à jour pour accepter la nouvelle classification
-        Assertions.assertEquals(0, atalayaConflicts.getConflictedClassifications().size(), "Il ne doit plus y avoir de conflit");
-
-        // On récupère atalaya pour vérifier qu'elle a bien récupéré la sous-classe rosidae
+        // Vérification que corylopsisClassification a changé après la résolution du conflit
+        CronquistClassificationBranch corylopsisClassificationAfterResolvingNameConflict = cronquistReader.findExistingClassification(corylopsisClassification.getLowestRank());
+        Assertions.assertNotNull(corylopsisClassificationAfterResolvingNameConflict, "La classification doit exister");
+        Assertions.assertEquals("Hamamelidales", corylopsisClassificationAfterResolvingNameConflict.getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
 
     }
 }

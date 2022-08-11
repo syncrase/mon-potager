@@ -90,9 +90,14 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     //            return -1;
     //        }
     //        return rang1.isHighestRankOf(rang2) ? 1 : rang1.isSameRankOf(rang2) ? 0 : -1;
+
     //    });
 
     //}
+
+    public void clearRank(CronquistTaxonomicRank classe) {
+        this.getRang(classe).setNom(null);
+    }
 
     @Deprecated
     @Nullable

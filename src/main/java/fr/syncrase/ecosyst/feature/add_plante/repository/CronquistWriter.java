@@ -5,6 +5,7 @@ import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassifica
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import fr.syncrase.ecosyst.repository.CronquistRankRepository;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ public class CronquistWriter {
         rankWhichReceivingChildren = cronquistReader.findExistingRank(rankWhichReceivingChildren);
         rankWhichWillBeMergedIntoTheOther = cronquistReader.findExistingRank(rankWhichWillBeMergedIntoTheOther);
 
-        if (rankWhichReceivingChildren == null && rankWhichReceivingChildren.getId() == null || rankWhichWillBeMergedIntoTheOther == null && rankWhichWillBeMergedIntoTheOther.getId() == null) {
+        if (rankWhichReceivingChildren == null || rankWhichWillBeMergedIntoTheOther == null) {
             throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with existing ranks");
         }
 
@@ -108,4 +109,14 @@ public class CronquistWriter {
         return save.getChildren().size() == childrenQuantity;
     }
 
+    public void updateRank(@NotNull CronquistRank toBeUpdated, @NotNull CronquistRank updateWith) {
+        toBeUpdated.setNom(updateWith.getNom());
+        cronquistRankRepository.save(toBeUpdated);
+    }
+
+    public void removeRank(@NotNull CronquistRank existing) {
+        existing.setNom(null);
+        cronquistRankRepository.save(existing);
+
+    }
 }

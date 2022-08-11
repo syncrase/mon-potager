@@ -174,53 +174,85 @@ public class ClassificationConsistencyService {
             if (Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())) {
                 throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two conflicted ranks, with at least not the same name");
             }
-            resolvedConflicts.addConflict(manageConflict(conflictualRank));
+            //resolvedConflicts.addConflict(manageConflict(conflictualRank));
+            boolean scrapedRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getScraped());
+            boolean isExistingRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting());
+
+            CronquistRank scrapedRank = cronquistReader.findExistingRank(conflictualRank.getScraped());
+            CronquistRank existingRank = cronquistReader.findExistingRank(conflictualRank.getExisting());
+            scrapedRank = getNullIfConnectionRank(scrapedRank);
+            existingRank = getNullIfConnectionRank(existingRank);
+
+            // Si l'un des deux est un rang de liaison (OU EXCLUSIF), les deux rangs doivent être fusionnés. Cas B
+            if (!isExistingRankSignificant) {
+                // Le rang non null est forcément celui qui possède un nom
+                CronquistRank rankWhichReceivingChildren = scrapedRank != null ? scrapedRank : existingRank;
+                // L'autre est donc forcément le rang de liaison
+                CronquistRank rankWhichWillBeMergedIntoTheOther = scrapedRank == null ? conflictualRank.getScraped() : conflictualRank.getExisting();
+
+                if (!cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
+                    //return conflictualRank;
+                    resolvedConflicts.addConflict(conflictualRank);
+                }
+                continue;
+            }
+
+            // Cas A1 & A2. Détermination du bon rang dans tous les cas puis merge dans le cas 2 (les deux rangs sont significatifs et existent déjà)
+            ScrapedPlant plante = getTheRightOne(conflictualRank);// TODO si les deux plantes existent en Cronquist, gros problème. S'ils ne sont pas du même rang ok gros merge sinon c'est la m**** parce qu'un invariant est brisé
+            if (plante != null) {
+                boolean scrapedRankIsTheRightOne = conflictualRank.getScraped().getNom().contentEquals(plante.getCronquistClassificationBranch().getLowestRank().getNom());
+                if (scrapedRankIsTheRightOne) {
+                    // Mettre à jour la base de donnée
+                    cronquistWriter.updateRank(conflictualRank.getExisting(), plante.getCronquistClassificationBranch().getLowestRank());
+                }
+                boolean existingRankIsTheRightOne = conflictualRank.getScraped().getNom().contentEquals(plante.getCronquistClassificationBranch().getLowestRank().getNom());
+                if (existingRankIsTheRightOne) {
+                    // Mettre à jour la classification à enregistrer
+                    resolvedConflicts.getNewClassification().add(conflictualRank.getExisting());
+                }
+            } else {
+                cronquistWriter.removeRank(conflictualRank.getExisting());// TODO cas de test, les rang enregistré se trouve ne pas être du Cronquist
+            }
+
+            // TODO merge
+            CronquistRank validatedRank = null;
+            if (scrapedRank != null && existingRank != null) {
+                // Détermination de quel rang utiliser pour le merge
+                validatedRank = scrapedRank;// TODO implémenter le scraping pour checker les deux noms. EN ATTENDANT on considère que le scrapedRank porte le bon nom de rang
+            }
+            // Résolution des conflits
+            // Détermination, merge, etc
+            //return conflictualRank;// TODO construct new conflict based on the previous revolving process
+
         }
+
 
         return resolvedConflicts;
     }
 
-    private @Nullable ConflictualRank manageConflict(@NotNull ConflictualRank conflictualRank) throws MoreThanOneResultException, InconsistencyResolverException {
-        boolean scrapedRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getScraped());
-        boolean isExistingRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting());
+    private @Nullable ScrapedPlant getTheRightOne(@NotNull ConflictualRank conflictualRank) {
+        boolean isScrapedExistsInCronquist, isExistingExistsInCronquist;
+        String scrapedNom = conflictualRank.getScraped().getNom();
+        @Nullable ScrapedPlant scrapedScrapedPlant = scrapTheRank(scrapedNom);
+        isScrapedExistsInCronquist = scrapedScrapedPlant != null;
+        String existingNom = conflictualRank.getExisting().getNom();
+        @Nullable ScrapedPlant scrapedExistingPlant = scrapTheRank(existingNom);
+        isExistingExistsInCronquist = scrapedExistingPlant != null;
 
-        CronquistRank scrapedRank = cronquistReader.findExistingRank(conflictualRank.getScraped());
-        CronquistRank existingRank = cronquistReader.findExistingRank(conflictualRank.getExisting());
-        scrapedRank = getNullIfConnectionRank(scrapedRank);
-        existingRank = getNullIfConnectionRank(existingRank);
-
-        // Si l'un des deux est un rang de liaison (OU EXCLUSIF), les deux rangs doivent être fusionnés. Cas B
-        if (!isExistingRankSignificant) {
-        //if (!isExistingRankSignificant && scrapedRankSignificant || !scrapedRankSignificant && isExistingRankSignificant) {
-            // Le rang non null est forcément celui qui possède un nom
-            // L'autre est donc forcément le rang de liaison
-            CronquistRank rankWhichReceivingChildren = scrapedRank != null ? scrapedRank : existingRank;
-            CronquistRank rankWhichWillBeMergedIntoTheOther = scrapedRank == null ? conflictualRank.getScraped() : conflictualRank.getExisting();
-
-            if (!cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
-                return conflictualRank;
-            } else {
-                return null;
-            }
+        boolean onlyScrapedInCronquist = isScrapedExistsInCronquist && !isExistingExistsInCronquist;
+        if (onlyScrapedInCronquist) {
+            return scrapedScrapedPlant;
         }
-
-        // Cas A1 & A2. Détermination du bon rang dans tous les cas puis merge dans le cas 2 (les deux rangs sont significatifs et existent déjà)
-
-        // TODO détermination. Deux cas : scrapedRank est le bon (mettre à jour la base) ou existing est le bon (rien à faire)
-        ScrapedPlant plante;
-        String nom = conflictualRank.getScraped().getNom();
-        plante = scrapTheRank(nom);
-        plante = plante;
-
-        // TODO merge
-        CronquistRank validatedRank = null;
-        if (scrapedRank != null && existingRank != null) {
-            // Détermination de quel rang utiliser pour le merge
-            validatedRank = scrapedRank;// TODO implémenter le scraping pour checker les deux noms. EN ATTENDANT on considère que le scrapedRank porte le bon nom de rang
+        boolean onlyExistingInCronquist = !isScrapedExistsInCronquist && isExistingExistsInCronquist;
+        if (onlyExistingInCronquist) {
+            return scrapedExistingPlant;
         }
-        // Résolution des conflits
-        // Détermination, merge, etc
-        return conflictualRank;// TODO construct new conflict based on the previous revolving process
+        boolean noneIsInCronquist = !isScrapedExistsInCronquist;
+        if (noneIsInCronquist) {
+            return null;
+        }
+        log.error("To be implemented : Both ranks exists in Cronquist. {} and {}", scrapedScrapedPlant, scrapedExistingPlant);
+        throw new RuntimeException();
     }
 
     private @Nullable ScrapedPlant scrapTheRank(String nom) {

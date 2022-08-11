@@ -38,7 +38,6 @@ public class SimpleClassificationMergeTest {
     @Test
     public void checkConsistency_mergeWithoutNameConflict() throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException {
 
-        // TODO récupérer les résultats de chacune des méthodes pour les mocker et valider unitairement chacun des comportements escompté
         // Règne 	Plantae
         //Sous-règne 	Tracheobionta
         //Division 	Magnoliophyta

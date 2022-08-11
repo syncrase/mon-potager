@@ -351,4 +351,13 @@ class WikipediaScraperTest {
         Assertions.assertEquals("Tracheobionta", classification.getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Mauvais rang");
         Assertions.assertEquals("Plantae", classification.getRang(CronquistTaxonomicRank.REGNE).getNom(), "Mauvais rang");
     }
+
+    @Test
+    public void extractClassificationFromWiki_Angiosperme() {
+        CronquistClassificationBranch classification;
+        String wiki = "https://fr.wikipedia.org/wiki/Angiosperme";
+        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+        Assertions.assertNull(classification, "La classification ne doit pas avoir été créée");
+
+    }
 }
