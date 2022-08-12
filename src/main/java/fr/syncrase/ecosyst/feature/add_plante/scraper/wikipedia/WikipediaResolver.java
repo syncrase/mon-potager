@@ -1,17 +1,20 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
+import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class WikipediaResolver extends WikipediaConnector {
 
-    public static final String WIKI_SEARCH_URL = "https://fr.wikipedia.org/wiki/";
     private final Logger log = LoggerFactory.getLogger(WikipediaResolver.class);
 
-    /**
+    /*
      * Cas de test
      * - j'envoie ail, je récupère
      * - j'envoie morelle noire, je récupère
@@ -20,21 +23,34 @@ public class WikipediaResolver extends WikipediaConnector {
      * @return
      * @throws NonExistentWikiPageException
      */
-    public String resolveUrlForThisPlant(String name) throws NonExistentWikiPageException {
-        log.info("Search for {} on Wikipedia", name);
-        String url = WIKI_SEARCH_URL + name;
-        //Elements encadreTaxonomique = wikipediaHtmlExtractor.lookFor(urlWiki);
-        Elements encadreTaxonomique = null;
-        Document document = getDocumentOf(url);
 
+    public boolean checkIfPageExists(String urlS) {
+        URL url;
+        try {
+            url = new URL(urlS);
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            huc.setRequestMethod("HEAD");
+            if (huc.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
+    }
+
+
+    @Nullable
+    public Document getDocumentIfContainingClassification(String url) throws NonExistentWikiPageException {
+        Document document = getDocumentOf(url);
+        if (!document.childNode(0).toString().equals("<!doctype html>")) {
+            // Parfois jsoup retourne un document vide...
+            document = getDocumentOf(url);
+        }
         // If I found a div or table containing a classification
         for (String xpath : WikipediaClassificationExtractor.CLASSIFICATION_SELECTOR) {
-            encadreTaxonomique = document.select(xpath);
-            if (encadreTaxonomique.size() != 0) return document.location();
+            if (document.select(xpath).size() != 0) return document;
         }
-
-        // TODO If not, trying to find an url containing the plant's name
-
         return null;
     }
 }

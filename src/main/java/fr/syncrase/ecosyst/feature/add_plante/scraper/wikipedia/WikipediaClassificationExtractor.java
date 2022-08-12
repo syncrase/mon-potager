@@ -159,9 +159,8 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
         return listItem.attr(HREF);
     }
 
-    public Elements extractEncadreDeClassification(String urlWiki) throws IOException, NonExistentWikiPageException {
+    public Elements extractEncadreDeClassification(Document wikiPageHtml) throws IOException, NonExistentWikiPageException {
         Elements encadreTaxonomique = null;
-        Document wikiPageHtml = getDocumentOf(urlWiki);
         for (String xpath : WikipediaClassificationExtractor.CLASSIFICATION_SELECTOR) {
             encadreTaxonomique = wikiPageHtml.select(xpath);
             if (encadreTaxonomique.size() != 0) break;

@@ -1,26 +1,29 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
-import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static fr.syncrase.ecosyst.feature.add_plante.scraper.WebScrapingService.WIKI_SEARCH_URL;
 
 class WikipediaResolverTest {
 
     WikipediaResolver wr = new WikipediaResolver();
 
     @Test
-    void resolveUrlForThisPlant_allium() throws NonExistentWikiPageException {
-        String allium = wr.resolveUrlForThisPlant("allium");
-        Assertions.assertNotNull(allium, "L'url doit être retrouvé");
-        Assertions.assertEquals("https://fr.wikipedia.org/wiki/Allium", allium, "L'url n'est pas la bonne");
+    void resolveUrlForThisPlant_allium() {
+        boolean allium = wr.checkIfPageExists(WIKI_SEARCH_URL + "allium");
+        Assertions.assertTrue(allium, "L'url doit être retrouvé");
     }
 
     @Test
-    void resolveUrlForThisPlant_hamamelidales() throws NonExistentWikiPageException {
-        String allium = wr.resolveUrlForThisPlant("Hamamelidales");
-        Assertions.assertNotNull(allium, "L'url doit être retrouvé");
-        Assertions.assertEquals("https://fr.wikipedia.org/wiki/Hamamelidales", allium, "L'url n'est pas la bonne");
+    void resolveUrlForThisPlant_hamamelidales() {
+        boolean allium = wr.checkIfPageExists(WIKI_SEARCH_URL + "Hamamelidales");
+        Assertions.assertTrue(allium, "L'url doit être retrouvé");
+    }
+
+    @Test
+    void checkIfPageExists_Lilianae() {
+        boolean allium = wr.checkIfPageExists(WIKI_SEARCH_URL + "Lilianae");
+        Assertions.assertTrue(allium, "L'url doit être retrouvé");
     }
 }

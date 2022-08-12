@@ -3,6 +3,8 @@ package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,8 @@ import org.junit.jupiter.api.Test;
 class WikipediaScraperTest {
 
     WikipediaScraper wikipediaScraper;
+
+    WikipediaResolver wikipediaResolver = new WikipediaResolver();
 
     public WikipediaScraperTest() {
         this.wikipediaScraper = new WikipediaScraper();
@@ -29,11 +33,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_ErreurDansLeNomDuRangTaxonomique() {
-        // Le genre contient Gentianaceae mais c'est une famille, le genre est ignoré (à voir avec le scraper)
+    public void extractClassificationFromWiki_ErreurDansLeNomDuRangTaxonomique() throws NonExistentWikiPageException {
+        // Le genre contient Gentianaceae mais c'est une famille, le genre est ignoré (à voir avec le scraper).
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Monodiella";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         String nomsDuGenreMonodiella = classification.getRang(CronquistTaxonomicRank.GENRE).getNom();
@@ -44,10 +49,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Allium() {
+    public void extractClassificationFromWiki_Allium() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Allium";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Allium", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -61,10 +68,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Atalaya() {
+    public void extractClassificationFromWiki_Atalaya() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Atalaya_(genre)";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Atalaya", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -76,10 +85,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Arjona() {
+    public void extractClassificationFromWiki_Arjona() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Arjona";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Arjona", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -93,10 +104,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Cossinia() {
+    public void extractClassificationFromWiki_Cossinia() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Cossinia";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Cossinia", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -110,10 +123,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_ErableDeCrete() {
+    public void extractClassificationFromWiki_ErableDeCrete() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/%C3%89rable_de_Cr%C3%A8te";// TODO Encoder le nom dans l'url resolver
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Acer sempervirens", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -121,16 +136,18 @@ class WikipediaScraperTest {
         Assertions.assertEquals("Aceraceae", classification.getRang(CronquistTaxonomicRank.FAMILLE).getNom(), "Mauvais rang");
         Assertions.assertEquals("Sapindales", classification.getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Mauvais rang");
         Assertions.assertEquals("Rosanae", classification.getRang(CronquistTaxonomicRank.SUPERORDRE).getNom(), "Mauvais rang");
-        Assertions.assertEquals("Magnoliidae", classification.getRang(CronquistTaxonomicRank.SOUSCLASSE  ).getNom(), "Mauvais rang");
+        Assertions.assertEquals("Magnoliidae", classification.getRang(CronquistTaxonomicRank.SOUSCLASSE).getNom(), "Mauvais rang");
         Assertions.assertEquals("Equisetopsida", classification.getRang(CronquistTaxonomicRank.CLASSE).getNom(), "Mauvais rang");
         Assertions.assertEquals("Plantae", classification.getRang(CronquistTaxonomicRank.REGNE).getNom(), "Mauvais rang");
     }
 
     @Test
-    public void extractClassificationFromWiki_ErableDeMiyabe() {
+    public void extractClassificationFromWiki_ErableDeMiyabe() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/%C3%89rable_de_Miyabe";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Acer Miyabei", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -145,10 +162,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Hamamelidales() {
+    public void extractClassificationFromWiki_Hamamelidales() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Hamamelidales";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         // TODO fix scraper
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
@@ -161,10 +180,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Corylopsis() {
+    public void extractClassificationFromWiki_Corylopsis() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Corylopsis";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Corylopsis", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -178,10 +199,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Distylium() {
+    public void extractClassificationFromWiki_Distylium() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Distylium";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Distylium", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -195,10 +218,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Loropetalum() {
+    public void extractClassificationFromWiki_Loropetalum() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Loropetalum";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Loropetalum", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -212,10 +237,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Oxera_neriifolia() {
+    public void extractClassificationFromWiki_Oxera_neriifolia() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Oxera_neriifolia";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Oxera neriifolia", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -229,10 +256,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Selaginaceae() {
+    public void extractClassificationFromWiki_Selaginaceae() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Selaginaceae";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Selaginaceae", classification.getRang(CronquistTaxonomicRank.FAMILLE).getNom(), "Mauvais rang");
@@ -244,10 +273,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Lepisanthes_senegalensis() {
+    public void extractClassificationFromWiki_Lepisanthes_senegalensis() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Lepisanthes_senegalensis";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Lepisanthes senegalensis", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -262,10 +293,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_ErableDeMontpellier() {
+    public void extractClassificationFromWiki_ErableDeMontpellier() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/%C3%89rable_de_Montpellier";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Acer monspessulanum", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -280,10 +313,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Chironia() {
+    public void extractClassificationFromWiki_Chironia() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Chironia";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Chironia", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -295,19 +330,23 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Asparagaceae() {
+    public void extractClassificationFromWiki_Asparagaceae() throws NonExistentWikiPageException {
         // Inexistant en Cronquist (APGIII)
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Asparagaceae";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNull(classification, "La classification doit avoir été créée");
     }
 
     @Test
-    public void extractClassificationFromWiki_Agave_lechuguilla() {
+    public void extractClassificationFromWiki_Agave_lechuguilla() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Agave_lechuguilla";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Agave lechuguilla", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -321,10 +360,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Helanthium_bolivianum() {
+    public void extractClassificationFromWiki_Helanthium_bolivianum() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Helanthium_bolivianum";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Helanthium bolivianum", classification.getRang(CronquistTaxonomicRank.ESPECE).getNom(), "Mauvais rang");
@@ -337,10 +378,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Monodiella() {
+    public void extractClassificationFromWiki_Monodiella() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Monodiella";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNotNull(classification, "La classification doit avoir été créée");
 
         Assertions.assertEquals("Monodiella", classification.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Mauvais rang");
@@ -353,10 +396,12 @@ class WikipediaScraperTest {
     }
 
     @Test
-    public void extractClassificationFromWiki_Angiosperme() {
+    public void extractClassificationFromWiki_Angiosperme() throws NonExistentWikiPageException {
         CronquistClassificationBranch classification;
         String wiki = "https://fr.wikipedia.org/wiki/Angiosperme";
-        classification = wikipediaScraper.extractClassificationFromWiki(wiki);
+
+        Document document = wikipediaResolver.getDocumentIfContainingClassification(wiki);
+        classification = wikipediaScraper.extractClassificationFromWiki(document);
         Assertions.assertNull(classification, "La classification ne doit pas avoir été créée");
 
     }

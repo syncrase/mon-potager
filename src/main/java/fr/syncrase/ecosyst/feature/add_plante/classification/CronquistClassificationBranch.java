@@ -4,13 +4,11 @@ import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -67,7 +65,7 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         if (!iterator.hasNext()) {
             log.error("Cannot define an consistent parenthood on an empty classification");
         }
-        CronquistRank current, parent = null;
+        CronquistRank current, parent;
         current = iterator.next();
         parent = current;
         while (iterator.hasNext()) {
@@ -78,41 +76,8 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         }
     }
 
-    //private static Comparator<CronquistRank> getCronquistRankComparator() {
-    //    return Comparator.comparing(CronquistRank::getRank, (rang1, rang2) -> {
-    //        if (rang1 == null && rang2 == null) {
-    //            return 0;
-    //        }
-    //        if (rang1 == null) {
-    //            return 1;
-    //        }
-    //        if (rang2 == null) {
-    //            return -1;
-    //        }
-    //        return rang1.isHighestRankOf(rang2) ? 1 : rang1.isSameRankOf(rang2) ? 0 : -1;
-
-    //    });
-
-    //}
-
-    public void clearRank(CronquistTaxonomicRank classe) {
-        this.getRang(classe).setNom(null);
-    }
-
-    @Deprecated
-    @Nullable
-    private CronquistRank getParent(@NotNull CronquistRank rank) throws InconsistentClassificationObject {
-        if (rank.getRank() == null) {
-            throw new InconsistentClassificationObject();
-        }
-        if (rank.getRank().getRangSuperieur() == null) {
-            return null;
-        }
-        /* Cas où il n'y a pas de parent → quand c'est un domaine. Et dans ce cas null est déjà retournée
-         * Un élément doit toujours être retourné
-         */
-        return classificationCronquist.stream().filter(cronquistRank -> cronquistRank.getRank().isSameRankOf(rank.getRank().getRangSuperieur())).findFirst().orElseThrow();
-
+    public void clearRank(CronquistTaxonomicRank ctr) {
+        this.getRang(ctr).setNom(null);// TODO supprimer cette méthode => utiliser remove à la place
     }
 
     /**
@@ -215,13 +180,6 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         return new Object[0];
     }
 
-    @Contract(pure = true)
-    @NotNull
-    @Override
-    public <T> T @Nullable [] toArray(@NotNull T[] a) {
-        return null;
-    }
-
     @Override
     public void forEach(Consumer<? super CronquistRank> action) {
         classificationCronquist.forEach(action);
@@ -243,6 +201,17 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
 
     @Override
     public boolean remove(Object o) {
+        CronquistRank thisCorrespondingRank;
+        if (o instanceof CronquistRank) {
+            CronquistRank cr = (CronquistRank) o;
+            thisCorrespondingRank = this.getRang(cr.getRank());
+        } else if (o instanceof CronquistTaxonomicRank) {
+            CronquistTaxonomicRank ctr = (CronquistTaxonomicRank) o;
+            thisCorrespondingRank = this.getRang(ctr);
+        } else {
+            throw new RuntimeException("Trying to clear a rank with an unhandled parameter type");
+        }
+        thisCorrespondingRank.setNom(null);
         return classificationCronquist.remove(o);
     }
 
@@ -272,22 +241,17 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     }
 
     @Override
-    public <T> T[] toArray(IntFunction<T[]> generator) {
-        return super.toArray(generator);
-    }
-
-    @Override
     public boolean removeIf(Predicate<? super CronquistRank> filter) {
-        return super.removeIf(filter);
+        return classificationCronquist.removeIf(filter);
     }
 
     @Override
     public Stream<CronquistRank> stream() {
-        return super.stream();
+        return classificationCronquist.stream();
     }
 
     @Override
     public Stream<CronquistRank> parallelStream() {
-        return super.parallelStream();
+        return classificationCronquist.parallelStream();
     }
 }

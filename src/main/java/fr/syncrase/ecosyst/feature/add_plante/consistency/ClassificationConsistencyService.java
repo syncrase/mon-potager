@@ -60,7 +60,13 @@ public class ClassificationConsistencyService {
     @Contract(pure = true)
     public ClassificationConflict getSynchronizedClassificationAndConflicts(CronquistClassificationBranch toSaveCronquistClassification) throws ClassificationReconstructionException, MoreThanOneResultException {
         ClassificationConflict synchronizationResult = new ClassificationConflict();
-        CronquistClassificationBranch scrapedClassification = new CronquistClassificationBranch(toSaveCronquistClassification);// TODO clone this
+        CronquistClassificationBranch scrapedClassification = new CronquistClassificationBranch(toSaveCronquistClassification);
+        synchronizationResult.setNewClassification(scrapedClassification);
+        addConflictIfRankExistsAtAnotherLevel(synchronizationResult, scrapedClassification);
+        if (synchronizationResult.getConflictedClassifications().size() != 0) {
+            return synchronizationResult;// The same rank name already exists at another place. The conflict must be resolved before continue the synchronization
+        }
+
         CronquistClassificationBranch existingClassification = cronquistReader.findExistingPartOfThisClassification(scrapedClassification);
         if (existingClassification != null) {
             for (CronquistRank existingRank : existingClassification) {
@@ -69,13 +75,29 @@ public class ClassificationConsistencyService {
                 updateScrapedRankOrAddConflict(synchronizationResult, existingRank, scrapedRank);
             }
         }
-        synchronizationResult.setNewClassification(scrapedClassification);
         return synchronizationResult;
     }
 
     /**
+     * Go through scraped classification and assert that each rank isn't associated with another taxonomic rank
+     *
+     * @param synchronizationResult A conflict is added to this object if the scraped rank already exists for another taxonomic rank
+     * @param scrapedClassification The scraped classification which will be asserted
+     * @throws MoreThanOneResultException if the passed scraped rank doesn't permit to find a unique rank
+     */
+    private void addConflictIfRankExistsAtAnotherLevel(ClassificationConflict synchronizationResult, @NotNull CronquistClassificationBranch scrapedClassification) throws MoreThanOneResultException {
+        for (CronquistRank scrapedRank : scrapedClassification) {
+            CronquistRank existingScrapedRank = cronquistReader.findExistingRank(scrapedRank);
+            if (existingScrapedRank != null && Objects.equals(existingScrapedRank.getNom(), scrapedRank.getNom()) && !existingScrapedRank.getRank().equals(scrapedRank.getRank())) {
+                synchronizationResult.addConflict(scrapedRank, existingScrapedRank);
+            }
+        }
+    }
+
+    /**
      * Check if any inconsistency exists<br/>
-     * The more complexe use case is in the case of a significant rank in the classification to be saved already exists in another classification segment, this is a conflict which will require a merge management.
+     * The more complexe use case is in the case of a significant rank in the classification to be saved already exists in another classification segment, this is a conflict which will require a merge management.<br/>
+     * If the scraped rank already exists at another taxonomic rank, declare a conflict.
      * <p>
      * <table border="2">
      *   <thead>
@@ -139,11 +161,11 @@ public class ClassificationConsistencyService {
             log.error("Impossible de vérifier la consistance du rang scrapé : le rang existant reçu est null!");
             return;
         }
-        boolean connectionScrapedRank = CronquistClassificationBranch.isRangDeLiaison(scrapedRank);
+        boolean scrapedRankIsConnection = CronquistClassificationBranch.isRangDeLiaison(scrapedRank);
         boolean existingRankIsSignificant = !CronquistClassificationBranch.isRangDeLiaison(existingRank);
-        boolean bothSignificativeWithTheSameName = existingRankIsSignificant && !connectionScrapedRank && Objects.equals(scrapedRank.getNom(), existingRank.getNom());
+        boolean bothSignificativeWithTheSameName = existingRankIsSignificant && !scrapedRankIsConnection && Objects.equals(scrapedRank.getNom(), existingRank.getNom());
 
-        if (connectionScrapedRank || bothSignificativeWithTheSameName) {
+        if (scrapedRankIsConnection || bothSignificativeWithTheSameName) {
             scrapedRank.setId(existingRank.getId());
             scrapedRank.setNom(existingRank.getNom());
             return;
@@ -168,13 +190,24 @@ public class ClassificationConsistencyService {
 
 
         for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {
-            if (!conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank())) {
-                throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two ranks of the same taxonomic rank");
+            if (
+                !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
+                    Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())
+            ) {
+                // One of the ranks is misplaced, resolve it
+                resolveMisplacedRank(resolvedConflicts, conflictualRank);
+                continue;
+            }
+            if (
+                !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
+                    !Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())
+            ) {
+                throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with : two ranks of the same taxonomic rank OR two ranks with the same name");
             }
             if (Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())) {
                 throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two conflicted ranks, with at least not the same name");
             }
-            //resolvedConflicts.addConflict(manageConflict(conflictualRank));
+
             boolean scrapedRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getScraped());
             boolean isExistingRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting());
 
@@ -190,29 +223,16 @@ public class ClassificationConsistencyService {
                 // L'autre est donc forcément le rang de liaison
                 CronquistRank rankWhichWillBeMergedIntoTheOther = scrapedRank == null ? conflictualRank.getScraped() : conflictualRank.getExisting();
 
-                if (!cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther)) {
-                    //return conflictualRank;
+                CronquistRank mergedRank = cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther);
+                if (mergedRank == null) {
+                    //return conflictualRank; TODO test en échec de cette condition? Dans quel cas garantir que le merge échouera ?
                     resolvedConflicts.addConflict(conflictualRank);
                 }
                 continue;
             }
 
             // Cas A1 & A2. Détermination du bon rang dans tous les cas puis merge dans le cas 2 (les deux rangs sont significatifs et existent déjà)
-            ScrapedPlant plante = getTheRightOne(conflictualRank);// TODO si les deux plantes existent en Cronquist, gros problème. S'ils ne sont pas du même rang ok gros merge sinon c'est la m**** parce qu'un invariant est brisé
-            if (plante != null) {
-                boolean scrapedRankIsTheRightOne = conflictualRank.getScraped().getNom().contentEquals(plante.getCronquistClassificationBranch().getLowestRank().getNom());
-                if (scrapedRankIsTheRightOne) {
-                    // Mettre à jour la base de donnée
-                    cronquistWriter.updateRank(conflictualRank.getExisting(), plante.getCronquistClassificationBranch().getLowestRank());
-                }
-                boolean existingRankIsTheRightOne = conflictualRank.getScraped().getNom().contentEquals(plante.getCronquistClassificationBranch().getLowestRank().getNom());
-                if (existingRankIsTheRightOne) {
-                    // Mettre à jour la classification à enregistrer
-                    resolvedConflicts.getNewClassification().add(conflictualRank.getExisting());
-                }
-            } else {
-                cronquistWriter.removeRank(conflictualRank.getExisting());// TODO cas de test, les rang enregistré se trouve ne pas être du Cronquist
-            }
+            validateEachRankIsCronquistByScrapingAndPersistResult(resolvedConflicts, conflictualRank);
 
             // TODO merge
             CronquistRank validatedRank = null;
@@ -230,29 +250,81 @@ public class ClassificationConsistencyService {
         return resolvedConflicts;
     }
 
-    private @Nullable ScrapedPlant getTheRightOne(@NotNull ConflictualRank conflictualRank) {
-        boolean isScrapedExistsInCronquist, isExistingExistsInCronquist;
+    private void resolveMisplacedRank(ClassificationConflict resolvedConflicts, @NotNull ConflictualRank conflictualRank) {
+        String name = conflictualRank.getScraped().getNom();
+        @Nullable ScrapedPlant freshlyScrapRank = scrapTheRank(name);
+
+        boolean isTheExistingHasTheRightRank;
+        boolean isTheScrapedHasTheRightRank;
+        if (freshlyScrapRank == null) {
+            isTheExistingHasTheRightRank = false;
+            isTheScrapedHasTheRightRank = false;
+        } else {
+            CronquistRank lowestRank = freshlyScrapRank.getCronquistClassificationBranch().getLowestRank();
+            isTheExistingHasTheRightRank = Objects.equals(conflictualRank.getExisting().getRank(), lowestRank.getRank());
+            isTheScrapedHasTheRightRank = Objects.equals(conflictualRank.getScraped().getRank(), lowestRank.getRank());
+
+        }
+        // if it's scraped rank which has the good rank, delete existing (and rename another existing?)
+        if (!isTheExistingHasTheRightRank) {
+            cronquistWriter.removeRank(conflictualRank.getExisting());
+        }
+        // if it's the existing rank which has the good rank, just update the classification to insert
+        if (!isTheScrapedHasTheRightRank) {
+            resolvedConflicts.getNewClassification().remove(conflictualRank.getScraped());
+
+        }
+    }
+
+    /**
+     * Update database if necessary
+     *
+     * @param resolvedConflicts the inner classification is modified if a rank must be deleted or updated
+     * @param conflictualRank   the object which contain the two problematic ranks
+     */
+    private void validateEachRankIsCronquistByScrapingAndPersistResult(ClassificationConflict resolvedConflicts, ConflictualRank conflictualRank) {
+        ConflictualRank freshlyScrapRanks = scrapClassificationForEach(conflictualRank);
+        boolean isTheScrapedRankACronquistRank = freshlyScrapRanks.getScraped() != null;
+        boolean isTheExistingRankACronquistRank = freshlyScrapRanks.getExisting() != null;
+        if (isTheScrapedRankACronquistRank && !isTheExistingRankACronquistRank) {
+            // Mettre à jour la base de donnée
+            cronquistWriter.updateRank(conflictualRank.getExisting(), freshlyScrapRanks.getScraped());
+        }
+        if (!isTheScrapedRankACronquistRank && isTheExistingRankACronquistRank) {
+            // Mettre à jour la classification à enregistrer
+            resolvedConflicts.getNewClassification().add(conflictualRank.getExisting());
+        }
+        if (!isTheScrapedRankACronquistRank && !isTheExistingRankACronquistRank) {
+            resolvedConflicts.getNewClassification().remove(conflictualRank.getScraped());
+            cronquistWriter.removeRank(conflictualRank.getExisting());// TODO cas de test, les rang enregistré se trouve ne pas être du Cronquist
+        }
+        //if (isTheScrapedRankACronquistRank && isTheExistingRankACronquistRank) {
+        // TODO si les deux plantes existent en Cronquist, gros problème. S'ils ne sont pas du même rang ok gros merge sinon c'est la m**** parce qu'un invariant est brisé
+        //}
+    }
+
+    /**
+     * Scrap each of conflictual ranks and return the one who is a cronquist classification
+     *
+     * @param conflictualRank Contains the two rank for whose I want to know if it belongs to Cronquist classification
+     * @return The scrapedPlant corresponding to one of the passed rank. null if none of them is a cronquist rank
+     */
+    private @NotNull ConflictualRank scrapClassificationForEach(@NotNull ConflictualRank conflictualRank) {
+        ConflictualRank conflictualRank1 = new ConflictualRank();
+
         String scrapedNom = conflictualRank.getScraped().getNom();
         @Nullable ScrapedPlant scrapedScrapedPlant = scrapTheRank(scrapedNom);
-        isScrapedExistsInCronquist = scrapedScrapedPlant != null;
+        if (scrapedScrapedPlant != null) {
+            conflictualRank1.scrapedRank(scrapedScrapedPlant.getCronquistClassificationBranch().getLowestRank());
+        }
+
         String existingNom = conflictualRank.getExisting().getNom();
         @Nullable ScrapedPlant scrapedExistingPlant = scrapTheRank(existingNom);
-        isExistingExistsInCronquist = scrapedExistingPlant != null;
+        if (scrapedExistingPlant != null) {
+            conflictualRank1.existing(scrapedExistingPlant.getCronquistClassificationBranch().getLowestRank());
+        }
 
-        boolean onlyScrapedInCronquist = isScrapedExistsInCronquist && !isExistingExistsInCronquist;
-        if (onlyScrapedInCronquist) {
-            return scrapedScrapedPlant;
-        }
-        boolean onlyExistingInCronquist = !isScrapedExistsInCronquist && isExistingExistsInCronquist;
-        if (onlyExistingInCronquist) {
-            return scrapedExistingPlant;
-        }
-        boolean noneIsInCronquist = !isScrapedExistsInCronquist;
-        if (noneIsInCronquist) {
-            return null;
-        }
-        log.error("To be implemented : Both ranks exists in Cronquist. {} and {}", scrapedScrapedPlant, scrapedExistingPlant);
-        throw new RuntimeException();
+        return conflictualRank1;
     }
 
     private @Nullable ScrapedPlant scrapTheRank(String nom) {

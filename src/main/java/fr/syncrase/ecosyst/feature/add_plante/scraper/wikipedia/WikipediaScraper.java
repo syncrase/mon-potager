@@ -5,6 +5,7 @@ import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExi
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.UnableToScrapClassification;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -23,18 +24,17 @@ public class WikipediaScraper {
         wikipediaClassificationExtractor = new WikipediaClassificationExtractor();
     }
 
-    public @Nullable CronquistClassificationBranch extractClassificationFromWiki(@NotNull String urlWiki) {
+    public @Nullable CronquistClassificationBranch extractClassificationFromWiki(Document wikiPage) {
         try {
-            log.info("Get classification from : " + urlWiki);
-            Elements encadreTaxonomique = wikipediaClassificationExtractor.extractEncadreDeClassification(urlWiki);
+            Elements encadreTaxonomique = wikipediaClassificationExtractor.extractEncadreDeClassification(wikiPage);
             CronquistClassificationBranch cronquistClassificationBranch = extractPremiereClassification(encadreTaxonomique);
             return cronquistClassificationBranch;
         } catch (SocketTimeoutException e) {
-            log.error("La page Wikipedia ne répond pas {}\n. Vérifier la connexion internet!", urlWiki);
+            log.error("La page Wikipedia ne répond pas {}\n. Vérifier la connexion internet!", wikiPage);
         } catch (IOException e) {
-            log.error("Problème d'accès lors de l'extraction des données de la page Wikipedia {}", urlWiki);
+            log.error("Problème d'accès lors de l'extraction des données de la page Wikipedia {}", wikiPage);
         } catch (NonExistentWikiPageException e) {
-            log.error("La page Wikipedia {} n'existe pas", urlWiki);
+            log.error("La page Wikipedia {} n'existe pas", wikiPage);
         }
         return null;
     }

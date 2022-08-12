@@ -73,7 +73,7 @@ public class CronquistWriter {
      * @throws InconsistencyResolverException when passed ranks cannot be merged because of lack of data
      */
     @Transactional
-    public boolean mergeTheseRanks(CronquistRank rankWhichReceivingChildren, CronquistRank rankWhichWillBeMergedIntoTheOther) throws InconsistencyResolverException, MoreThanOneResultException {
+    public CronquistRank mergeTheseRanks(CronquistRank rankWhichReceivingChildren, CronquistRank rankWhichWillBeMergedIntoTheOther) throws InconsistencyResolverException, MoreThanOneResultException {
         if (rankWhichReceivingChildren == null || rankWhichWillBeMergedIntoTheOther == null) {
             throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with two not null ranks");
         }
@@ -88,7 +88,6 @@ public class CronquistWriter {
             throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with existing ranks");
         }
 
-        int childrenQuantity = rankWhichWillBeMergedIntoTheOther.getChildren().size() + rankWhichReceivingChildren.getChildren().size();
         // Ajout du parent à tous les enfants
         for (CronquistRank child : rankWhichWillBeMergedIntoTheOther.getChildren()) {
             child.setParent(rankWhichReceivingChildren);
@@ -105,8 +104,7 @@ public class CronquistWriter {
             goingToBeDeletedRank = goingToBeDeletedRank.getParent();
         } while (CronquistClassificationBranch.isRangDeLiaison(goingToBeDeletedRank));
 
-        CronquistRank save = cronquistRankRepository.save(rankWhichReceivingChildren);
-        return save.getChildren().size() == childrenQuantity;
+        return cronquistRankRepository.save(rankWhichReceivingChildren);
     }
 
     public void updateRank(@NotNull CronquistRank toBeUpdated, @NotNull CronquistRank updateWith) {

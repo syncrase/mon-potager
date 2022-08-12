@@ -8,6 +8,8 @@ import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.WikipediaResolve
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.WikipediaScraper;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.PlantNotFoundException;
+import org.jetbrains.annotations.Nullable;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.io.IOException;
 @Service
 public class WebScrapingService {
 
+    public static final String WIKI_SEARCH_URL = "https://fr.wikipedia.org/wiki/";
     private final Logger log = LoggerFactory.getLogger(WebScrapingService.class);
 
     public ScrapedPlant scrapPlant(String name) throws IOException, NonExistentWikiPageException, PlantNotFoundException {
@@ -27,18 +30,17 @@ public class WebScrapingService {
         // Find the url describing this plant name
         log.info("Trying to resolve the wikipedia url for {}", name);
         WikipediaResolver wikipediaResolver = new WikipediaResolver();
-        String url = wikipediaResolver.resolveUrlForThisPlant(name);
+
+        log.info("Search for {} on Wikipedia", name);
+        String url = WIKI_SEARCH_URL + name;
+        Document pageContainingClassification = null;
+        if (wikipediaResolver.checkIfPageExists(url)) {
+            pageContainingClassification = wikipediaResolver.getDocumentIfContainingClassification(url);
+        }
 
         // Scrap data from this URL
-        CronquistClassificationBranch cronquistClassificationBranch = null;
-        if (url != null) {
-            log.info("Found url is {}", url);
-            WikipediaScraper wikipediaScraper = new WikipediaScraper();
-            cronquistClassificationBranch = wikipediaScraper.extractClassificationFromWiki(url);
-        } else {
-            log.info("Plante not found");
-            return null;
-        }
+        log.info("Found url is ({}). Trying to extract classification from it", url);
+        CronquistClassificationBranch cronquistClassificationBranch = getClassificationFromDocument(pageContainingClassification);
 
         if (cronquistClassificationBranch == null) {
             log.info("Plante not found");
@@ -49,6 +51,19 @@ public class WebScrapingService {
             .addNomsVernaculaires(new NomVernaculaire().nom(name))
             .cronquistClassificationBranch(cronquistClassificationBranch);
         return plante;
+    }
+
+    @Nullable
+    private CronquistClassificationBranch getClassificationFromDocument(Document pageContainingClassification) {
+        CronquistClassificationBranch cronquistClassificationBranch;
+        if (pageContainingClassification != null) {
+            WikipediaScraper wikipediaScraper = new WikipediaScraper();
+            cronquistClassificationBranch = wikipediaScraper.extractClassificationFromWiki(pageContainingClassification);// TODO prend un document en entrée, j'ai déjà fais l'appel
+        } else {
+            log.info("Wiki page not found");
+            return null;
+        }
+        return cronquistClassificationBranch;
     }
 
 }

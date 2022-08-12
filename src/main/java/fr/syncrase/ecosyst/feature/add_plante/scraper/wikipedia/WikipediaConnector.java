@@ -12,10 +12,13 @@ public abstract class WikipediaConnector {
             return Jsoup.connect(urlWiki)
                 .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
                 .referrer("https://www.google.com")
+                .header("Content-Type", "application/json")
+                .header("Cache-control", "no-cache")
+                .header("Accept-Encoding", "gzip, deflate")
                 .get();
         } catch (IOException e) {
             String message = e.getMessage();
-            if(message.contains("Status=404")) {
+            if (message.contains("Status=404")) {
                 throw new NonExistentWikiPageException(message.split("URL=")[1]);
             }
             throw new RuntimeException(e);
