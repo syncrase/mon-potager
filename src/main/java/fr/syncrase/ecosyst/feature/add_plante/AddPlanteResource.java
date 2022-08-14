@@ -92,7 +92,7 @@ public class AddPlanteResource {
         ClassificationConflict resolvedConflicts = null;
         if (conflicts.getConflictedClassifications().size() == 0) {
             try {
-                resolvedConflicts = classificationConsistencyService.resolveInconsistency(conflicts);
+                resolvedConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(conflicts);
                 resolvedConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
             } catch (InconsistencyResolverException | MoreThanOneResultException e) {
                 log.warn("{}: Unable to construct a classification for {}", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());

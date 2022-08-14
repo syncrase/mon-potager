@@ -3,7 +3,7 @@ package fr.syncrase.ecosyst.feature.add_plante.repository;
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import org.jetbrains.annotations.Nullable;
@@ -38,15 +38,15 @@ class CronquistReaderTest {
 
     @Test
     void findExistingRank_doNotReturnAnInexistantRank() throws MoreThanOneResultException {
-        CronquistClassificationBranch alliumClassification = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch alliumClassification = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
 
-        CronquistRank lowestRank = ClassificationBranchRepository.ALDROVANDA.getClassification().getLowestRank();
+        CronquistRank lowestRank = ClassificationBranchMockRepository.ALDROVANDA.getClassification().getLowestRank();
         @Nullable CronquistRank existingClassification = cronquistReader.findExistingRank(lowestRank);
 
         Assertions.assertNull(existingClassification, lowestRank + " ne doit pas être retourné car n'a pas été enregistré");
 
 
-        existingClassification = cronquistReader.findExistingRank(ClassificationBranchRepository.ALLIUM.getClassification().getLowestRank());
+        existingClassification = cronquistReader.findExistingRank(ClassificationBranchMockRepository.ALLIUM.getClassification().getLowestRank());
         Assertions.assertNotNull(existingClassification, "La classification qui vient juste d'être enregistrée doit être disponible en base");
 
     }

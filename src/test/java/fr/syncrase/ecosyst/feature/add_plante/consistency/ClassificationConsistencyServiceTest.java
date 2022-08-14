@@ -3,7 +3,7 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +20,7 @@ class ClassificationConsistencyServiceTest {
     @Test
     void checkConsistencyWithNoConflictAndAllRanksUnknown() throws ClassificationReconstructionException, MoreThanOneResultException {
 
-        CronquistClassificationBranch classification = ClassificationBranchRepository.ALLIUM.getClassification();
+        CronquistClassificationBranch classification = ClassificationBranchMockRepository.ALLIUM.getClassification();
         ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(classification);
         Assertions.assertNotNull(conflicts, "La classification conflictuel doit exister");
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");

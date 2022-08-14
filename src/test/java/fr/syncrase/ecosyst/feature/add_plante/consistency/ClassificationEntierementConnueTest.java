@@ -4,7 +4,7 @@ import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
@@ -43,12 +43,12 @@ public class ClassificationEntierementConnueTest {
         /*
          * Enregistrement une première fois
          */
-        CronquistClassificationBranch firstCronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch firstCronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
 
         /*
          * Vérification de la consistance pour un autre objet sémantiquement le même
          */
-        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ALLIUM.getClassification());
+        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALLIUM.getClassification());
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
         Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");

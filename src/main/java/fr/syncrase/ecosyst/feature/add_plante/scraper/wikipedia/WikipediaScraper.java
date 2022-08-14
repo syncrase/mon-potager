@@ -24,7 +24,7 @@ public class WikipediaScraper {
         wikipediaClassificationExtractor = new WikipediaClassificationExtractor();
     }
 
-    public @Nullable CronquistClassificationBranch extractClassificationFromWiki(Document wikiPage) {
+    public @Nullable CronquistClassificationBranch extractCronquistClassificationFromWiki(Document wikiPage) {
         try {
             Elements encadreTaxonomique = wikipediaClassificationExtractor.extractEncadreDeClassification(wikiPage);
             CronquistClassificationBranch cronquistClassificationBranch = extractPremiereClassification(encadreTaxonomique);
@@ -44,16 +44,20 @@ public class WikipediaScraper {
         // TODO dans l'état actuel des choses, je ne garde que la PREMIERE section !
 
         switch (wikipediaClassificationExtractor.extractTypeOfMainClassification(encadreTaxonomique)) {
+            // TODO enum avec les types de classification
             case "APG III":
                 log.info("APG III to be implemented");
+                break;
+            case "Tropicos":
+                log.info("Tropicos to be implemented");
                 break;
             case "Cronquist":
                 CronquistClassificationBranch cronquistClassificationBranch = extractionCronquist(encadreTaxonomique);
                 return cronquistClassificationBranch;
-            case "No extractClassification":
+            case "None found classification":
                 log.info("No classification table found in this page");
                 break;
-            case "No Cronquist":
+            case "Not exists in Cronquist":
                 log.info("Taxon inexistant en Cronquist");
                 break;
             default:

@@ -4,7 +4,7 @@ import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class CronquistWriterTest {
      */
     @Test
     void saveClassification() {
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
         Assertions.assertNotNull(cronquistClassificationBranch, "La classification conflictuel doit exister");
         Assertions.assertEquals(27, cronquistClassificationBranch.size(), "La classification à insérer doit posséder 27 éléments");
         Assertions.assertEquals("Allium", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Le genre doit être Allium");
@@ -67,7 +67,7 @@ class CronquistWriterTest {
          */
 
         Exception exception = Assertions.assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
-            cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+            cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
         });
 
         String expectedMessagePart1 = "could not execute statement; SQL [n/a]; constraint [\"PUBLIC.UX_CRONQUIST_RANK__NOM_INDEX_2 ON PUBLIC.CRONQUIST_RANK(NOM) VALUES ";

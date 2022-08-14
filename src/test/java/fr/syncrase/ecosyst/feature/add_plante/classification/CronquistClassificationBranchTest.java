@@ -1,7 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.classification;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ class CronquistClassificationBranchTest {
 
     @Test
     void constructorTrueCopyTest() {
-        CronquistClassificationBranch c1 = ClassificationBranchRepository.ARJONA.getClassification();
+        CronquistClassificationBranch c1 = ClassificationBranchMockRepository.ARJONA.getClassification();
         CronquistClassificationBranch c2 = new CronquistClassificationBranch(c1);
         Assertions.assertEquals(c1.size(), c2.size(), "La copie de la liste doit être de la même taille que le liste initiale");
 

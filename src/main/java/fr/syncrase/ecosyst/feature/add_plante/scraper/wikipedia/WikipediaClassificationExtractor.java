@@ -172,28 +172,31 @@ public class WikipediaClassificationExtractor extends WikipediaConnector {
 
         Elements taxoTitles = encadreTaxonomique.select(MAIN_CLASSIFICATION_SELECTOR);
         if (taxoTitles.size() == 0) {
-            return "No extractClassification";
+            return "None found classification";
         }
         String taxoTitle = taxoTitles.get(0)// peut contenir plusieurs titres s'il y a plusieurs classifications
             .childNode(0)// TextNode
             .toString();
 
         // Récupère le nom de l'encadré : ['Classification', 'Classification APG III (2009)']
+        if (taxoTitle.contains("Tropicos")) {
+            return "Tropicos";
+        }
         if (taxoTitle.contains("APG III")) {
             return "APG III";
         }
-        if (taxoTitle.equals("Classification de Cronquist (1981)")) {// table.taxobox_classification caption a
+        if (taxoTitle.equals("Classification de Cronquist (1981)")) {// table.taxobox_classification caption a // TODO remove this ?
             Elements mainTitle = encadreTaxonomique.select("table.taxobox_classification");
             // Dans le cas Asparagaceae
             if (mainTitle.next().hasClass("floatleft") && mainTitle.next().next().text().contains("Taxon inexistant en Classification de Cronquist (1981)")) {
-                return "No Cronquist";
+                return "Not exists in Cronquist";
             }
             return "Cronquist";
         }
         if (taxoTitle.contains("Cronquist")) {
             Elements small = encadreTaxonomique.select("small");
             if (small.stream().anyMatch(el -> el.toString().contains("Taxon inexistant"))) {
-                return "No Cronquist";
+                return "Not exists in Cronquist";
             }
             return "Cronquist";
         }

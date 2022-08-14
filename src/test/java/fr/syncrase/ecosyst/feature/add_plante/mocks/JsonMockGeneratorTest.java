@@ -39,7 +39,7 @@ public class JsonMockGeneratorTest {
 
     @Test
     void getJsonObject() throws IOException, NonExistentWikiPageException, PlantNotFoundException {
-        @Nullable ScrapedPlant plante = webScrapingService.scrapPlant("Agave_lechuguilla");
+        @Nullable ScrapedPlant plante = webScrapingService.scrapPlant("%C3%89rable_de_Miyabe");
         // TODO extract as json in order to reuse it without send any request
         if (plante != null) {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -56,8 +56,8 @@ public class JsonMockGeneratorTest {
     @Test
     void testMethod() throws ClassificationReconstructionException, MoreThanOneResultException {
 
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
 
-        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ALDROVANDA.getClassification());
+        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALDROVANDA.getClassification());
     }
 }

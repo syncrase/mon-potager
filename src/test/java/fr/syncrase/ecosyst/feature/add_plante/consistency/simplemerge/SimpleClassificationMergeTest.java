@@ -7,7 +7,7 @@ import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassifica
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
-import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchRepository;
+import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
@@ -77,11 +77,11 @@ public class SimpleClassificationMergeTest {
         @NotNull CronquistClassificationBranch atalayaClassification
     )
         throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException {
-        ClassificationConflict cossiniaPinnataConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.COSSINIA_PINNATA.getClassification());
+        ClassificationConflict cossiniaPinnataConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.COSSINIA_PINNATA.getClassification());
         Assertions.assertEquals(1, cossiniaPinnataConflicts.getConflictedClassifications().size(), "Il doit y avoir un conflit");
         Assertions.assertNotNull(cossiniaPinnataConflicts.getNewClassification(), "La classification faisant l'objet des conflits ne doit pas être null");
 
-        ClassificationConflict resolvedCossiniaPinnataConflicts = classificationConsistencyService.resolveInconsistency(cossiniaPinnataConflicts);// La base est mise à jour pour accepter la nouvelle classification
+        ClassificationConflict resolvedCossiniaPinnataConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(cossiniaPinnataConflicts);// La base est mise à jour pour accepter la nouvelle classification
         Assertions.assertEquals(0, resolvedCossiniaPinnataConflicts.getConflictedClassifications().size(), "Il ne doit plus y avoir de conflit");
         Assertions.assertNotNull(resolvedCossiniaPinnataConflicts.getNewClassification(), "La classification faisant l'objet des conflits ne doit pas être null");
 
@@ -102,14 +102,14 @@ public class SimpleClassificationMergeTest {
         Assertions.assertNull(
             resolvedCossiniaPinnataConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSCLASSE).getId(),
             "Rosidae (de la classification en conflit) ne doit pas posséder d'ID");
-        ClassificationConflict resolvedCossiniaPinnataConflictsAfterConsistencyCheck = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.COSSINIA_PINNATA.getClassification());
+        ClassificationConflict resolvedCossiniaPinnataConflictsAfterConsistencyCheck = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.COSSINIA_PINNATA.getClassification());
         Assertions.assertNotNull(
             resolvedCossiniaPinnataConflictsAfterConsistencyCheck.getNewClassification().getRang(CronquistTaxonomicRank.SOUSCLASSE).getId(),
             "Rosidae (de la classification en conflit) doit dorénavant posséder un ID");
     }
 
     private CronquistClassificationBranch synchronisationEtEnregistrementDeLaClassificationAtalaya() throws ClassificationReconstructionException, MoreThanOneResultException {
-        ClassificationConflict atalayaConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchRepository.ATALAYA.getClassification());
+        ClassificationConflict atalayaConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ATALAYA.getClassification());
         Assertions.assertEquals(0, atalayaConflicts.getConflictedClassifications().size(), "Il ne doit pas y avoir de conflit");
         CronquistRank atalayaSousRegne = atalayaConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE);
         Assertions.assertEquals("Tracheobionta", atalayaSousRegne.getNom(), "La classification atalaya doit posséder le sous-règne Tracheobionta mais est égal à " + atalayaSousRegne);
@@ -117,7 +117,7 @@ public class SimpleClassificationMergeTest {
     }
 
     private CronquistClassificationBranch enregistrementDeLaClassificationArjona() {
-        return cronquistWriter.saveClassification(ClassificationBranchRepository.ARJONA.getClassification());
+        return cronquistWriter.saveClassification(ClassificationBranchMockRepository.ARJONA.getClassification());
     }
 
 }

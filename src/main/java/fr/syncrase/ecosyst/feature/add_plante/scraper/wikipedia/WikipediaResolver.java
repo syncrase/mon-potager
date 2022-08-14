@@ -44,7 +44,7 @@ public class WikipediaResolver extends WikipediaConnector {
     public Document getDocumentIfContainingClassification(String url) throws NonExistentWikiPageException {
         Document document = getDocumentOf(url);
         if (!document.childNode(0).toString().equals("<!doctype html>")) {
-            // Parfois jsoup retourne un document vide...
+            // Parfois jsoup retourne un document vide, en exécutant une deuxième fois ça fonctionne...
             document = getDocumentOf(url);
         }
         // If I found a div or table containing a classification

@@ -40,12 +40,7 @@ public class WebScrapingService {
 
         // Scrap data from this URL
         log.info("Found url is ({}). Trying to extract classification from it", url);
-        CronquistClassificationBranch cronquistClassificationBranch = getClassificationFromDocument(pageContainingClassification);
-
-        if (cronquistClassificationBranch == null) {
-            log.info("Plante not found");
-            return null;
-        }
+        CronquistClassificationBranch cronquistClassificationBranch = getCronquistClassificationFromDocument(pageContainingClassification);
 
         ScrapedPlant plante = new ScrapedPlant()
             .addNomsVernaculaires(new NomVernaculaire().nom(name))
@@ -54,11 +49,11 @@ public class WebScrapingService {
     }
 
     @Nullable
-    private CronquistClassificationBranch getClassificationFromDocument(Document pageContainingClassification) {
+    private CronquistClassificationBranch getCronquistClassificationFromDocument(Document pageContainingClassification) {
         CronquistClassificationBranch cronquistClassificationBranch;
         if (pageContainingClassification != null) {
             WikipediaScraper wikipediaScraper = new WikipediaScraper();
-            cronquistClassificationBranch = wikipediaScraper.extractClassificationFromWiki(pageContainingClassification);// TODO prend un document en entrée, j'ai déjà fais l'appel
+            cronquistClassificationBranch = wikipediaScraper.extractCronquistClassificationFromWiki(pageContainingClassification);
         } else {
             log.info("Wiki page not found");
             return null;
