@@ -122,10 +122,6 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
         return Objects.equals(rangCible.getNom(), DEFAULT_NAME_FOR_CONNECTOR_RANK);
     }
 
-    private void removeTaxon(@NotNull CronquistTaxonomicRank nomDuRangEnCours) {
-        classificationCronquist.removeIf(cronquistRank -> cronquistRank.getRank().equals(nomDuRangEnCours));
-    }
-
     public CronquistRank getRang(CronquistTaxonomicRank rang) {
         if (rang != null) {
             CronquistRank ceiling = classificationCronquist.ceiling(new CronquistRank().rank(rang));
@@ -194,7 +190,9 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     public boolean add(@NotNull CronquistRank cronquistRank) {
         CronquistRank thisCorrespondingRank = this.getRang(cronquistRank.getRank());
         boolean isListChanged = !Objects.equals(thisCorrespondingRank.getNom(), cronquistRank.getNom()) || !Objects.equals(thisCorrespondingRank.getId(), cronquistRank.getId());
-        thisCorrespondingRank.setNom(cronquistRank.getNom());
+        if (cronquistRank.getNom() != null) {
+            thisCorrespondingRank.setNom(cronquistRank.getNom().toLowerCase());
+        }
         thisCorrespondingRank.setId(cronquistRank.getId());
         return isListChanged;
     }

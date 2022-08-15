@@ -36,5 +36,26 @@
 
     </form>
 
+    <div *ngIf="planteSuggestions && planteSuggestions.length > 0">
+      <table aria-describedby="page-heading" class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">nom vernaculaire</th>
+          <th scope="col">rang le plus bas connus</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let planteSuggestion of planteSuggestions">
+          <td>{{planteSuggestion.id}}</td>
+          <td>{{planteSuggestion.nomsVernaculaires}}</td>
+          <td>{{planteSuggestion.cronquistClassificationBranch}}</td>
+          <td>Je choisi celle-ci :-) TODO</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>

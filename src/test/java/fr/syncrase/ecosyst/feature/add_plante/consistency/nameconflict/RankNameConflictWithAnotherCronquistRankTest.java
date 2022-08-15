@@ -84,7 +84,7 @@ public class RankNameConflictWithAnotherCronquistRankTest {
     }
 
     private void assertAfterFirstSynchronization(@NotNull ClassificationConflict erableMiyabeConflicts) {
-        Assertions.assertEquals("Rosanae", erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SUPERORDRE).getNom(), "Le super-ordre doit être rajouté lors de la synchronisation avec la base");
+        Assertions.assertEquals("rosanae", erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SUPERORDRE).getNom(), "Le super-ordre doit être rajouté lors de la synchronisation avec la base");
 
         Assertions.assertEquals(2, erableMiyabeConflicts.getConflictedClassifications().size(), "Il doit exister deux conflits");
 
@@ -92,24 +92,24 @@ public class RankNameConflictWithAnotherCronquistRankTest {
             .filter(conflictualRank1 -> conflictualRank1.getExisting().getRank().equals(CronquistTaxonomicRank.SOUSCLASSE))
             .findFirst();
         if (sousClasseConflict.isPresent()) {
-            Assertions.assertEquals("Magnoliidae", sousClasseConflict.get().getExisting().getNom());
-            Assertions.assertEquals("Rosidae", sousClasseConflict.get().getScraped().getNom());
+            Assertions.assertEquals("magnoliidae", sousClasseConflict.get().getExisting().getNom());
+            Assertions.assertEquals("rosidae", sousClasseConflict.get().getScraped().getNom());
         } else {
             fail("Un conflit doit exister au niveau de la sous-classe");
         }
 
         Optional<ConflictualRank> classeConflict = erableMiyabeConflicts.getConflictedClassifications().stream()
-            .filter(conflictualRank1 -> conflictualRank1.getExisting().getRank().equals(CronquistTaxonomicRank.CLASSE))
-            .findFirst();
+                .filter(conflictualRank1 -> conflictualRank1.getExisting().getRank().equals(CronquistTaxonomicRank.CLASSE))
+                .findFirst();
         if (classeConflict.isPresent()) {
-            Assertions.assertEquals("Equisetopsida", classeConflict.get().getExisting().getNom());
-            Assertions.assertEquals("Magnoliopsida", classeConflict.get().getScraped().getNom());
+            Assertions.assertEquals("equisetopsida", classeConflict.get().getExisting().getNom());
+            Assertions.assertEquals("magnoliopsida", classeConflict.get().getScraped().getNom());
         } else {
             fail("Un conflit doit exister au niveau de la classe");
         }
 
-        Assertions.assertEquals("Tracheobionta", erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Le sous-règne doit avoir été ajouté lors de la synchronisation");
-        Assertions.assertEquals("Magnoliophyta", erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit avoir été ajouté lors de la synchronisation");
+        Assertions.assertEquals("tracheobionta", erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Le sous-règne doit avoir été ajouté lors de la synchronisation");
+        Assertions.assertEquals("magnoliophyta", erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit avoir été ajouté lors de la synchronisation");
         Assertions.assertNotNull(erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getId(), "Le sous-règne doit déjà posséder l'identifiant du rang de liaison qu'il va remplacer");
         Assertions.assertNotNull(erableMiyabeConflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getId(), "L'embranchement doit posséder l'identifiant du rang de liaison qu'il va remplace");
     }
@@ -118,15 +118,15 @@ public class RankNameConflictWithAnotherCronquistRankTest {
         Assertions.assertEquals(1, resolvedErableMiyabeConflicts.getConflictedClassifications().size(), "Il doit rester un conflit insoluble");
         Optional<ConflictualRank> remainingClasseConflict = resolvedErableMiyabeConflicts.getConflictedClassifications().stream().findFirst();
         if (remainingClasseConflict.isPresent()) {
-            Assertions.assertEquals("Magnoliidae", remainingClasseConflict.get().getExisting().getNom());
-            Assertions.assertEquals("Rosidae", remainingClasseConflict.get().getScraped().getNom());
+            Assertions.assertEquals("magnoliidae", remainingClasseConflict.get().getExisting().getNom());
+            Assertions.assertEquals("rosidae", remainingClasseConflict.get().getScraped().getNom());
         } else {
             fail("Le conflit sur la sous classe doit toujours exister");
         }
 
         CronquistClassificationBranch erableDeCreteUpdatedClassification = cronquistReader.findExistingClassification(erableDeCreteClassification.getLowestRank());
         Assertions.assertNotNull(erableDeCreteUpdatedClassification, "La classification erable de crete doit exister");
-        Assertions.assertEquals("Magnoliopsida", erableDeCreteUpdatedClassification.getRang(CronquistTaxonomicRank.CLASSE).getNom(), "Equisetopsida doit avoir été remplacée par Magnoliopsida");
+        Assertions.assertEquals("magnoliopsida", erableDeCreteUpdatedClassification.getRang(CronquistTaxonomicRank.CLASSE).getNom(), "Equisetopsida doit avoir été remplacée par Magnoliopsida");
     }
 
 

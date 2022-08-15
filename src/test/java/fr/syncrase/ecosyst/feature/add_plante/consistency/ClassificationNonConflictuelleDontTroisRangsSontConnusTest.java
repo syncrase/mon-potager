@@ -47,13 +47,13 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
 
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");
+        Assertions.assertEquals("plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");
 
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getId(), "Le sous-règne doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Tracheobionta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Le sous-règne doit être Tracheobionta");
+        Assertions.assertEquals("tracheobionta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "Le sous-règne doit être Tracheobionta");
 
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getId(), "L'embranchement doit avoir été récupéré de la base de données");
-        Assertions.assertEquals("Magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
+        Assertions.assertEquals("magnoliophyta", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "L'embranchement doit être Magnoliophyta");
 
     }
 

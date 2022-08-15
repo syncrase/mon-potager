@@ -14,8 +14,8 @@ export class AddPlanteService {
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {
   }
 
-  search(plante: string): Observable<EntityResponseType> {
-    return this.http.get<IScrapedPlante>(`${this.resourceUrl}/scrap`, {observe: 'response', params: {name: plante}});
+  search(plante: string): Observable<EntityArrayResponseType> {
+    return this.http.get<IScrapedPlante[]>(`${this.resourceUrl}/search`, {observe: 'response', params: {name: plante}});
   }
 
 

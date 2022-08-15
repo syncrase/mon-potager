@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -192,7 +191,7 @@ public class ClassificationConsistencyService {
         for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {
 
             boolean sameNameForDistinctsTaxonomicRanks = !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
-                Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom());
+                    Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom());
             if (sameNameForDistinctsTaxonomicRanks) {
                 // One of the ranks is misplaced, resolve it
                 resolveMisplacedRank(resolvedConflicts, conflictualRank);
@@ -200,7 +199,6 @@ public class ClassificationConsistencyService {
             }
             throwIfMalformedParameters(conflictualRank);
 
-            boolean scrapedRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getScraped());
             boolean isExistingRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting());
 
             CronquistRank scrapedRank = cronquistReader.findExistingRank(conflictualRank.getScraped());
@@ -227,10 +225,9 @@ public class ClassificationConsistencyService {
             validateEachRankIsCronquistByScrapingAndPersistResult(resolvedConflicts, conflictualRank);
 
             // TODO merge
-            CronquistRank validatedRank = null;
             if (scrapedRank != null && existingRank != null) {
                 // Détermination de quel rang utiliser pour le merge
-                validatedRank = scrapedRank;// TODO implémenter le scraping pour checker les deux noms. EN ATTENDANT on considère que le scrapedRank porte le bon nom de rang
+                log.error("Portion d'algo non encore implémentée");
             }
             // Résolution des conflits
             // Détermination, merge, etc
@@ -238,14 +235,13 @@ public class ClassificationConsistencyService {
 
         }
 
-
         return resolvedConflicts;
     }
 
     private void throwIfMalformedParameters(@NotNull ConflictualRank conflictualRank) throws InconsistencyResolverException {
         if (
-            !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
-                !Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())
+                !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
+                        !Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())
         ) {
             throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with : two ranks of the same taxonomic rank OR two ranks with the same name");
         }
@@ -334,7 +330,7 @@ public class ClassificationConsistencyService {
 
         String existingNom = conflictualRank.getExisting().getNom();
         @Nullable ScrapedPlant scrapedExistingPlant = scrapTheRank(existingNom);
-        if (scrapedScrapedPlant != null && scrapedExistingPlant.getCronquistClassificationBranch() != null) {
+        if (scrapedExistingPlant != null && scrapedExistingPlant.getCronquistClassificationBranch() != null) {
             conflictualRank1.existing(scrapedExistingPlant.getCronquistClassificationBranch().getLowestRank());
         }
 
@@ -344,8 +340,6 @@ public class ClassificationConsistencyService {
     private @Nullable ScrapedPlant scrapTheRank(String nom) {
         try {
             return webScrapingService.scrapPlant(nom);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (NonExistentWikiPageException | PlantNotFoundException e) {
             log.warn("{}: Unable to find a wiki page for {}", e.getClass(), nom);
             return null;

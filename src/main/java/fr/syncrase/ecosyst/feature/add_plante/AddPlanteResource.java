@@ -1,14 +1,12 @@
 package fr.syncrase.ecosyst.feature.add_plante;
 
 import fr.syncrase.ecosyst.domain.NomVernaculaire;
+import fr.syncrase.ecosyst.domain.Plante;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
-import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
-import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
-import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
+import fr.syncrase.ecosyst.feature.add_plante.repository.PlanteReader;
+import fr.syncrase.ecosyst.feature.add_plante.repository.PlanteWriter;
+import fr.syncrase.ecosyst.feature.add_plante.repository.exception.UnableToSaveClassificationException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.WebScrapingService;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.PlantNotFoundException;
@@ -18,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -31,34 +29,65 @@ public class AddPlanteResource {
     private final Logger log = LoggerFactory.getLogger(AddPlanteResource.class);
 
     private final WebScrapingService webScrapingService;
-    private final ClassificationConsistencyService classificationConsistencyService;
 
-    private final CronquistWriter cronquistWriter;
+    private final PlanteReader planteReader;
 
-    public AddPlanteResource(WebScrapingService webScrapingService, ClassificationConsistencyService classificationConsistencyService, CronquistWriter cronquistWriter) {
+    private final PlanteWriter planteWriter;
+
+    public AddPlanteResource(
+            WebScrapingService webScrapingService,
+            PlanteReader planteReader,
+            PlanteWriter planteWriter) {
         this.webScrapingService = webScrapingService;
-        this.classificationConsistencyService = classificationConsistencyService;
-        this.cronquistWriter = cronquistWriter;
+        this.planteReader = planteReader;
+        this.planteWriter = planteWriter;
     }
 
     /**
-     * {@code GET  /plantes/search} : Scrap information on the internet (Wikipédia) about the plante and send back the resulting plant
+     * {@code GET  /plantes/search} : First search the provided name in the nom vernaculaire table :
+     * <ul>
+     *     <li><b>if exists</b> : Search associated plants and return List\<ScrapedPlant\></li>
+     *     <li><b>if not exists</b> : Trying to scrap wikipedia
+     *     <ul>
+     *         <li><b>if scrap succeed</b> : Send back ScrapedPlant</li>
+     *         <li><b>if scrap fail</b> : not found status</li>
+     *     </ul>
+     *     </li>
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} resulting plante.
      */
-    @GetMapping("/plantes/scrap")
-    public ResponseEntity<ScrapedPlant> scrapPlant(@RequestParam String name) {
+    @GetMapping("/plantes/search")
+    public ResponseEntity<List<ScrapedPlant>> scrapPlant(@RequestParam String name) {
         log.debug("REST request to look for {} on the internet", name);
-        ScrapedPlant plante = null;
+        List<Plante> plantesByCriteria = planteReader.findPlantes(name);
+        if (plantesByCriteria.size() == 1) {
+            // Eagerly Load plante
+            return ResponseEntity.ok().body(
+                    plantesByCriteria.stream().map(plante1 -> new ScrapedPlant()
+                            .cronquistClassificationBranch(new CronquistClassificationBranch(plante1.getCronquistRank()))// Premature optimization ?
+                            .nomsVernaculaires(plante1.getNomsVernaculaires())
+                            .id(plante1.getId())).collect(Collectors.toList())
+            );
+        }
+        if (plantesByCriteria.size() > 1) {
+            // Map plante to ScrapedPlante
+            return ResponseEntity.ok().body(
+                    plantesByCriteria.stream().map(plante1 -> new ScrapedPlant()
+                            .nomsVernaculaires(plante1.getNomsVernaculaires())
+                            .id(plante1.getId())).collect(Collectors.toList())
+            );
+        }
+
+        // plantesByCriteria.size() == 1 : true
+        ScrapedPlant plante;
         try {
             plante = webScrapingService.scrapPlant(name);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (NonExistentWikiPageException | PlantNotFoundException e) {
-            log.warn("{}: Unable to find a wiki page for {}", e.getClass(), name);
+            log.error("Impossible de scraper la plante {}", name);
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok().body(plante);
+
+        return ResponseEntity.ok().body(List.of(plante));
     }
 
     /**
@@ -67,57 +96,19 @@ public class AddPlanteResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} resulting plante.
      */
     @PostMapping("/plantes/save")
-    public ResponseEntity<ScrapedPlant> savePlant(@RequestBody @NotNull ScrapedPlant plante) {
-        log.debug("REST request to save Plante : {}", plante.getNomsVernaculaires().stream().map(NomVernaculaire::getNom).collect(Collectors.joining(", ")));
+    public ResponseEntity<Plante> savePlant(@RequestBody @NotNull ScrapedPlant plante) {
+        log.debug("REST request to save Plante : {}", plante.getNomsVernaculaires() != null ? plante.getNomsVernaculaires().stream().map(NomVernaculaire::getNom).collect(Collectors.joining(", ")) : "no name");
 
-
-        /*
-         * Accès en read only
-         */
-        CronquistClassificationBranch toSaveCronquistClassification = new CronquistClassificationBranch(plante.getCronquistClassificationBranch());
-        ClassificationConflict conflicts;
+        Plante savedPlante;
         try {
-            conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(toSaveCronquistClassification);
-        } catch (ClassificationReconstructionException e) {
-            log.warn("{}: Unable to construct a classification for {}", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());
-            return ResponseEntity.internalServerError().build();
-        } catch (MoreThanOneResultException e) {
-            log.warn("{}: the rank name {} seems to be in an inconsistent state in the database. More than one was found.", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());
-            return ResponseEntity.internalServerError().build();
+            savedPlante = planteWriter.saveScrapedPlante(plante);
+        } catch (UnableToSaveClassificationException e) {
+            log.warn("Impossible de sauvegarder la classification");
+            return ResponseEntity.noContent().build();
         }
-
-        /*
-         * Modification de la base pour qu'il n'y ait plus de conflit possible
-         */
-        ClassificationConflict resolvedConflicts = null;
-        if (conflicts.getConflictedClassifications().size() == 0) {
-            try {
-                resolvedConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(conflicts);
-                resolvedConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
-            } catch (InconsistencyResolverException | MoreThanOneResultException e) {
-                log.warn("{}: Unable to construct a classification for {}", e.getClass(), plante.getCronquistClassificationBranch().last().getNom());
-                return ResponseEntity.internalServerError().build();
-            } catch (ClassificationReconstructionException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            resolvedConflicts = conflicts;
-        }
-
-
-
-        /*
-         * Enregistrement de la nouvelle classification
-         */
-        if (resolvedConflicts.getConflictedClassifications().size() == 0) {
-            CronquistClassificationBranch savedClassification = cronquistWriter.saveClassification(conflicts.getNewClassification());
-            plante.setCronquistClassificationBranch(savedClassification);
-        }
-        //else {
-        //    // Il y a encore un conflit qui n'a pas été résolu. Je le renvoie à l'utilisateur
-        //}
-        return ResponseEntity.ok().body(plante);
+        return ResponseEntity.ok().body(savedPlante);
 
     }
+
 
 }

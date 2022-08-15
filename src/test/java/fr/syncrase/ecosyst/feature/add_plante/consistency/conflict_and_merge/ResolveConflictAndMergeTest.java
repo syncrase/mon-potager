@@ -45,24 +45,22 @@ public class ResolveConflictAndMergeTest {
 
         // Règne 	Plantae
         //Division 	Angiospermae
-        //Classe 	Lilianae        ←- Lilianae est un superordre
+        //Classe 	Lilianae        ← Lilianae est un superordre
         //Ordre 	Alismatales
         //Famille 	Alismataceae
         //Genre 	Helanthium
         //Espèce    Helanthium bolivianum
-        //wiki = "https://fr.wikipedia.org/wiki/Helanthium_bolivianum";
         CronquistClassificationBranch classification = ClassificationBranchMockRepository.HELANTHIUM_BOLIVIANUM.getClassification();
         CronquistClassificationBranch helanthiumBolivianumClassification = cronquistWriter.saveClassification(classification);
 
         // Règne 	    Plantae
-        //Classe 	    Equisetopsida   <- rentre en conflit avec l'autre
+        //Classe 	    Equisetopsida   ← rentre en conflit avec l'autre
         //Sous-classe 	Magnoliidae
         //Super-ordre 	Lilianae
         //Ordre 	    Asparagales
         //Famille 	    Asparagaceae
         //Genre 	    Agave
         //Espèce        Agave lechuguilla
-        //String wiki = "https://fr.wikipedia.org/wiki/Agave_lechuguilla";
         CronquistClassificationBranch agave_lechuguillaClassification = ClassificationBranchMockRepository.AGAVE_LECHUGUILLA.getClassification();
         agave_lechuguillaClassification.clearRank(CronquistTaxonomicRank.CLASSE);
         ClassificationConflict agaveLechuguillaConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(agave_lechuguillaClassification);
@@ -72,10 +70,6 @@ public class ResolveConflictAndMergeTest {
         assertsAfterAgaveResolution(helanthiumBolivianumClassification, resolvedAgaveLechuguillaConflicts);
 
         // Impossible de régler le conflit, car impossible de scraper Lilianae de Wikipédia (Cronquist indisponible)
-    }
-
-    private void assertAfterAgaveSynchronizationAfterResolution(@NotNull ClassificationConflict synchronizedResolvedAgaveLechuguillaConflicts) {
-        Assertions.assertEquals(1, synchronizedResolvedAgaveLechuguillaConflicts.getConflictedClassifications().size(), "Il doit y avoir un conflit");
     }
 
     private void assertsAfterAgaveResolution(@NotNull CronquistClassificationBranch helanthiumBolivianumClassification, @NotNull ClassificationConflict resolvedAgaveLechuguillaConflicts) throws MoreThanOneResultException {
@@ -91,8 +85,8 @@ public class ResolveConflictAndMergeTest {
         if (first.isPresent()) {
             Assertions.assertEquals(CronquistTaxonomicRank.SUPERORDRE, first.get().getScraped().getRank(), "Le superordre de la nouvelle classification doit être en conflit");
             Assertions.assertEquals(CronquistTaxonomicRank.CLASSE, first.get().getExisting().getRank(), "La classe de la classification existante doit être en conflit");
-            Assertions.assertEquals("Lilianae", first.get().getScraped().getNom(), "Le nom de la nouvelle classification doit être Lilianae");
-            Assertions.assertEquals("Lilianae", first.get().getExisting().getNom(), "La nom de la classification existante doit être Lilianae");
+            Assertions.assertEquals("lilianae", first.get().getScraped().getNom(), "Le nom de la nouvelle classification doit être Lilianae");
+            Assertions.assertEquals("lilianae", first.get().getExisting().getNom(), "La nom de la classification existante doit être Lilianae");
         } else {
             fail();
         }

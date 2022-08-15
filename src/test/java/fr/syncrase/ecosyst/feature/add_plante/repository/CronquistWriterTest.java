@@ -41,16 +41,16 @@ class CronquistWriterTest {
         CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
         Assertions.assertNotNull(cronquistClassificationBranch, "La classification conflictuel doit exister");
         Assertions.assertEquals(27, cronquistClassificationBranch.size(), "La classification à insérer doit posséder 27 éléments");
-        Assertions.assertEquals("Allium", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Le genre doit être Allium");
+        Assertions.assertEquals("allium", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Le genre doit être Allium");
         // setConsistantParenthood
         Assertions.assertNotNull(cronquistClassificationBranch.getRang(CronquistTaxonomicRank.GENRE).getParent(), "Le genre Allium doit posséder un parent");
-        Assertions.assertEquals("Liliaceae", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.FAMILLE).getNom(), "La famille doit être Liliaceae");
-        Assertions.assertEquals("Liliales", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.ORDRE).getNom(), "La famille doit être Liliales");
-        Assertions.assertEquals("Liliidae", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.SOUSCLASSE).getNom(), "La famille doit être Liliidae");
-        Assertions.assertEquals("Liliopsida", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.CLASSE).getNom(), "La famille doit être Liliopsida");
-        Assertions.assertEquals("Magnoliophyta", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "La famille doit être Magnoliophyta");
-        Assertions.assertEquals("Tracheobionta", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "La famille doit être Tracheobionta");
-        Assertions.assertEquals("Plantae", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.REGNE).getNom(), "La famille doit être Plantae");
+        Assertions.assertEquals("liliaceae", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.FAMILLE).getNom(), "La famille doit être Liliaceae");
+        Assertions.assertEquals("liliales", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.ORDRE).getNom(), "La famille doit être Liliales");
+        Assertions.assertEquals("liliidae", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.SOUSCLASSE).getNom(), "La famille doit être Liliidae");
+        Assertions.assertEquals("liliopsida", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.CLASSE).getNom(), "La famille doit être Liliopsida");
+        Assertions.assertEquals("magnoliophyta", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.EMBRANCHEMENT).getNom(), "La famille doit être Magnoliophyta");
+        Assertions.assertEquals("tracheobionta", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.SOUSREGNE).getNom(), "La famille doit être Tracheobionta");
+        Assertions.assertEquals("plantae", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.REGNE).getNom(), "La famille doit être Plantae");
 
         Iterator<CronquistRank> iterator = cronquistClassificationBranch.iterator();
         CronquistRank previousRank = iterator.next();
@@ -66,9 +66,7 @@ class CronquistWriterTest {
          * Vérifie que l'enregistrement d'une autre classification sémantiquement identique est impossible
          */
 
-        Exception exception = Assertions.assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
-            cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
-        });
+        Exception exception = Assertions.assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification()));
 
         String expectedMessagePart1 = "could not execute statement; SQL [n/a]; constraint [\"PUBLIC.UX_CRONQUIST_RANK__NOM_INDEX_2 ON PUBLIC.CRONQUIST_RANK(NOM) VALUES ";
         String expectedMessagePart2 = "SQL statement:\ninsert into cronquist_rank (nom, parent_id, rank, id) values (?, ?, ?, ?) [23505-200]]; " +

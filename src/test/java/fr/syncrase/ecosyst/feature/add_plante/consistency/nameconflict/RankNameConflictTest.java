@@ -72,7 +72,7 @@ public class RankNameConflictTest {
         // Resynchronisation avec la base
         ClassificationConflict synchronizedResolvedDistyliumConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedDistyliumConflicts.getNewClassification());
         Assertions.assertEquals(0, synchronizedResolvedDistyliumConflicts.getConflictedClassifications().size(), "Le conflit doit avoir été résolu");
-        Assertions.assertEquals("Hamamelidales", synchronizedResolvedDistyliumConflicts.getNewClassification().getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
+        Assertions.assertEquals("hamamelidales", synchronizedResolvedDistyliumConflicts.getNewClassification().getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
         Assertions.assertNotNull(synchronizedResolvedDistyliumConflicts.getNewClassification().getRang(CronquistTaxonomicRank.ORDRE).getId(), "L'id de Saxifragales doit se retrouver dans Hamamelidales pour que le mise à jour du nom soit faite");
 
 
@@ -95,6 +95,6 @@ public class RankNameConflictTest {
         // Vérification que corylopsisClassification a changé après la résolution du conflit
         CronquistClassificationBranch corylopsisClassificationAfterResolvingNameConflict = cronquistReader.findExistingClassification(corylopsisClassification.getLowestRank());
         Assertions.assertNotNull(corylopsisClassificationAfterResolvingNameConflict, "La classification doit exister");
-        Assertions.assertEquals("Hamamelidales", corylopsisClassificationAfterResolvingNameConflict.getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
+        Assertions.assertEquals("hamamelidales", corylopsisClassificationAfterResolvingNameConflict.getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
     }
 }
