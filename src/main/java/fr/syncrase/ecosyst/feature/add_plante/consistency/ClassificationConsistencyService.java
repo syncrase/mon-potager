@@ -187,9 +187,7 @@ public class ClassificationConsistencyService {
         ClassificationConflict resolvedConflicts = new ClassificationConflict();
         resolvedConflicts.setNewClassification(conflicts.getNewClassification());
 
-
         for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {
-
             boolean sameNameForDistinctsTaxonomicRanks = !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
                     Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom());
             if (sameNameForDistinctsTaxonomicRanks) {
@@ -207,15 +205,15 @@ public class ClassificationConsistencyService {
             existingRank = getNullIfConnectionRank(existingRank);
 
             // Si l'un des deux est un rang de liaison (OU EXCLUSIF), les deux rangs doivent être fusionnés. Cas B
-            if (!isExistingRankSignificant) {
-                // Le rang non null est forcément celui qui possède un nom // TODO extract this for more readability
+            if (!isExistingRankSignificant) {// TODO existingRank == null
+                // Le rang non null est forcément celui qui possède un nom
                 CronquistRank rankWhichReceivingChildren = scrapedRank != null ? scrapedRank : existingRank;
                 // L'autre est donc forcément le rang de liaison
                 CronquistRank rankWhichWillBeMergedIntoTheOther = scrapedRank == null ? conflictualRank.getScraped() : conflictualRank.getExisting();
 
                 CronquistRank mergedRank = cronquistWriter.mergeTheseRanks(rankWhichReceivingChildren, rankWhichWillBeMergedIntoTheOther);
                 if (mergedRank == null) {
-                    //return conflictualRank; TODO test en échec de cette condition? Dans quel cas garantir que le merge échouera ?
+                    // TODO test en échec de cette condition? Dans quel cas garantir que le merge échouera ?
                     resolvedConflicts.addConflict(conflictualRank);
                 }
                 continue;

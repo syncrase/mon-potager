@@ -252,4 +252,9 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     public Stream<CronquistRank> parallelStream() {
         return classificationCronquist.parallelStream();
     }
+
+    @Override
+    public SortedSet<CronquistRank> subSet(CronquistRank fromElement, CronquistRank toElement) {
+        return classificationCronquist.subSet(fromElement, toElement);
+    }
 }

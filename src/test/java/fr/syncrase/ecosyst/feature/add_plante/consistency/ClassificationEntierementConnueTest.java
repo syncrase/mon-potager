@@ -32,14 +32,17 @@ public class ClassificationEntierementConnueTest {
 
     @Test
     public void checkConsistencyDUneClassificationEnregistreeDeuxFois() throws ClassificationReconstructionException, MoreThanOneResultException {
-        // Règne 	Plantae
-        //Sous-règne 	Tracheobionta
-        //Division 	Magnoliophyta
-        //Classe 	Liliopsida
-        //Sous-classe 	Liliidae
-        //Ordre 	Liliales
-        //Famille 	Liliaceae
-        //Genre Allium
+
+        /*
+         * Règne 	    Plantae
+         * Sous-règne 	Tracheobionta
+         * Division 	Magnoliophyta
+         * Classe 	    Liliopsida
+         * Sous-classe 	Liliidae
+         * Ordre 	    Liliales
+         * Famille 	    Liliaceae
+         * Genre        Allium
+         */
         /*
          * Enregistrement une première fois
          */
