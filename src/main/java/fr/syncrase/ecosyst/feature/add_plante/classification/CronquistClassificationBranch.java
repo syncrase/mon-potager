@@ -257,4 +257,9 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     public SortedSet<CronquistRank> subSet(CronquistRank fromElement, CronquistRank toElement) {
         return classificationCronquist.subSet(fromElement, toElement);
     }
+
+    @Override
+    public NavigableSet<CronquistRank> subSet(CronquistRank fromElement, boolean fromInclusive, CronquistRank toElement, boolean toInclusive) {
+        return classificationCronquist.subSet(fromElement, fromInclusive, toElement, toInclusive);
+    }
 }

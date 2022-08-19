@@ -1,5 +1,6 @@
 package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
+import com.sun.xml.bind.v2.TODO;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
@@ -28,7 +29,9 @@ public class ClassificationConsistencyService {
     private final Logger log = LoggerFactory.getLogger(ClassificationConsistencyService.class);
 
     private final CronquistReader cronquistReader;
+
     private final CronquistWriter cronquistWriter;
+
     private final WebScrapingService webScrapingService;
 
     private CronquistRankRepository cronquistRankRepository;
@@ -189,7 +192,7 @@ public class ClassificationConsistencyService {
 
         for (ConflictualRank conflictualRank : conflicts.getConflictedClassifications()) {
             boolean sameNameForDistinctsTaxonomicRanks = !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
-                    Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom());
+                Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom());
             if (sameNameForDistinctsTaxonomicRanks) {
                 // One of the ranks is misplaced, resolve it
                 resolveMisplacedRank(resolvedConflicts, conflictualRank);
@@ -197,15 +200,12 @@ public class ClassificationConsistencyService {
             }
             throwIfMalformedParameters(conflictualRank);
 
-            boolean isExistingRankSignificant = !CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting());
-
             CronquistRank scrapedRank = cronquistReader.findExistingRank(conflictualRank.getScraped());
             CronquistRank existingRank = cronquistReader.findExistingRank(conflictualRank.getExisting());
             scrapedRank = getNullIfConnectionRank(scrapedRank);
             existingRank = getNullIfConnectionRank(existingRank);
 
-            // Si l'un des deux est un rang de liaison (OU EXCLUSIF), les deux rangs doivent être fusionnés. Cas B
-            if (!isExistingRankSignificant) {// TODO existingRank == null
+            if (CronquistClassificationBranch.isRangDeLiaison(conflictualRank.getExisting())) {
                 // Le rang non null est forcément celui qui possède un nom
                 CronquistRank rankWhichReceivingChildren = scrapedRank != null ? scrapedRank : existingRank;
                 // L'autre est donc forcément le rang de liaison
@@ -238,8 +238,8 @@ public class ClassificationConsistencyService {
 
     private void throwIfMalformedParameters(@NotNull ConflictualRank conflictualRank) throws InconsistencyResolverException {
         if (
-                !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
-                        !Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())
+            !conflictualRank.getScraped().getRank().equals(conflictualRank.getExisting().getRank()) &&
+                !Objects.equals(conflictualRank.getScraped().getNom(), conflictualRank.getExisting().getNom())
         ) {
             throw new InconsistencyResolverException("Resolve rank inconsistency imply to treat with : two ranks of the same taxonomic rank OR two ranks with the same name");
         }
