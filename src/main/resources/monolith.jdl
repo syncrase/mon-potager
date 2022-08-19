@@ -4,7 +4,7 @@ entity Plante {
 }
 
 entity NomVernaculaire {
-    nom String required,
+    nom String unique required,
     description String
 }
 
