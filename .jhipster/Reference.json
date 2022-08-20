@@ -1,0 +1,40 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111338",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "reference",
+  "fields": [
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "ReferenceType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "IMAGE,SOURCE"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Reference",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "url",
+      "otherEntityRelationshipName": "references",
+      "relationshipName": "url",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "plante",
+      "otherEntityRelationshipName": "references",
+      "ownerSide": false,
+      "relationshipName": "plantes",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

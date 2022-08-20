@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "candolle": {
+      "home": {
+        "title": "Candolles",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Candolle",
+        "createOrEditLabel": "Créer ou éditer un Candolle",
+        "notFound": "Aucun Candolle trouvé"
+      },
+      "created": "Un nouveau Candolle a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Candolle avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Candolle avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Candolle {{ id }} ?"
+      },
+      "detail": {
+        "title": "Candolle"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

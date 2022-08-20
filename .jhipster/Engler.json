@@ -1,0 +1,23 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111347",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "engler",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Engler",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "classification",
+      "otherEntityRelationshipName": "engler",
+      "ownerSide": true,
+      "relationshipName": "classification",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

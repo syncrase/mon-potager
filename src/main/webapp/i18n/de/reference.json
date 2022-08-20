@@ -1,0 +1,27 @@
+{
+  "monolithApp": {
+    "reference": {
+      "home": {
+        "title": "References",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Reference erstellen",
+        "createOrEditLabel": "Reference erstellen oder bearbeiten",
+        "notFound": "Keine References gefunden"
+      },
+      "created": "Reference erstellt mit ID {{ param }}",
+      "updated": "Reference aktualisiert mit ID {{ param }}",
+      "deleted": "Reference gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Reference {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Reference"
+      },
+      "id": "ID",
+      "description": "Description",
+      "type": "Type",
+      "url": "Url",
+      "plantes": "Plantes"
+    }
+  }
+}

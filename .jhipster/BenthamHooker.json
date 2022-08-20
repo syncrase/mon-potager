@@ -1,0 +1,23 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111343",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "bentham_hooker",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "BenthamHooker",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "classification",
+      "otherEntityRelationshipName": "benthamHooker",
+      "ownerSide": true,
+      "relationshipName": "classification",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

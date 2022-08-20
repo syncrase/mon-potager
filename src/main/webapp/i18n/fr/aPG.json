@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "aPG": {
+      "home": {
+        "title": "APGS",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau APG",
+        "createOrEditLabel": "Créer ou éditer un APG",
+        "notFound": "Aucun APG trouvé"
+      },
+      "created": "Un nouveau APG a été créé avec l'identifiant {{ param }}",
+      "updated": "Le APG avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le APG avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le APG {{ id }} ?"
+      },
+      "detail": {
+        "title": "APG"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

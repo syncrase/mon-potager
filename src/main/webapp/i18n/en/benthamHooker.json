@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "benthamHooker": {
+      "home": {
+        "title": "Bentham Hookers",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Bentham Hooker",
+        "createOrEditLabel": "Create or edit a Bentham Hooker",
+        "notFound": "No Bentham Hookers found"
+      },
+      "created": "A new Bentham Hooker is created with identifier {{ param }}",
+      "updated": "A Bentham Hooker is updated with identifier {{ param }}",
+      "deleted": "A Bentham Hooker is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Bentham Hooker {{ id }}?"
+      },
+      "detail": {
+        "title": "Bentham Hooker"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

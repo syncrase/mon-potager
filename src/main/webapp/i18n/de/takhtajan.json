@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "takhtajan": {
+      "home": {
+        "title": "Takhtajans",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Takhtajan erstellen",
+        "createOrEditLabel": "Takhtajan erstellen oder bearbeiten",
+        "notFound": "Keine Takhtajans gefunden"
+      },
+      "created": "Takhtajan erstellt mit ID {{ param }}",
+      "updated": "Takhtajan aktualisiert mit ID {{ param }}",
+      "deleted": "Takhtajan gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Takhtajan {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Takhtajan"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

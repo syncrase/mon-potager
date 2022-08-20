@@ -1,0 +1,28 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111339",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "url",
+  "fields": [
+    {
+      "fieldName": "url",
+      "fieldType": "String",
+      "fieldValidateRules": ["unique"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Url",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "reference",
+      "otherEntityRelationshipName": "url",
+      "relationshipName": "references",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

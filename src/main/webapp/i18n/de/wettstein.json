@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "wettstein": {
+      "home": {
+        "title": "Wettsteins",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Wettstein erstellen",
+        "createOrEditLabel": "Wettstein erstellen oder bearbeiten",
+        "notFound": "Keine Wettsteins gefunden"
+      },
+      "created": "Wettstein erstellt mit ID {{ param }}",
+      "updated": "Wettstein aktualisiert mit ID {{ param }}",
+      "deleted": "Wettstein gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Wettstein {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Wettstein"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

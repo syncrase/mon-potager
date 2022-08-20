@@ -1,0 +1,9 @@
+{
+  "monolithApp": {
+    "ReferenceType": {
+      "null": "",
+      "IMAGE": "IMAGE",
+      "SOURCE": "SOURCE"
+    }
+  }
+}

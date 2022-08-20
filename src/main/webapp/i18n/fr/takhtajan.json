@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "takhtajan": {
+      "home": {
+        "title": "Takhtajans",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Takhtajan",
+        "createOrEditLabel": "Créer ou éditer un Takhtajan",
+        "notFound": "Aucun Takhtajan trouvé"
+      },
+      "created": "Un nouveau Takhtajan a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Takhtajan avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Takhtajan avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Takhtajan {{ id }} ?"
+      },
+      "detail": {
+        "title": "Takhtajan"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

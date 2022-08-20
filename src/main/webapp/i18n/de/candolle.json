@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "candolle": {
+      "home": {
+        "title": "Candolles",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Candolle erstellen",
+        "createOrEditLabel": "Candolle erstellen oder bearbeiten",
+        "notFound": "Keine Candolles gefunden"
+      },
+      "created": "Candolle erstellt mit ID {{ param }}",
+      "updated": "Candolle aktualisiert mit ID {{ param }}",
+      "deleted": "Candolle gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Candolle {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Candolle"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "engler": {
+      "home": {
+        "title": "Englers",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Engler",
+        "createOrEditLabel": "Create or edit a Engler",
+        "notFound": "No Englers found"
+      },
+      "created": "A new Engler is created with identifier {{ param }}",
+      "updated": "A Engler is updated with identifier {{ param }}",
+      "deleted": "A Engler is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Engler {{ id }}?"
+      },
+      "detail": {
+        "title": "Engler"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

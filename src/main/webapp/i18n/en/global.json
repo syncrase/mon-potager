@@ -7,6 +7,20 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entities",
+        "plante": "Plante",
+        "nomVernaculaire": "Nom Vernaculaire",
+        "reference": "Reference",
+        "url": "Url",
+        "classification": "Classification",
+        "cronquistRank": "Cronquist Rank",
+        "apg": "APG",
+        "benthamHooker": "Bentham Hooker",
+        "wettstein": "Wettstein",
+        "thorne": "Thorne",
+        "takhtajan": "Takhtajan",
+        "engler": "Engler",
+        "candolle": "Candolle",
+        "dahlgren": "Dahlgren",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

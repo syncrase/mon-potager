@@ -1,0 +1,33 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111337",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "nom_vernaculaire",
+  "fields": [
+    {
+      "fieldName": "nom",
+      "fieldType": "String",
+      "fieldValidateRules": ["unique", "required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "NomVernaculaire",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "plante",
+      "otherEntityRelationshipName": "nomsVernaculaires",
+      "ownerSide": false,
+      "relationshipName": "plantes",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

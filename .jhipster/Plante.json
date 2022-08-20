@@ -1,0 +1,39 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111336",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "plante",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Plante",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "javadoc": "Le nom latin d'une plante est la composition du genre et de l'espèce. De ce fait une plante est associée au minimum avec une espèce (ou tout autre rang entre l'espèce et le sous-genre).",
+      "otherEntityName": "classification",
+      "otherEntityRelationshipName": "plantes",
+      "relationshipName": "classification",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "javadoc": "Un même nom vernaculaire peut qualifier plusieurs plantes distinctes et très différentes",
+      "otherEntityField": "nom",
+      "otherEntityName": "nomVernaculaire",
+      "otherEntityRelationshipName": "plantes",
+      "ownerSide": true,
+      "relationshipName": "nomsVernaculaires",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "reference",
+      "otherEntityRelationshipName": "plantes",
+      "ownerSide": true,
+      "relationshipName": "references",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}

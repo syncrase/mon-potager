@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "thorne": {
+      "home": {
+        "title": "Thornes",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Thorne",
+        "createOrEditLabel": "Créer ou éditer un Thorne",
+        "notFound": "Aucun Thorne trouvé"
+      },
+      "created": "Un nouveau Thorne a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Thorne avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Thorne avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Thorne {{ id }} ?"
+      },
+      "detail": {
+        "title": "Thorne"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

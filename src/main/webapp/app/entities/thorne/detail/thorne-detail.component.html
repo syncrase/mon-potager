@@ -1,0 +1,34 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="thorne">
+      <h2 data-cy="thorneDetailsHeading"><span jhiTranslate="monolithApp.thorne.detail.title">Thorne</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ thorne.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="monolithApp.thorne.classification">Classification</span></dt>
+        <dd>
+          <div *ngIf="thorne.classification">
+            <a [routerLink]="['/classification', thorne.classification?.id, 'view']">{{ thorne.classification?.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/thorne', thorne.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

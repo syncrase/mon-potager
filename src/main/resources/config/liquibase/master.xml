@@ -15,7 +15,32 @@
     <property name="datetimeType" value="datetime" dbms="oracle, mssql, postgresql, h2"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111336_added_entity_Plante.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111337_added_entity_NomVernaculaire.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111338_added_entity_Reference.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111339_added_entity_Url.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111340_added_entity_Classification.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111341_added_entity_CronquistRank.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111342_added_entity_APG.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111343_added_entity_BenthamHooker.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111344_added_entity_Wettstein.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111345_added_entity_Thorne.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111346_added_entity_Takhtajan.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111347_added_entity_Engler.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111348_added_entity_Candolle.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111349_added_entity_Dahlgren.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <include file="config/liquibase/changelog/20220820111336_added_entity_constraints_Plante.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111338_added_entity_constraints_Reference.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111341_added_entity_constraints_CronquistRank.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111342_added_entity_constraints_APG.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111343_added_entity_constraints_BenthamHooker.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111344_added_entity_constraints_Wettstein.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111345_added_entity_constraints_Thorne.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111346_added_entity_constraints_Takhtajan.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111347_added_entity_constraints_Engler.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111348_added_entity_constraints_Candolle.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220820111349_added_entity_constraints_Dahlgren.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "thorne": {
+      "home": {
+        "title": "Thornes",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Thorne erstellen",
+        "createOrEditLabel": "Thorne erstellen oder bearbeiten",
+        "notFound": "Keine Thornes gefunden"
+      },
+      "created": "Thorne erstellt mit ID {{ param }}",
+      "updated": "Thorne aktualisiert mit ID {{ param }}",
+      "deleted": "Thorne gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Thorne {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Thorne"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

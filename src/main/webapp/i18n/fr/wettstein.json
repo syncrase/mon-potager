@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "wettstein": {
+      "home": {
+        "title": "Wettsteins",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Wettstein",
+        "createOrEditLabel": "Créer ou éditer un Wettstein",
+        "notFound": "Aucun Wettstein trouvé"
+      },
+      "created": "Un nouveau Wettstein a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Wettstein avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Wettstein avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Wettstein {{ id }} ?"
+      },
+      "detail": {
+        "title": "Wettstein"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

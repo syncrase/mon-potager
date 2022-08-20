@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "aPG": {
+      "home": {
+        "title": "APGS",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "APG erstellen",
+        "createOrEditLabel": "APG erstellen oder bearbeiten",
+        "notFound": "Keine APGS gefunden"
+      },
+      "created": "APG erstellt mit ID {{ param }}",
+      "updated": "APG aktualisiert mit ID {{ param }}",
+      "deleted": "APG gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll APG {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "APG"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

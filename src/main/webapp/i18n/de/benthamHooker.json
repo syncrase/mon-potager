@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "benthamHooker": {
+      "home": {
+        "title": "Bentham Hookers",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Bentham Hooker erstellen",
+        "createOrEditLabel": "Bentham Hooker erstellen oder bearbeiten",
+        "notFound": "Keine Bentham Hookers gefunden"
+      },
+      "created": "Bentham Hooker erstellt mit ID {{ param }}",
+      "updated": "Bentham Hooker aktualisiert mit ID {{ param }}",
+      "deleted": "Bentham Hooker gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Bentham Hooker {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Bentham Hooker"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

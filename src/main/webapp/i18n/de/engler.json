@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "engler": {
+      "home": {
+        "title": "Englers",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Engler erstellen",
+        "createOrEditLabel": "Engler erstellen oder bearbeiten",
+        "notFound": "Keine Englers gefunden"
+      },
+      "created": "Engler erstellt mit ID {{ param }}",
+      "updated": "Engler aktualisiert mit ID {{ param }}",
+      "deleted": "Engler gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Engler {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Engler"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

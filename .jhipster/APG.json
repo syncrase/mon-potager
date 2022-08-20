@@ -1,0 +1,23 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111342",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "apg",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "APG",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "classification",
+      "otherEntityRelationshipName": "apg",
+      "ownerSide": true,
+      "relationshipName": "classification",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

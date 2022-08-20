@@ -1,0 +1,23 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111349",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "dahlgren",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Dahlgren",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "classification",
+      "otherEntityRelationshipName": "dahlgren",
+      "ownerSide": true,
+      "relationshipName": "classification",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

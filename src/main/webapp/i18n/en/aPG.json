@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "aPG": {
+      "home": {
+        "title": "APGS",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new APG",
+        "createOrEditLabel": "Create or edit a APG",
+        "notFound": "No APGS found"
+      },
+      "created": "A new APG is created with identifier {{ param }}",
+      "updated": "A APG is updated with identifier {{ param }}",
+      "deleted": "A APG is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete APG {{ id }}?"
+      },
+      "detail": {
+        "title": "APG"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

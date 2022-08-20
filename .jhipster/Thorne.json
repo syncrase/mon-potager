@@ -1,0 +1,23 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111345",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "thorne",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "name": "Thorne",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "classification",
+      "otherEntityRelationshipName": "thorne",
+      "ownerSide": true,
+      "relationshipName": "classification",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

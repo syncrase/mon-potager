@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "engler": {
+      "home": {
+        "title": "Englers",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Engler",
+        "createOrEditLabel": "Créer ou éditer un Engler",
+        "notFound": "Aucun Engler trouvé"
+      },
+      "created": "Un nouveau Engler a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Engler avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Engler avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Engler {{ id }} ?"
+      },
+      "detail": {
+        "title": "Engler"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

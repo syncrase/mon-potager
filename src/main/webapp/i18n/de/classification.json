@@ -1,0 +1,33 @@
+{
+  "monolithApp": {
+    "classification": {
+      "home": {
+        "title": "Classifications",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Classification erstellen",
+        "createOrEditLabel": "Classification erstellen oder bearbeiten",
+        "notFound": "Keine Classifications gefunden"
+      },
+      "created": "Classification erstellt mit ID {{ param }}",
+      "updated": "Classification aktualisiert mit ID {{ param }}",
+      "deleted": "Classification gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Classification {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Classification"
+      },
+      "id": "ID",
+      "cronquist": "Cronquist",
+      "apg": "Apg",
+      "benthamHooker": "Bentham Hooker",
+      "wettstein": "Wettstein",
+      "thorne": "Thorne",
+      "takhtajan": "Takhtajan",
+      "engler": "Engler",
+      "candolle": "Candolle",
+      "dahlgren": "Dahlgren",
+      "plantes": "Plantes"
+    }
+  }
+}

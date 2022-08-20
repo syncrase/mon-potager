@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "dahlgren": {
+      "home": {
+        "title": "Dahlgrens",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Dahlgren",
+        "createOrEditLabel": "Créer ou éditer un Dahlgren",
+        "notFound": "Aucun Dahlgren trouvé"
+      },
+      "created": "Un nouveau Dahlgren a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Dahlgren avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Dahlgren avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Dahlgren {{ id }} ?"
+      },
+      "detail": {
+        "title": "Dahlgren"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

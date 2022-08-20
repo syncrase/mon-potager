@@ -1,0 +1,24 @@
+{
+  "monolithApp": {
+    "dahlgren": {
+      "home": {
+        "title": "Dahlgrens",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Dahlgren",
+        "createOrEditLabel": "Create or edit a Dahlgren",
+        "notFound": "No Dahlgrens found"
+      },
+      "created": "A new Dahlgren is created with identifier {{ param }}",
+      "updated": "A Dahlgren is updated with identifier {{ param }}",
+      "deleted": "A Dahlgren is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Dahlgren {{ id }}?"
+      },
+      "detail": {
+        "title": "Dahlgren"
+      },
+      "id": "ID",
+      "classification": "Classification"
+    }
+  }
+}

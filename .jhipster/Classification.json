@@ -1,0 +1,86 @@
+{
+  "applications": "*",
+  "changelogDate": "20220820111340",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "classification",
+  "fields": [],
+  "fluentMethods": true,
+  "javadoc": "Fait le lien entre les différentes classifications",
+  "jpaMetamodelFiltering": true,
+  "name": "Classification",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "cronquistRank",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "cronquist",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "aPG",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "apg",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "benthamHooker",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "benthamHooker",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "wettstein",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "wettstein",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "thorne",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "thorne",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "takhtajan",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "takhtajan",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "engler",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "engler",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "candolle",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "candolle",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "dahlgren",
+      "otherEntityRelationshipName": "classification",
+      "ownerSide": false,
+      "relationshipName": "dahlgren",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "plante",
+      "otherEntityRelationshipName": "classification",
+      "relationshipName": "plantes",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}
