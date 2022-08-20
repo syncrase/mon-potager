@@ -4,8 +4,8 @@ import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ConflictualRank;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.CronquistConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
@@ -33,7 +33,7 @@ public class ResolveConflictAndMergeTest {
     CronquistReader cronquistReader;
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @AfterEach
     void tearDown() {
@@ -51,7 +51,7 @@ public class ResolveConflictAndMergeTest {
         //Genre 	Helanthium
         //Espèce    Helanthium bolivianum
         CronquistClassificationBranch classification = ClassificationBranchMockRepository.HELANTHIUM_BOLIVIANUM.getClassification();
-        CronquistClassificationBranch helanthiumBolivianumClassification = cronquistWriter.saveClassification(classification);
+        CronquistClassificationBranch helanthiumBolivianumClassification = cronquistWriter.save(classification);
 
         // Règne 	    Plantae
         //Classe 	    Equisetopsida   ← rentre en conflit avec l'autre
@@ -63,10 +63,10 @@ public class ResolveConflictAndMergeTest {
         //Espèce        Agave lechuguilla
         CronquistClassificationBranch agave_lechuguillaClassification = ClassificationBranchMockRepository.AGAVE_LECHUGUILLA.getClassification();
         agave_lechuguillaClassification.clearRank(CronquistTaxonomicRank.CLASSE);
-        ClassificationConflict agaveLechuguillaConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(agave_lechuguillaClassification);
+        ClassificationConflict agaveLechuguillaConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(agave_lechuguillaClassification);
         assertsAfterAgaveSynchronization(agaveLechuguillaConflicts);
 
-        ClassificationConflict resolvedAgaveLechuguillaConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(agaveLechuguillaConflicts);
+        ClassificationConflict resolvedAgaveLechuguillaConflicts = cronquistConsistencyService.resolveInconsistencyInDatabase(agaveLechuguillaConflicts);
         assertsAfterAgaveResolution(helanthiumBolivianumClassification, resolvedAgaveLechuguillaConflicts);
 
         // Impossible de régler le conflit, car impossible de scraper Lilianae de Wikipédia (Cronquist indisponible)

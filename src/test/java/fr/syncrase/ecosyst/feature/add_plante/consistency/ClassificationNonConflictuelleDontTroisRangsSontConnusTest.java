@@ -2,7 +2,6 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
-import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
@@ -20,7 +19,7 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
     CronquistWriter cronquistWriter;
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @AfterEach
     void tearDown() {
@@ -40,9 +39,9 @@ public class ClassificationNonConflictuelleDontTroisRangsSontConnusTest {
         //Ordre 	Nepenthales
         //Famille 	Droseraceae
         //Genre Aldrovanda
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
+        cronquistWriter.save(ClassificationBranchMockRepository.ALLIUM.getClassification());
 
-        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALDROVANDA.getClassification());
+        ClassificationConflict conflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALDROVANDA.getClassification());
 
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
 

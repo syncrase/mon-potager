@@ -38,7 +38,7 @@ class CronquistWriterTest {
      */
     @Test
     void saveClassification() {
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.save(ClassificationBranchMockRepository.ALLIUM.getClassification());
         Assertions.assertNotNull(cronquistClassificationBranch, "La classification conflictuel doit exister");
         Assertions.assertEquals(27, cronquistClassificationBranch.size(), "La classification à insérer doit posséder 27 éléments");
         Assertions.assertEquals("allium", cronquistClassificationBranch.getRang(CronquistTaxonomicRank.GENRE).getNom(), "Le genre doit être Allium");
@@ -66,10 +66,10 @@ class CronquistWriterTest {
          * Vérifie que l'enregistrement d'une autre classification sémantiquement identique est impossible
          */
 
-        Exception exception = Assertions.assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification()));
+        Exception exception = Assertions.assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> cronquistWriter.save(ClassificationBranchMockRepository.ALLIUM.getClassification()));
 
         String expectedMessagePart1 = "could not execute statement; SQL [n/a]; constraint [\"PUBLIC.UX_CRONQUIST_RANK__NOM_INDEX_2 ON PUBLIC.CRONQUIST_RANK(NOM) VALUES ";
-        String expectedMessagePart2 = "SQL statement:\ninsert into cronquist_rank (nom, parent_id, rank, id) values (?, ?, ?, ?) [23505-200]]; " +
+        String expectedMessagePart2 = "SQL statement:\ninsert into cronquist_rank (classification_id, nom, parent_id, rank, id) values (?, ?, ?, ?, ?) [23505-200]]; " +
             "nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement";
         String actualMessage = exception.getMessage();
 

@@ -1,15 +1,17 @@
 package fr.syncrase.ecosyst.feature.add_plante.repository;
 
+import fr.syncrase.ecosyst.domain.Classification;
 import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.domain.Plante;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.CronquistConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.UnableToSaveClassificationException;
+import fr.syncrase.ecosyst.repository.ClassificationRepository;
 import fr.syncrase.ecosyst.repository.NomVernaculaireRepository;
 import fr.syncrase.ecosyst.repository.PlanteRepository;
 import org.jetbrains.annotations.Contract;
@@ -20,8 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class PlanteWriter {
@@ -32,66 +33,80 @@ public class PlanteWriter {
 
     private final NomVernaculaireRepository nomVernaculaireRepository;
 
-    private final ClassificationConsistencyService classificationConsistencyService;
+    private final CronquistConsistencyService cronquistConsistencyService;
 
     private final PlanteRepository planteRepository;
 
-    public PlanteWriter(CronquistWriter cronquistWriter, NomVernaculaireRepository nomVernaculaireRepository, ClassificationConsistencyService classificationConsistencyService, PlanteRepository planteRepository) {
+    private final ClassificationRepository classificationRepository;
+
+    public PlanteWriter(CronquistWriter cronquistWriter, NomVernaculaireRepository nomVernaculaireRepository, CronquistConsistencyService cronquistConsistencyService, PlanteRepository planteRepository, ClassificationRepository classificationRepository) {
         this.cronquistWriter = cronquistWriter;
         this.nomVernaculaireRepository = nomVernaculaireRepository;
-        this.classificationConsistencyService = classificationConsistencyService;
+        this.cronquistConsistencyService = cronquistConsistencyService;
         this.planteRepository = planteRepository;
+        this.classificationRepository = classificationRepository;
     }
 
     @Transactional
     public Plante saveScrapedPlante(@NotNull ScrapedPlant plante) throws UnableToSaveClassificationException {
 
-        CronquistClassificationBranch savedCronquist = saveClassification(plante.getCronquistClassificationBranch());
+        // For each classification type
+        CronquistClassificationBranch savedCronquist = saveCronquist(plante.getCronquistClassificationBranch());
         if (savedCronquist == null && plante.getCronquistClassificationBranch() != null) {
             throw new UnableToSaveClassificationException();
         }
-        if (savedCronquist != null) {
-            plante.setCronquistClassificationBranch(savedCronquist);
-        }
+        //if (savedCronquist != null) {
+        plante.setCronquistClassificationBranch(savedCronquist);
+        //}
 
-        List<NomVernaculaire> nomVernaculaires = saveNomsVernaculaires(plante);
-        plante.setNomsVernaculaires(new HashSet<>(nomVernaculaires));
+        Classification classification = plante.getPlante().getClassification();
+        //Classification classification = new Classification().cronquist(plante.getCronquistClassificationBranch().getLowestRank());
+        classificationRepository.save(classification);
 
-        return savePlante(plante);
-    }
 
-    private @NotNull Plante savePlante(@NotNull ScrapedPlant plante) {
-        return planteRepository.save(
-                new Plante()
-                        .id(plante.getId())
-                        .nomsVernaculaires(plante.getNomsVernaculaires())
-                        .cronquistRank(plante.getCronquistClassificationBranch().getLowestRank())
-        );
+        //List<NomVernaculaire> nomVernaculaires =
+        saveNomsVernaculaires(plante.getPlante().getNomsVernaculaires());
+        //plante.setNomsVernaculaires(new HashSet<>(nomVernaculaires));
+
+        Plante planteEntity = new Plante()
+            .id(plante.getPlante().getId())
+            .nomsVernaculaires(plante.getPlante().getNomsVernaculaires())
+            .classification(classification);
+
+        return planteRepository.save(planteEntity);
     }
 
     @Contract(pure = true)
-    private @NotNull List<NomVernaculaire> saveNomsVernaculaires(@NotNull ScrapedPlant plante) {
-        if (plante.getNomsVernaculaires() == null) {
-            return List.of();
+    private void saveNomsVernaculaires(Set<NomVernaculaire> nomsVernaculaires) {
+        //private @NotNull List<NomVernaculaire> saveNomsVernaculaires(@NotNull ScrapedPlant plante) {
+        // TODO est-ce que les noms possède les nouveau id à la sortie de la méthode
+        if (nomsVernaculaires == null) {
+            return;
+            //return List.of();
         }
-        for (NomVernaculaire nomVernaculaire : plante.getNomsVernaculaires()) {
+        synchronize(nomsVernaculaires);
+        //return
+        nomVernaculaireRepository.saveAll(nomsVernaculaires);
+    }
+
+    private void synchronize(@NotNull Set<NomVernaculaire> nomsVernaculaires) {
+        for (NomVernaculaire nomVernaculaire : nomsVernaculaires) {
             NomVernaculaire existingNomVernaculaire = nomVernaculaireRepository.findByNom(nomVernaculaire.getNom());
             if (existingNomVernaculaire != null) {
                 nomVernaculaire.setId(existingNomVernaculaire.getId());
             }
         }
-        return nomVernaculaireRepository.saveAll(plante.getNomsVernaculaires());
     }
 
     @Contract(pure = true)
-    private @Nullable CronquistClassificationBranch saveClassification(@NotNull CronquistClassificationBranch classification) {
+    private @Nullable CronquistClassificationBranch saveCronquist(@NotNull CronquistClassificationBranch classification) {
         /*
          * Accès en read only
          */
         CronquistClassificationBranch toSaveCronquistClassification = new CronquistClassificationBranch(classification);
         ClassificationConflict conflicts;
         try {
-            conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(toSaveCronquistClassification);
+            conflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(toSaveCronquistClassification);
         } catch (ClassificationReconstructionException e) {
             log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.last().getNom());
             return null;
@@ -106,8 +121,8 @@ public class PlanteWriter {
         ClassificationConflict resolvedConflicts;
         if (conflicts.getConflictedClassifications().size() != 0) {
             try {
-                resolvedConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(conflicts);
-                resolvedConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
+                resolvedConflicts = cronquistConsistencyService.resolveInconsistencyInDatabase(conflicts);
+                resolvedConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
             } catch (InconsistencyResolverException | MoreThanOneResultException e) {
                 log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.last().getNom());
                 return null;
@@ -122,7 +137,7 @@ public class PlanteWriter {
          * Enregistrement de la nouvelle classification
          */
         if (resolvedConflicts.getConflictedClassifications().size() == 0) {
-            return cronquistWriter.saveClassification(conflicts.getNewClassification());
+            return cronquistWriter.save(conflicts.getNewClassification());
         }
         return null;
     }

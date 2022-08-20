@@ -23,7 +23,7 @@ public class ClassificationEntierementConnueTest {
     CronquistWriter cronquistWriter;
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @AfterEach
     void tearDown() {
@@ -46,12 +46,12 @@ public class ClassificationEntierementConnueTest {
         /*
          * Enregistrement une première fois
          */
-        CronquistClassificationBranch firstCronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
+        CronquistClassificationBranch firstCronquistClassificationBranch = cronquistWriter.save(ClassificationBranchMockRepository.ALLIUM.getClassification());
 
         /*
          * Vérification de la consistance pour un autre objet sémantiquement le même
          */
-        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALLIUM.getClassification());
+        ClassificationConflict conflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALLIUM.getClassification());
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
         Assertions.assertNotNull(conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getId(), "Le règne doit avoir été récupéré de la base de données");
         Assertions.assertEquals("plantae", conflicts.getNewClassification().getRang(CronquistTaxonomicRank.REGNE).getNom(), "Le règne doit être Plantae");
@@ -64,7 +64,7 @@ public class ClassificationEntierementConnueTest {
         /*
          * Enregistrement une seconde fois de cet autre objet
          */
-        CronquistClassificationBranch secondCronquistClassificationBranch = cronquistWriter.saveClassification(conflicts.getNewClassification());
+        CronquistClassificationBranch secondCronquistClassificationBranch = cronquistWriter.save(conflicts.getNewClassification());
 
         Assertions.assertEquals(firstCronquistClassificationBranch.size(), secondCronquistClassificationBranch.size(), "Les deux classifications doivent avoir la même taille");
         Iterator<CronquistRank> iterator1 = firstCronquistClassificationBranch.iterator();

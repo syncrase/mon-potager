@@ -4,8 +4,8 @@ import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ConflictualRank;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.CronquistConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
@@ -33,7 +33,7 @@ public class RankNameConflictWithAnotherCronquistRankTest {
     CronquistWriter cronquistWriter;
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @AfterEach
     void tearDown() {
@@ -57,7 +57,7 @@ public class RankNameConflictWithAnotherCronquistRankTest {
          * Espèce Acer sempervirens
          */
         CronquistClassificationBranch erableDeCreteClassificationMock = ClassificationBranchMockRepository.ERABLE_DE_CRETE.getClassification();
-        CronquistClassificationBranch erableDeCreteClassification = cronquistWriter.saveClassification(erableDeCreteClassificationMock);
+        CronquistClassificationBranch erableDeCreteClassification = cronquistWriter.save(erableDeCreteClassificationMock);
 
         /*
          * Règne 	Plantae
@@ -74,10 +74,10 @@ public class RankNameConflictWithAnotherCronquistRankTest {
         CronquistClassificationBranch erableDeMiyabeClassification = ClassificationBranchMockRepository.ERABLE_DE_MIYABE.getClassification();
         Assertions.assertNull(erableDeMiyabeClassification.getRang(CronquistTaxonomicRank.SUPERORDRE).getNom(), "Le superordre n'existe pas initialement");
 
-        ClassificationConflict erableMiyabeConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(erableDeMiyabeClassification);
+        ClassificationConflict erableMiyabeConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(erableDeMiyabeClassification);
         assertAfterFirstSynchronization(erableMiyabeConflicts);
 
-        ClassificationConflict resolvedErableMiyabeConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(erableMiyabeConflicts);
+        ClassificationConflict resolvedErableMiyabeConflicts = cronquistConsistencyService.resolveInconsistencyInDatabase(erableMiyabeConflicts);
         assertsAfterResolution(erableDeCreteClassification, resolvedErableMiyabeConflicts);
 
         // Impossible de sauvegarder car un conflit persiste

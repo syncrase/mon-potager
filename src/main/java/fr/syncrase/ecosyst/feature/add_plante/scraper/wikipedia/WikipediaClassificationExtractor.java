@@ -1,6 +1,6 @@
 package fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia;
 
-import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedRank;
+import fr.syncrase.ecosyst.feature.add_plante.scraper.ScrapedRank;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.InvalidRankName;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.UnableToScrapClassification;

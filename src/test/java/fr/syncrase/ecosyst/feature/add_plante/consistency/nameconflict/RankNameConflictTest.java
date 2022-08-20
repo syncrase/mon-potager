@@ -1,12 +1,11 @@
 package fr.syncrase.ecosyst.feature.add_plante.consistency.nameconflict;
 
 import fr.syncrase.ecosyst.MonolithApp;
-import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ConflictualRank;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.CronquistConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistReader;
@@ -34,7 +33,7 @@ public class RankNameConflictTest {
     CronquistWriter cronquistWriter;
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @AfterEach
     void tearDown() {
@@ -53,7 +52,7 @@ public class RankNameConflictTest {
         //Ordre 	Saxifragales (conflit : ce nom n'existe pas en cronquist)
         //Famille 	Hamamelidaceae
         //Genre Corylopsis
-        CronquistClassificationBranch corylopsisClassification = cronquistWriter.saveClassification(ClassificationBranchMockRepository.CORYLOPSIS.getClassification());
+        CronquistClassificationBranch corylopsisClassification = cronquistWriter.save(ClassificationBranchMockRepository.CORYLOPSIS.getClassification());
 
         // Règne 	Plantae
         //Sous-règne 	Tracheobionta
@@ -63,14 +62,14 @@ public class RankNameConflictTest {
         //Ordre 	Hamamelidales
         //Famille 	Hamamelidaceae
         //Genre Distylium
-        ClassificationConflict distyliumConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.DISTYLIUM.getClassification());
+        ClassificationConflict distyliumConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.DISTYLIUM.getClassification());
         assertsAfterSynchronization(distyliumConflicts);
 
-        ClassificationConflict resolvedDistyliumConflicts = classificationConsistencyService.resolveInconsistencyInDatabase(distyliumConflicts);
+        ClassificationConflict resolvedDistyliumConflicts = cronquistConsistencyService.resolveInconsistencyInDatabase(distyliumConflicts);
         assertsAfterResolution(corylopsisClassification, resolvedDistyliumConflicts);
 
         // Resynchronisation avec la base
-        ClassificationConflict synchronizedResolvedDistyliumConflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(resolvedDistyliumConflicts.getNewClassification());
+        ClassificationConflict synchronizedResolvedDistyliumConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(resolvedDistyliumConflicts.getNewClassification());
         Assertions.assertEquals(0, synchronizedResolvedDistyliumConflicts.getConflictedClassifications().size(), "Le conflit doit avoir été résolu");
         Assertions.assertEquals("hamamelidales", synchronizedResolvedDistyliumConflicts.getNewClassification().getRang(CronquistTaxonomicRank.ORDRE).getNom(), "Le nom attendu de l'ordre est \"Hamamelidales\"");
         Assertions.assertNotNull(synchronizedResolvedDistyliumConflicts.getNewClassification().getRang(CronquistTaxonomicRank.ORDRE).getId(), "L'id de Saxifragales doit se retrouver dans Hamamelidales pour que le mise à jour du nom soit faite");

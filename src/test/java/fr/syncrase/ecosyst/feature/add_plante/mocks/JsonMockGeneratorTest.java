@@ -5,13 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
-import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
-import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.WebScrapingService;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.PlantNotFoundException;
@@ -32,9 +27,6 @@ public class JsonMockGeneratorTest {
     private WebScrapingService webScrapingService;// Just for generate json
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
-
-    @Autowired
     CronquistWriter cronquistWriter;
 
     @Test
@@ -45,19 +37,13 @@ public class JsonMockGeneratorTest {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String classificationSet = ow.writeValueAsString(plante.getCronquistClassificationBranch().getClassificationSet());
 
-            TreeSet<CronquistRank> classification = new ObjectMapper().readValue(classificationSet, new TypeReference<TreeSet<CronquistRank>>() {
-            });
-            classification = null;
+            TreeSet<CronquistRank> classification = new ObjectMapper().readValue(classificationSet,
+                new TypeReference<TreeSet<CronquistRank>>() {
+                });
+            classification.removeIf(cronquistRank -> true);
         } else {
             fail();
         }
     }
 
-    @Test
-    void testMethod() throws ClassificationReconstructionException, MoreThanOneResultException {
-
-        CronquistClassificationBranch cronquistClassificationBranch = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
-
-        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(ClassificationBranchMockRepository.ALDROVANDA.getClassification());
-    }
 }

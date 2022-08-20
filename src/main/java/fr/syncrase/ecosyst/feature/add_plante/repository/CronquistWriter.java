@@ -34,7 +34,7 @@ public class CronquistWriter {
         this.cronquistRankRepository = cronquistRankRepository;
     }
 
-    public CronquistClassificationBranch saveClassification(CronquistClassificationBranch newClassification) {
+    public CronquistClassificationBranch save(CronquistClassificationBranch newClassification) {
         log.info(String.format("Save the classification %s", newClassification));
         if (newClassification.getClassificationSet() == null || newClassification.getClassificationSet().size() == 0) {
             log.error("No classification to save");
@@ -49,22 +49,10 @@ public class CronquistWriter {
         return newClassification;
     }
 
-    public void removeClassification(CronquistClassificationBranch classificationToRemove) {
-        log.info(String.format("Delete the classification %s", classificationToRemove));
-        if (classificationToRemove.getClassificationSet() == null || classificationToRemove.getClassificationSet().size() == 0) {
-            log.error("No classification to delete");
-            return;
-        }
-
-
-        cronquistRankRepository.deleteAll(classificationToRemove.getClassificationSet());
-
-        //Iterator<CronquistRank> iterator = classificationToRemove.getClassificationSet().descendingIterator();
-        //while(iterator.hasNext()){
-        //    cronquistRankRepository.save(iterator.next());
-        //}
-
+    public void removeAll() {
+        cronquistRankRepository.deleteAll();
     }
+
 
     /**
      * @param rankWhichReceivingChildren        rank which will receive children

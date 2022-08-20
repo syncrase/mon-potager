@@ -35,9 +35,9 @@ public class AddPlanteResource {
     private final PlanteWriter planteWriter;
 
     public AddPlanteResource(
-            WebScrapingService webScrapingService,
-            PlanteReader planteReader,
-            PlanteWriter planteWriter) {
+        WebScrapingService webScrapingService,
+        PlanteReader planteReader,
+        PlanteWriter planteWriter) {
         this.webScrapingService = webScrapingService;
         this.planteReader = planteReader;
         this.planteWriter = planteWriter;
@@ -63,18 +63,15 @@ public class AddPlanteResource {
         if (plantesByCriteria.size() == 1) {
             // Eagerly Load plante
             return ResponseEntity.ok().body(
-                    plantesByCriteria.stream().map(plante1 -> new ScrapedPlant()
-                            .cronquistClassificationBranch(new CronquistClassificationBranch(plante1.getCronquistRank()))// Premature optimization ?
-                            .nomsVernaculaires(plante1.getNomsVernaculaires())
-                            .id(plante1.getId())).collect(Collectors.toList())
+                plantesByCriteria.stream().map(plante1 -> new ScrapedPlant(plante1)
+                    .cronquistClassificationBranch(new CronquistClassificationBranch(plante1.getClassification().getCronquist()))
+                ).collect(Collectors.toList())
             );
         }
         if (plantesByCriteria.size() > 1) {
             // Map plante to ScrapedPlante
             return ResponseEntity.ok().body(
-                    plantesByCriteria.stream().map(plante1 -> new ScrapedPlant()
-                            .nomsVernaculaires(plante1.getNomsVernaculaires())
-                            .id(plante1.getId())).collect(Collectors.toList())
+                plantesByCriteria.stream().map(ScrapedPlant::new).collect(Collectors.toList())
             );
         }
 
@@ -97,7 +94,11 @@ public class AddPlanteResource {
      */
     @PostMapping("/plantes/save")
     public ResponseEntity<Plante> savePlant(@RequestBody @NotNull ScrapedPlant plante) {
-        log.debug("REST request to save Plante : {}", plante.getNomsVernaculaires() != null ? plante.getNomsVernaculaires().stream().map(NomVernaculaire::getNom).collect(Collectors.joining(", ")) : "no name");
+        log.debug("REST request to save Plante : {}",
+            plante.getPlante().getNomsVernaculaires() != null ?
+                plante.getPlante().getNomsVernaculaires().stream().map(NomVernaculaire::getNom).collect(Collectors.joining(", ")) :
+                "no name"
+        );
 
         Plante savedPlante;
         try {

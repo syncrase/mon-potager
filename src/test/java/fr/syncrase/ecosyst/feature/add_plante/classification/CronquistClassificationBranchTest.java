@@ -2,13 +2,12 @@ package fr.syncrase.ecosyst.feature.add_plante.classification;
 
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
-import fr.syncrase.ecosyst.feature.add_plante.repository.CronquistWriter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 class CronquistClassificationBranchTest {
 

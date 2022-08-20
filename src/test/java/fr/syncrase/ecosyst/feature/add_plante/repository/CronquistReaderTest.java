@@ -2,9 +2,7 @@ package fr.syncrase.ecosyst.feature.add_plante.repository;
 
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
-import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +27,7 @@ class CronquistReaderTest {
     }
 
     @Test
-    void findExistingPartOfThisClassification() throws ClassificationReconstructionException, MoreThanOneResultException {
+    void findExistingPartOfThisClassification() {
     }
 
     @Test
@@ -38,7 +36,7 @@ class CronquistReaderTest {
 
     @Test
     void findExistingRank_doNotReturnAnInexistantRank() throws MoreThanOneResultException {
-        CronquistClassificationBranch alliumClassification = cronquistWriter.saveClassification(ClassificationBranchMockRepository.ALLIUM.getClassification());
+        cronquistWriter.save(ClassificationBranchMockRepository.ALLIUM.getClassification());
 
         CronquistRank lowestRank = ClassificationBranchMockRepository.ALDROVANDA.getClassification().getLowestRank();
         @Nullable CronquistRank existingClassification = cronquistReader.findExistingRank(lowestRank);

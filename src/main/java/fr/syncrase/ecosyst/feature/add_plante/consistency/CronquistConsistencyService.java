@@ -1,6 +1,5 @@
 package fr.syncrase.ecosyst.feature.add_plante.consistency;
 
-import com.sun.xml.bind.v2.TODO;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
@@ -24,9 +23,9 @@ import java.util.Objects;
  * Service for check the consistency of a {@link CronquistClassificationBranch}
  */
 @Service
-public class ClassificationConsistencyService {
+public class CronquistConsistencyService {
 
-    private final Logger log = LoggerFactory.getLogger(ClassificationConsistencyService.class);
+    private final Logger log = LoggerFactory.getLogger(CronquistConsistencyService.class);
 
     private final CronquistReader cronquistReader;
 
@@ -34,9 +33,7 @@ public class ClassificationConsistencyService {
 
     private final WebScrapingService webScrapingService;
 
-    private CronquistRankRepository cronquistRankRepository;
-
-    public ClassificationConsistencyService(CronquistReader cronquistReader, CronquistWriter cronquistWriter, WebScrapingService webScrapingService) {
+    public CronquistConsistencyService(CronquistReader cronquistReader, CronquistWriter cronquistWriter, WebScrapingService webScrapingService) {
         this.cronquistReader = cronquistReader;
         this.cronquistWriter = cronquistWriter;
         this.webScrapingService = webScrapingService;

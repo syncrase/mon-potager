@@ -2,11 +2,10 @@ package fr.syncrase.ecosyst.feature.add_plante.consistency.conflict_and_merge;
 
 import fr.syncrase.ecosyst.MonolithApp;
 import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.domain.enumeration.CronquistTaxonomicRank;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
-import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConsistencyService;
+import fr.syncrase.ecosyst.feature.add_plante.consistency.CronquistConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
 import fr.syncrase.ecosyst.feature.add_plante.mocks.ClassificationBranchMockRepository;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
@@ -17,8 +16,6 @@ import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneRe
 import fr.syncrase.ecosyst.feature.add_plante.scraper.WebScrapingService;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.NonExistentWikiPageException;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.exception.PlantNotFoundException;
-import fr.syncrase.ecosyst.repository.CronquistRankRepository;
-import fr.syncrase.ecosyst.service.CronquistRankQueryService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +43,7 @@ public class DeleteObsoleteClassificationTest {
     CronquistReader cronquistReader;
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @Autowired
     private WebScrapingService webScrapingService;
@@ -58,11 +55,6 @@ public class DeleteObsoleteClassificationTest {
 
     @Test
     public void checkConsistency_wrongNameConflictedRightName_checkParenthood() throws ClassificationReconstructionException, MoreThanOneResultException, InconsistencyResolverException, NonExistentWikiPageException, PlantNotFoundException {
-        Mockito.when(webScrapingService.scrapPlant("CeRangNExistePas"))
-            .thenReturn(
-                new ScrapedPlant()
-                    .addNomsVernaculaires(new NomVernaculaire().nom("test"))
-            );
         /*
          * Règne 	    Plantae
          * Sous-règne 	Tracheobionta
@@ -75,7 +67,7 @@ public class DeleteObsoleteClassificationTest {
          */
         CronquistClassificationBranch classification = ClassificationBranchMockRepository.ALLIUM.getClassification();
         classification.add(new CronquistRank().rank(FAMILLE).nom("CeRangNExistePas"));
-        CronquistClassificationBranch allium0 = cronquistWriter.saveClassification(classification);
+        CronquistClassificationBranch allium0 = cronquistWriter.save(classification);
 
         List<Long> tousLesIdsDeLaFamilleInclueJusquaLOrdreExclu = allium0.subSet(
             allium0.getRang(FAMILLE),
@@ -106,21 +98,16 @@ public class DeleteObsoleteClassificationTest {
             .thenReturn(
                 mockedLiliaceae
             );
-        ClassificationConflict allium1AfterSynchronization = classificationConsistencyService.getSynchronizedClassificationAndConflicts(allium1);
+        ClassificationConflict allium1AfterSynchronization = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(allium1);
         Assertions.assertEquals(1, allium1AfterSynchronization.getConflictedClassifications().size(), "Il doit y avoir un conflit");
 
-        ClassificationConflict allium1AfterConflictResolving = classificationConsistencyService.resolveInconsistencyInDatabase(allium1AfterSynchronization);
+        ClassificationConflict allium1AfterConflictResolving = cronquistConsistencyService.resolveInconsistencyInDatabase(allium1AfterSynchronization);
         Assertions.assertEquals(0, allium1AfterConflictResolving.getConflictedClassifications().size(), "Il ne doit plus y avoir de conflit");
 
-        ClassificationConflict allium1AfterReSynchronization = classificationConsistencyService.getSynchronizedClassificationAndConflicts(allium1AfterConflictResolving.getNewClassification());
+        ClassificationConflict allium1AfterReSynchronization = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(allium1AfterConflictResolving.getNewClassification());
 
-        // TODO pas la peine de save pour ce test
-        CronquistClassificationBranch savedAllium1 = cronquistWriter.saveClassification(allium1AfterReSynchronization.getNewClassification());
+        CronquistClassificationBranch savedAllium1 = cronquistWriter.save(allium1AfterReSynchronization.getNewClassification());
         assertParenthoodConsistency(savedAllium1);
-
-        //List<CronquistRank> allById = cronquistRankRepository.findAllById(tousLesIdsDeLaFamilleInclueJusquaLOrdreExclu);
-        //assertEquals(0, allById.size(), "Tous les rangs de liaison obsolètes doivent être supprimés");
-        // Impossible de régler le conflit, car impossible de scraper Lilianae de Wikipédia (Cronquist indisponible)
 
     }
 

@@ -2,6 +2,8 @@ package fr.syncrase.ecosyst.feature.add_plante.scraper;
 
 import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.domain.Plante;
+import fr.syncrase.ecosyst.domain.Reference;
+import fr.syncrase.ecosyst.domain.Url;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.WikipediaResolver;
@@ -25,25 +27,27 @@ public class WebScrapingService {
 
     public ScrapedPlant scrapPlant(String name) throws NonExistentWikiPageException, PlantNotFoundException {
 
-        // Find the url describing this plant name
-        log.info("Trying to resolve the wikipedia url for {}", name);
+        // Find the wikiUrl describing this plant name
+        log.info("Trying to resolve the wikipedia wikiUrl for {}", name);
         WikipediaResolver wikipediaResolver = new WikipediaResolver();
 
         log.info("Search for {} on Wikipedia", name);
-        String url = WIKI_SEARCH_URL + name;
+        String wikiUrl = WIKI_SEARCH_URL + name;
         Document pageContainingClassification = null;
-        if (wikipediaResolver.checkIfPageExists(url)) {
-            pageContainingClassification = wikipediaResolver.getDocumentIfContainingClassification(url);
+        if (wikipediaResolver.checkIfPageExists(wikiUrl)) {
+            pageContainingClassification = wikipediaResolver.getDocumentIfContainingClassification(wikiUrl);
         }
 
         // Scrap data from this URL
-        log.info("Found url is ({}). Trying to extract classification from it", url);
+        log.info("Found wikiUrl is ({}). Trying to extract classification from it", wikiUrl);
         CronquistClassificationBranch cronquistClassificationBranch = getCronquistClassificationFromDocument(pageContainingClassification);
         if (cronquistClassificationBranch != null) {
 
-            return new ScrapedPlant()
-                    .addNomsVernaculaires(new NomVernaculaire().nom(name))
-                    .cronquistClassificationBranch(cronquistClassificationBranch);
+            ScrapedPlant scrapedPlant = new ScrapedPlant()
+                .cronquistClassificationBranch(cronquistClassificationBranch);
+            scrapedPlant.getPlante().addNomsVernaculaires(new NomVernaculaire().nom(name));
+            scrapedPlant.getPlante().addReferences(new Reference().url(new Url().url(wikiUrl)));
+            return scrapedPlant;
         }
         throw new PlantNotFoundException("Impossible de scraper la plante " + name);
     }

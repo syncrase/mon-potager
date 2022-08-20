@@ -1,11 +1,14 @@
 package fr.syncrase.ecosyst.feature.add_plante.repository;
 
+import fr.syncrase.ecosyst.domain.Classification;
 import fr.syncrase.ecosyst.domain.CronquistRank;
 import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.domain.Plante;
+import fr.syncrase.ecosyst.service.ClassificationQueryService;
 import fr.syncrase.ecosyst.service.CronquistRankQueryService;
 import fr.syncrase.ecosyst.service.NomVernaculaireQueryService;
 import fr.syncrase.ecosyst.service.PlanteQueryService;
+import fr.syncrase.ecosyst.service.criteria.ClassificationCriteria;
 import fr.syncrase.ecosyst.service.criteria.CronquistRankCriteria;
 import fr.syncrase.ecosyst.service.criteria.NomVernaculaireCriteria;
 import fr.syncrase.ecosyst.service.criteria.PlanteCriteria;
@@ -26,6 +29,14 @@ public class PlanteReader {
     private NomVernaculaireQueryService nomVernaculaireQueryService;
 
     private PlanteQueryService planteQueryService;
+
+    private ClassificationQueryService classificationQueryService;
+
+    @Autowired
+    public void setClassificationQueryService(ClassificationQueryService classificationQueryService) {
+        this.classificationQueryService = classificationQueryService;
+    }
+
 
     @Autowired
     public void setCronquistRankQueryService(CronquistRankQueryService cronquistRankQueryService) {
@@ -49,22 +60,29 @@ public class PlanteReader {
         nomFilter.setEquals(name.toLowerCase());
 
         addNomsVernaculairesIdsIfAnyExists(planteCriteria, nomFilter);
-        addCronquistRanksIdsIfAnyExists(planteCriteria, nomFilter);
+        addClassificationIdsIfAnyExists(planteCriteria, nomFilter);
 
-        if (planteCriteria.getCronquistRankId() != null || planteCriteria.getNomsVernaculairesId() != null) {
+        if (planteCriteria.getClassificationId() != null || planteCriteria.getNomsVernaculairesId() != null) {
             return planteQueryService.findByCriteria(planteCriteria);
         }
         return List.of();
     }
 
-    private void addCronquistRanksIdsIfAnyExists(PlanteCriteria planteCriteria, StringFilter nomFilter) {
+    private void addClassificationIdsIfAnyExists(PlanteCriteria planteCriteria, StringFilter nomFilter) {
         CronquistRankCriteria cronquistRankCriteria = new CronquistRankCriteria();
         cronquistRankCriteria.setNom(nomFilter);
         List<CronquistRank> cronquistRankByCriteria = cronquistRankQueryService.findByCriteria(cronquistRankCriteria);
         if (cronquistRankByCriteria.size() != 0) {
-            LongFilter rankIdFilter = new LongFilter();
-            rankIdFilter.setEquals(cronquistRankByCriteria.get(0).getId());
-            planteCriteria.setCronquistRankId(rankIdFilter);
+            ClassificationCriteria classificationCriteria = new ClassificationCriteria();
+            LongFilter cronquistIdFilter = new LongFilter();
+            cronquistIdFilter.setEquals(cronquistRankByCriteria.get(0).getId());
+            classificationCriteria.setCronquistId(cronquistIdFilter);
+            List<Classification> classificationByCriteria = classificationQueryService.findByCriteria(classificationCriteria);
+            if (classificationByCriteria.size() != 0) {
+                LongFilter rankIdFilter = new LongFilter();
+                rankIdFilter.setEquals(classificationByCriteria.get(0).getId());
+                planteCriteria.setClassificationId(rankIdFilter);
+            }
         }
     }
 

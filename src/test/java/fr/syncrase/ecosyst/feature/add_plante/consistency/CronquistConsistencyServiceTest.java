@@ -12,16 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = MonolithApp.class)
-class ClassificationConsistencyServiceTest {
+class CronquistConsistencyServiceTest {
 
     @Autowired
-    private ClassificationConsistencyService classificationConsistencyService;
+    private CronquistConsistencyService cronquistConsistencyService;
 
     @Test
     void checkConsistencyWithNoConflictAndAllRanksUnknown() throws ClassificationReconstructionException, MoreThanOneResultException {
 
         CronquistClassificationBranch classification = ClassificationBranchMockRepository.ALLIUM.getClassification();
-        ClassificationConflict conflicts = classificationConsistencyService.getSynchronizedClassificationAndConflicts(classification);
+        ClassificationConflict conflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(classification);
         Assertions.assertNotNull(conflicts, "La classification conflictuel doit exister");
         Assertions.assertEquals(0, conflicts.getConflictedClassifications().size(), "La classification conflictuel ne doit contenir aucun conflit");
         Assertions.assertEquals(27, conflicts.getNewClassification().size(), "La classification à insérer doit posséder 27 éléments");

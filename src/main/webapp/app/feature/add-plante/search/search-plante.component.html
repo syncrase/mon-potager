@@ -9,7 +9,7 @@
 
     <jhi-alert></jhi-alert>
 
-    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form (ngSubmit)="search()" [formGroup]="editForm" name="editForm" novalidate role="form">
       <div class="row mb-3">
         <label class="form-label" jhiTranslate="monolithApp.addPlante.planteSearch" for="field_search">Rechercher la
           plante</label>
@@ -48,8 +48,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let planteSuggestion of planteSuggestions">
-          <td>{{planteSuggestion.id}}</td>
-          <td>{{planteSuggestion.nomsVernaculaires}}</td>
+          <td>{{planteSuggestion.plante?.id}}</td>
+          <td>{{planteSuggestion.plante?.nomsVernaculaires}}</td>
           <td>{{planteSuggestion.cronquistClassificationBranch}}</td>
           <td>Je choisi celle-ci :-) TODO</td>
         </tr>
