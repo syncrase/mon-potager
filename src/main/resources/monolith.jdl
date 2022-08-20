@@ -8,6 +8,27 @@ entity NomVernaculaire {
     description String
 }
 
+entity Reference {
+    description String,
+    type ReferenceType required,
+}
+
+enum ReferenceType {
+    IMAGE, SOURCE
+}
+
+entity Url {
+    url String unique
+}
+
+/**
+* Fait le lien entre les différentes classifications
+*/
+entity Classification {}
+
+/**
+* Une classification est représentée par un set de rang ordonné possédant un parent récursivement jusqu'au rang taxonomique le plus haut, le Domaine
+*/
 entity CronquistRank {
     /**
     * Hauteur du rang : classe, ordre, espèce, etc.
@@ -21,9 +42,21 @@ entity CronquistRank {
     nom String unique
 }
 
-entity NomVernaculaire {
-    nom String unique,
-}
+entity APG {}
+
+entity BenthamHooker {}
+
+entity Wettstein {}
+
+entity Thorne {}
+
+entity Takhtajan {}
+
+entity Engler {}
+
+entity Candolle {}
+
+entity Dahlgren {}
 
 enum CronquistTaxonomicRank {
     DOMAINE (Domaine),
@@ -63,7 +96,6 @@ enum CronquistTaxonomicRank {
     FORME (Forme),
     SOUSFORME (SousForme)
 }
-
 //***********************************************************
 //***********************************************************
 // Plants associations
@@ -74,12 +106,17 @@ relationship ManyToMany {
     /**
     * Un même nom vernaculaire peut qualifier plusieurs plantes distinctes et très différentes
     */
-    Plante{nomsVernaculaires(nom)} to NomVernaculaire{plantes}
+    Plante{nomsVernaculaires(nom)} to NomVernaculaire{plantes},
+    Plante{references} to Reference{plantes},
+}
+
+relationship ManyToOne {
+    Reference{url} to Url{references}
 }
 
 //***********************************************************
 //***********************************************************
-// CRONQUIST associations
+// Classification associations
 //***********************************************************
 //***********************************************************
 
@@ -90,11 +127,23 @@ relationship OneToMany {
     CronquistRank{children} to CronquistRank{parent},
 }
 
+relationship OneToOne {
+    CronquistRank{classification} to Classification{cronquist},
+    APG{classification} to Classification{apg},
+    BenthamHooker{classification} to Classification{benthamHooker},
+    Wettstein{classification} to Classification{wettstein},
+    Thorne{classification} to Classification{thorne},
+    Takhtajan{classification} to Classification{takhtajan},
+    Engler{classification} to Classification{engler},
+    Candolle{classification} to Classification{candolle},
+    Dahlgren{classification} to Classification{dahlgren},
+}
+
 relationship ManyToOne {
     /**
     * Le nom latin d'une plante est la composition du genre et de l'espèce. De ce fait une plante est associée au minimum avec une espèce (ou tout autre rang entre l'espèce et le sous-genre).
     */
-    Plante{cronquistRank} to CronquistRank,
+    Plante{classification} to Classification{plantes},
 }
 
 //***********************************************************
