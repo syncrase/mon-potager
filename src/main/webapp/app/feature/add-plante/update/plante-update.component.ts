@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpResponse} from '@angular/common/http';
-import {AbstractControl, FormBuilder} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -13,6 +13,10 @@ import {SessionContextService} from "../../../shared/session-context/session-con
 import {NomVernaculaire} from "../../../entities/nom-vernaculaire/nom-vernaculaire.model";
 import {Plante} from "../../../entities/plante/plante.model";
 
+type DynamicKeysObject = {
+  [key: string]: any
+};
+
 @Component({
   selector: 'jhi-plante-update',
   templateUrl: './plante-update.component.html',
@@ -23,7 +27,7 @@ export class PlanteUpdateComponent implements OnInit {
 
   editForm = this.fb.group({
     id: [],
-    nomsVernaculaires: [],
+    nomsVernaculaires: this.fb.array([]),
     cronquist: this.fb.array([]),
   });
   cronquistRanks: ICronquistRank[] | null | undefined;
@@ -53,9 +57,17 @@ export class PlanteUpdateComponent implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    // this.isSaving = true;
     const plante = this.createFromForm();
     this.subscribeToSaveResponse(this.planteService.save(plante));
+  }
+
+  ajoutNomVernaculaire(): void {
+    (this.editForm.controls['nomsVernaculaires'] as FormArray).push(this.fb.control(new NomVernaculaire()));
+  }
+
+  deleteNomVernaculaire(index: number): void {
+    (this.editForm.controls['nomsVernaculaires'] as FormArray).removeAt(index);
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IScrapedPlante>>): void {
@@ -77,10 +89,9 @@ export class PlanteUpdateComponent implements OnInit {
     this.isSaving = false;
   }
 
-  protected cronquistRanksAsObject(cronquistRanks: ICronquistRank[]): any {
-    const classif: {
-      [key: string]: any
-    } = {};
+  protected formFriendlyCronquistRanks(cronquistRanks: ICronquistRank[]): any {
+    // TODO refactor this in order to don't use this.cronquistRanks anymore
+    const classif: DynamicKeysObject = {};
     this.cronquistRanks = [];
     // eslint-disable-next-line guard-for-in
     for (const taxonomicRank in CronquistTaxonomicRank) {
@@ -104,11 +115,15 @@ export class PlanteUpdateComponent implements OnInit {
     this.planteInitiale = plante;
     this.editForm.patchValue({
       id: plante.plante?.id,
-      nomsVernaculaires: plante.plante?.nomsVernaculaires?.map(nv => nv.nom).join(', '),
       // TODO traiter les références, les images et les sources
     });
+    if (plante.plante?.nomsVernaculaires) {
+      for (const nv of plante.plante.nomsVernaculaires) {
+        (this.editForm.controls['nomsVernaculaires'] as FormArray).push(this.fb.control(nv));
+      }
+    }
     if (plante.cronquistClassificationBranch) {
-      this.editForm.setControl('cronquist', this.fb.group(this.cronquistRanksAsObject(plante.cronquistClassificationBranch)));
+      this.editForm.setControl('cronquist', this.fb.group(this.formFriendlyCronquistRanks(plante.cronquistClassificationBranch)));
     }
   }
 
@@ -126,7 +141,6 @@ export class PlanteUpdateComponent implements OnInit {
     for (const n in CronquistTaxonomicRank) {
       const rank = new CronquistRank();
       rank.rank = n as CronquistTaxonomicRank;
-      // rank.rank = CronquistTaxonomicRank[n as keyof typeof CronquistTaxonomicRank];
       if (param) {
         rank.nom = (param as any)[n]!;
       }
@@ -149,11 +163,13 @@ export class PlanteUpdateComponent implements OnInit {
   private nomsVernaculaires(): NomVernaculaire[] | null {
     const nomVernaculairesForm = this.editForm.get(['nomsVernaculaires']);
     if (nomVernaculairesForm!.value) {
-      return nomVernaculairesForm!.value.split(',').map((nv: string) => {
-        const nom = new NomVernaculaire();
-        nom.nom = nv.trim();
-        return nom;
-      }) as NomVernaculaire[];
+      const nomVernaculairesExtractedFromForm: NomVernaculaire[] = [];
+      // nomVernaculairesForm.value is not iterable
+      // eslint-disable-next-line guard-for-in
+      for (const nomVernaculairesFormKey in nomVernaculairesForm!.value) {
+        nomVernaculairesExtractedFromForm.push(nomVernaculairesForm!.value[nomVernaculairesFormKey] as NomVernaculaire)
+      }
+      return nomVernaculairesExtractedFromForm;
     }
     return null;
   }

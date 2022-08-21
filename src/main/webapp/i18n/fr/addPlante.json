@@ -4,7 +4,12 @@
       "home": {
         "title": "Ajouter une plante"
       },
-      "planteSearch": "Rechercher la plante"
+      "planteSearch": "Rechercher la plante",
+      "update": {
+        "nomVernaculaire": {
+          "add": "Ajouter un nom vernaculaire"
+        }
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
   "monolithApp": {
     "nomVernaculaire": {
       "home": {
-        "title": "NomVernaculaires",
+        "title": "Nom vernaculaires",
         "refreshListLabel": "Actualiser la liste",
         "createLabel": "Créer un nouveau Nom Vernaculaire",
         "createOrEditLabel": "Créer ou éditer un Nom Vernaculaire",

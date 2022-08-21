@@ -1,32 +1,76 @@
 <div class="d-flex justify-content-center">
-    <div *ngIf="missingPlante;else plantForm">
-        missing plante
-    </div>
+  <div *ngIf="missingPlante;else plantForm">
+    missing plante
+  </div>
 
-    <ng-template #plantForm class="col-8">
-        <form (ngSubmit)="save()" *ngIf="!missingPlante" [formGroup]="editForm" name="editForm" novalidate role="form">
-            <h2 data-cy="PlanteCreateUpdateHeading" id="jhi-plante-heading"
-                jhiTranslate="monolithApp.plante.home.createOrEditLabel">
-                Create or edit a Plante
-            </h2>
+  <ng-template #plantForm class="col-8">
+    <form (ngSubmit)="save()" *ngIf="!missingPlante" [formGroup]="editForm" name="editForm" novalidate role="form">
+      <h2 data-cy="PlanteCreateUpdateHeading" id="jhi-plante-heading"
+          jhiTranslate="monolithApp.plante.home.createOrEditLabel">
+        Create or edit a Plante
+      </h2>
 
-            <div>
-                <jhi-alert-error></jhi-alert-error>
+      <div>
+        <jhi-alert-error></jhi-alert-error>
 
-                <div [hidden]="editForm.get('id')!.value == null" class="row mb-3">
-                    <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
-                    <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id"
-                           [readonly]="true"/>
-                </div>
-
-                <div class="row mb-3">
-                    <label jhiTranslate="monolithApp.plante.nomsVernaculaires" for="field_nomsVernaculaires">Noms
-                        Vernaculaires</label>
-                    <textarea type="number" class="form-control" name="nomsVernaculaires" id="field_nomsVernaculaires"
-                              data-cy="nomsVernaculaires" formControlName="nomsVernaculaires"
-                              [readonly]="false"></textarea>
+        <div [hidden]="editForm.get('id')!.value == null" class="row mb-3">
+          <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
+          <input [readonly]="true" class="form-control" data-cy="id" formControlName="id" id="field_id" name="id"
+                 type="number"/>
         </div>
 
+        <div class="row mb-3">
+          <label for="field_nomsVernaculaires" jhiTranslate="monolithApp.plante.nomsVernaculaires">Noms
+            Vernaculaires</label>
+          <table aria-describedby="page-heading" class="table table-striped">
+
+            <thead>
+            <tr>
+              <th scope="col">
+                <span jhiTranslate="monolithApp.nomVernaculaire.nom">Nom vernaculaire</span>
+                <fa-icon icon="sort"></fa-icon>
+              </th>
+              <th scope="col"><span jhiTranslate="monolithApp.nomVernaculaire.description">Description</span>
+                <fa-icon icon="sort"></fa-icon>
+              </th>
+              <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let myVar of editForm.get('nomsVernaculaires')?.value; let i = index"
+                [formGroupName]="'nomsVernaculaires'"
+                data-cy="nomsVernaculairesTable">
+              <td>
+                <input [attr.data-cy]="'nom'+i" [jhiBindNomVernaculaireTo]="'nom'" class="form-control"
+                       formControlName="{{i}}"
+                       id="nom{{i}}" name="nom{{i}}" type="text"/>
+              </td>
+              <td>
+                <input [attr.data-cy]="'description'+i" [jhiBindNomVernaculaireTo]="'description'" class="form-control"
+                       formControlName="{{i}}"
+                       id="description{{i}}" name="description{{i}}"
+                       type="text"/>
+              </td>
+              <td>
+                <button (click)="deleteNomVernaculaire(i)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton"
+                        type="submit">
+                  <fa-icon icon="times"></fa-icon>
+                  <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <button (click)="ajoutNomVernaculaire()" class="btn btn-primary jh-create-entity"
+                  data-cy="ajoutNomVernaculaire"
+                  id="ajout-nom-vernaculaire"
+                  type="button">
+            <fa-icon icon="plus"></fa-icon>
+            <span jhiTranslate="monolithApp.addPlante.update.nomVernaculaire.add">Add row</span>
+          </button>
+
+        </div>
 
         <div class="table-responsive" id="entities" *ngIf="cronquistRanks && cronquistRanks.length > 0">
           <table class="table table-striped" aria-describedby="page-heading">
@@ -61,16 +105,16 @@
           <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
 
-          <button
-                  [disabled]="editForm.invalid || isSaving"
-                  class="btn btn-primary"
-                  data-cy="entityCreateSaveButton"
-                  id="save-entity"
-                  type="submit"
-          >
-              <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
-          </button>
+        <button
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+          data-cy="entityCreateSaveButton"
+          id="save-entity"
+          type="submit"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
       </div>
-        </form>
-    </ng-template>
+    </form>
+  </ng-template>
 </div>
