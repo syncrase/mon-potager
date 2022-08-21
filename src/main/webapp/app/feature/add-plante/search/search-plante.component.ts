@@ -39,8 +39,22 @@ export class SearchPlanteComponent {
     this.isSearching = true;
     const planteName = this.editForm.get(['search'])!.value as string;
     if (planteName) {
-      this.addPlanteService.search(planteName).subscribe((plante: HttpResponse<ScrapedPlante[]>) => {
-        this.handleResult(plante);
+      this.addPlanteService.search(planteName).subscribe({
+        next: (plante: HttpResponse<ScrapedPlante[]>) => {
+          this.alertService.addAlert({
+            type: 'warning',
+            message: 'subscribe next. Handle result'
+          });
+          this.handleResult(plante);
+        },
+        error: () => {
+          this.isSearching = false;
+          this.alertService.addAlert({
+            type: 'danger',
+            message: 'Erreur serveur. See logs'
+          });
+
+        }
       })
     } else {
       const message = 'Vous devez renseigner le champ de recherche';

@@ -8,6 +8,14 @@
       "update": {
         "nomVernaculaire": {
           "add": "Ajouter un nom vernaculaire"
+        },
+        "image": {
+          "add": "Ajouter une image"
+        },
+        "source": {
+          "add": "Ajouter une source",
+          "edit": "Modifier source",
+          "invalidUrl": "Le format de l'url est invalide"
         }
       }
     }

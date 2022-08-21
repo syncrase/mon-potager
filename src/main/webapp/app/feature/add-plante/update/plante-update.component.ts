@@ -10,12 +10,22 @@ import {IScrapedPlante, ScrapedPlante} from "../scraped-plant.model";
 import {CronquistRank, ICronquistRank} from "../../../entities/cronquist-rank/cronquist-rank.model";
 import {CronquistTaxonomicRank} from "../../../entities/enumerations/cronquist-taxonomic-rank.model";
 import {SessionContextService} from "../../../shared/session-context/session-context.service";
-import {NomVernaculaire} from "../../../entities/nom-vernaculaire/nom-vernaculaire.model";
+import {INomVernaculaire, NomVernaculaire} from "../../../entities/nom-vernaculaire/nom-vernaculaire.model";
 import {Plante} from "../../../entities/plante/plante.model";
+import {ReferenceType} from "../../../entities/enumerations/reference-type.model";
+import {IReference, Reference} from "../../../entities/reference/reference.model";
+import {Url} from "../../../entities/url/url.model";
 
 type DynamicKeysObject = {
   [key: string]: any
 };
+
+
+function urlValidator(control: AbstractControl): DynamicKeysObject | null {
+  const regex = new RegExp("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-.@:%_+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?");
+  const url = control.value.url.url;
+  return regex.test(url) ? null : {invalidFormat: true}
+}
 
 @Component({
   selector: 'jhi-plante-update',
@@ -29,6 +39,8 @@ export class PlanteUpdateComponent implements OnInit {
     id: [],
     nomsVernaculaires: this.fb.array([]),
     cronquist: this.fb.array([]),
+    images: this.fb.array([]),
+    sources: this.fb.array([]),
   });
   cronquistRanks: ICronquistRank[] | null | undefined;
   private planteInitiale!: IScrapedPlante;
@@ -68,6 +80,64 @@ export class PlanteUpdateComponent implements OnInit {
 
   deleteNomVernaculaire(index: number): void {
     (this.editForm.controls['nomsVernaculaires'] as FormArray).removeAt(index);
+  }
+
+  get images(): FormArray {
+    return this.editForm.controls['images'] as FormArray;
+  }
+
+  ajoutImage(): void {
+    const reference = new Reference();
+    reference.type = ReferenceType.IMAGE;
+    reference.url = new Url();
+    (this.editForm.controls['images'] as FormArray).push(this.fb.control(reference));
+  }
+
+  deleteImage(index: number): void {
+    (this.editForm.controls['images'] as FormArray).removeAt(index);
+  }
+
+  get sources(): FormArray {
+    return this.editForm.controls['sources'] as FormArray;
+  }
+
+  ajoutSource(): void {
+    const reference = new Reference();
+    reference.type = ReferenceType.SOURCE;
+    reference.url = new Url();
+    (this.editForm.controls['sources'] as FormArray).push(this.fb.control(reference, control => urlValidator(control)));
+    (this.editForm.controls['sources'] as FormArray).disable();
+  }
+
+  deleteSource(index: number): void {
+    (this.editForm.controls['sources'] as FormArray).removeAt(index);
+  }
+
+  toggleSourceEdit(index: number): void {
+    const abstractControl = (this.editForm.controls['sources'] as FormArray).at(index);
+    if (abstractControl.disabled) {
+      abstractControl.enable();
+    } else {
+      abstractControl.disable();
+    }
+  }
+
+  isDisabled(index: number): boolean {
+    return (this.editForm.controls['sources'] as FormArray).at(index).disabled;
+  }
+
+  /**
+   * Ouvre le lien dans un nouvel onglet
+   * @param i index de la source dans la liste de sources
+   */
+  redirect(i: number): void {
+    const control = this.sources.at(i);
+    if (!urlValidator(control)) {
+      window.open(
+        control.value.url.url,
+        '_blank'
+      );
+    }
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IScrapedPlante>>): void {
@@ -122,6 +192,16 @@ export class PlanteUpdateComponent implements OnInit {
         (this.editForm.controls['nomsVernaculaires'] as FormArray).push(this.fb.control(nv));
       }
     }
+    if (plante.plante?.references) {
+      for (const reference of plante.plante.references) {
+        if (reference.type === ReferenceType.IMAGE) {
+          (this.editForm.controls['images'] as FormArray).push(this.fb.control(reference));
+        }
+        if (reference.type === ReferenceType.SOURCE) {
+          (this.editForm.controls['sources'] as FormArray).push(this.fb.control(reference));
+        }
+      }
+    }
     if (plante.cronquistClassificationBranch) {
       this.editForm.setControl('cronquist', this.fb.group(this.formFriendlyCronquistRanks(plante.cronquistClassificationBranch)));
     }
@@ -155,22 +235,42 @@ export class PlanteUpdateComponent implements OnInit {
   private getPlanteFromForm(): Plante {
     const plante = new Plante();
     plante.id = this.editForm.get(['id'])!.value;
-    plante.nomsVernaculaires = this.nomsVernaculaires();
+    plante.nomsVernaculaires = this.nomsVernaculairesFromForm();
     // TODO traiter les références, les images et les sources
+    plante.references = this.referencesFromForm();
     return plante;
   }
 
-  private nomsVernaculaires(): NomVernaculaire[] | null {
+  private nomsVernaculairesFromForm(): INomVernaculaire[] | null {
     const nomVernaculairesForm = this.editForm.get(['nomsVernaculaires']);
     if (nomVernaculairesForm!.value) {
       const nomVernaculairesExtractedFromForm: NomVernaculaire[] = [];
       // nomVernaculairesForm.value is not iterable
       // eslint-disable-next-line guard-for-in
       for (const nomVernaculairesFormKey in nomVernaculairesForm!.value) {
-        nomVernaculairesExtractedFromForm.push(nomVernaculairesForm!.value[nomVernaculairesFormKey] as NomVernaculaire)
+        nomVernaculairesExtractedFromForm.push(nomVernaculairesForm!.value[nomVernaculairesFormKey] as INomVernaculaire)
       }
       return nomVernaculairesExtractedFromForm;
     }
     return null;
+  }
+
+  private referencesFromForm(): IReference[] {
+    const imagesForm = this.editForm.get(['images']);
+    const referencesExtractedFromForm: IReference[] = [];
+    if (imagesForm!.value) {
+      // eslint-disable-next-line guard-for-in
+      for (const imagesFormKey in imagesForm!.value) {
+        referencesExtractedFromForm.push(imagesForm!.value[imagesFormKey] as IReference)
+      }
+    }
+    const sourcesForm = this.editForm.get(['sources']);
+    if (sourcesForm!.value) {
+      // eslint-disable-next-line guard-for-in
+      for (const sourcesFormKey in sourcesForm!.value) {
+        referencesExtractedFromForm.push(sourcesForm!.value[sourcesFormKey] as IReference)
+      }
+    }
+    return referencesExtractedFromForm;
   }
 }

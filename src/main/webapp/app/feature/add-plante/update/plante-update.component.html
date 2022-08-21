@@ -20,10 +20,42 @@
         </div>
 
         <div class="row mb-3">
-          <label for="field_nomsVernaculaires" jhiTranslate="monolithApp.plante.nomsVernaculaires">Noms
-            Vernaculaires</label>
-          <table aria-describedby="page-heading" class="table table-striped">
+          <h1>Images</h1>
+          <ul>
+            <ng-container formArrayName="images">
+              <li *ngFor="let image of images.controls; let i = index" data-cy="imageCarousel">
+                <input [attr.data-cy]="'image'+i" [jhiBindReferenceTo]="'url'"
+                       class="form-control"
+                       formControlName="{{i}}" id="image{{i}}" name="image{{i}}" placeholder="Url de l'image"
+                       type="text"/>
+                <input [attr.data-cy]="'image'+i" [jhiBindReferenceTo]="'description'"
+                       class="form-control"
+                       formControlName="{{i}}" id="image{{i}}" name="image{{i}}" placeholder="Description de l'image"
+                       type="text"/>
+                <img
+                  alt="Trulli"
+                  height="333" src="{{image.value.url.url}}" width="500">
+                <button (click)="deleteImage(i)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton"
+                        type="submit">
+                  <fa-icon icon="times"></fa-icon>
+                  <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                </button>
+              </li>
+            </ng-container>
 
+
+          </ul>
+          <button (click)="ajoutImage()" class="btn btn-primary jh-create-entity"
+                  data-cy="ajoutImage"
+                  id="ajout-image"
+                  type="button">
+            <fa-icon icon="plus"></fa-icon>
+            <span jhiTranslate="monolithApp.addPlante.update.image.add">Add picture</span>
+          </button>
+        </div>
+
+        <div class="table-responsive" id="nomsVernaculaires">
+          <table aria-describedby="page-heading" class="table table-striped">
             <thead>
             <tr>
               <th scope="col">
@@ -37,7 +69,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let myVar of editForm.get('nomsVernaculaires')?.value; let i = index"
+            <tr *ngFor="let _ of editForm.get('nomsVernaculaires')?.value; let i = index"
                 [formGroupName]="'nomsVernaculaires'"
                 data-cy="nomsVernaculairesTable">
               <td>
@@ -69,10 +101,9 @@
             <fa-icon icon="plus"></fa-icon>
             <span jhiTranslate="monolithApp.addPlante.update.nomVernaculaire.add">Add row</span>
           </button>
-
         </div>
 
-        <div class="table-responsive" id="entities" *ngIf="cronquistRanks && cronquistRanks.length > 0">
+        <div *ngIf="cronquistRanks && cronquistRanks.length > 0" class="table-responsive" id="cronquist">
           <table class="table table-striped" aria-describedby="page-heading">
             <thead>
             <tr>
@@ -97,6 +128,52 @@
           </table>
         </div>
 
+        <div class="row mb-3">
+          <h1>Sources</h1>
+          <ul>
+            <ng-container formArrayName="sources">
+              <li *ngFor="let source of sources.controls; let i = index" data-cy="sourceCarousel">
+                <div *ngIf="isDisabled(i); else editUrl">
+                  <div (click)="redirect(i)">{{source.value.url.url}}</div>
+                </div>
+                <ng-template #editUrl>
+                  <input [attr.data-cy]="'source'+i"
+                         [jhiBindReferenceTo]="'url'"
+                         class="form-control" formControlName="{{i}}" id="source{{i}}" name="source{{i}}"
+                         type="text"/>
+                </ng-template>
+                <input [attr.data-cy]="'source'+i" [jhiBindReferenceTo]="'description'"
+                       class="form-control"
+                       formControlName="{{i}}" id="source{{i}}" name="source{{i}}" type="text"/>
+                <small *ngIf="source.errors?.invalidFormat" class="form-text text-danger"
+                       jhiTranslate="monolithApp.addPlante.update.source.invalidUrl">
+                  Invalid url format
+                </small>
+                <button
+                  (click)="toggleSourceEdit(i)"
+                  class="btn btn-primary btn-sm"
+                  data-cy="entityEditButton"
+                  id="edit-source-{{i}}"
+                  type="button">
+                  <fa-icon icon="plus"></fa-icon>
+                  <span jhiTranslate="monolithApp.addPlante.update.source.edit">Edit source</span>
+                </button>
+                <button (click)="deleteSource(i)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton"
+                        type="submit">
+                  <fa-icon icon="times"></fa-icon>
+                  <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                </button>
+              </li>
+            </ng-container>
+          </ul>
+          <button (click)="ajoutSource()" class="btn btn-primary jh-create-entity"
+                  data-cy="ajoutSource"
+                  id="ajout-source"
+                  type="button">
+            <fa-icon icon="plus"></fa-icon>
+            <span jhiTranslate="monolithApp.addPlante.update.source.add">Add source</span>
+          </button>
+        </div>
       </div>
 
       <div>
@@ -104,7 +181,6 @@
                 (click)="previousState()">
           <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
         </button>
-
         <button
           [disabled]="editForm.invalid || isSaving"
           class="btn btn-primary"
