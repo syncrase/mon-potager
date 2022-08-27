@@ -2,7 +2,6 @@ package fr.syncrase.ecosyst.feature.add_plante;
 
 import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.domain.Plante;
-import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.PlanteReader;
 import fr.syncrase.ecosyst.feature.add_plante.repository.PlanteWriter;
@@ -58,15 +57,12 @@ public class AddPlanteResource {
      */
     @GetMapping("/plantes/search")
     public ResponseEntity<List<ScrapedPlant>> scrapPlant(@RequestParam String name) {
-        log.debug("REST request to look for {} on the internet", name);
+        log.debug("REST request to look for {}", name);
         List<Plante> plantesByCriteria = planteReader.findPlantes(name);
         if (plantesByCriteria.size() == 1) {
             // Eagerly Load plante
-            return ResponseEntity.ok().body(
-                plantesByCriteria.stream().map(plante1 -> new ScrapedPlant(plante1)
-                    .cronquistClassificationBranch(new CronquistClassificationBranch(plante1.getClassification().getCronquist()))
-                ).collect(Collectors.toList())
-            );
+            Plante plante = planteReader.eagerLoad(plantesByCriteria.get(0));
+            return ResponseEntity.ok().body(List.of(new ScrapedPlant(plante)));
         }
         if (plantesByCriteria.size() > 1) {
             // Map plante to ScrapedPlante
@@ -102,7 +98,7 @@ public class AddPlanteResource {
 
         Plante savedPlante;
         try {
-            savedPlante = planteWriter.saveScrapedPlante(plante);
+            savedPlante = planteWriter.saveScrapedPlante(plante.getPlante());
         } catch (UnableToSaveClassificationException e) {
             log.warn("Impossible de sauvegarder la classification");
             return ResponseEntity.noContent().build();

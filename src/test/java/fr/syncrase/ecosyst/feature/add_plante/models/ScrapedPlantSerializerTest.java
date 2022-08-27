@@ -85,7 +85,10 @@ class ScrapedPlantSerializerTest {
             "  \"cronquistClassificationBranch\" : [ {\n" +
             "    \"id\" : null,\n" +
             "    \"nom\" : \"allium ampeloprasum var. porrum\",\n" +
-            "    \"rank\" : \"ESPECE\"\n" +
+            "    \"rank\" : \"ESPECE\",\n" +
+            "    \"classification\" : {\n" +
+            "      \"id\" : null\n" +
+            "    }\n" +
             "  }, {\n" +
             "    \"id\" : null,\n" +
             "    \"nom\" : null,\n" +

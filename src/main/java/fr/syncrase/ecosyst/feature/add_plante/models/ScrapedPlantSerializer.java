@@ -64,40 +64,48 @@ public class ScrapedPlantSerializer extends StdSerializer<ScrapedPlant> {
         gen.writeEndObject();
     }
 
-    private void writeNomsVernaculaires(@NotNull Set<NomVernaculaire> nomsVernaculaires) throws IOException {
-        gen.writeFieldName("nomsVernaculaires");
-        gen.writeStartArray();
-        for (NomVernaculaire nv : nomsVernaculaires) {
-            gen.writeStartObject();
-            writeNumber("id", nv.getId());
-            gen.writeStringField("nom", nv.getNom());
-            writeString("description", nv.getDescription());
-            gen.writeEndObject();
+    private void writeNomsVernaculaires(Set<NomVernaculaire> nomsVernaculaires) throws IOException {
+        if (nomsVernaculaires == null) {
+            gen.writeNullField("nomsVernaculaires");
+        } else {
+            gen.writeFieldName("nomsVernaculaires");
+            gen.writeStartArray();
+            for (NomVernaculaire nv : nomsVernaculaires) {
+                gen.writeStartObject();
+                writeNumber("id", nv.getId());
+                gen.writeStringField("nom", nv.getNom());
+                writeString("description", nv.getDescription());
+                gen.writeEndObject();
+            }
+            gen.writeEndArray();
         }
-        gen.writeEndArray();
     }
 
-    private void writeReferences(@NotNull Set<Reference> references) throws IOException {
-        gen.writeFieldName("references");
-        gen.writeStartArray();
-        for (Reference ref : references) {
-            gen.writeStartObject();
-            writeNumber("id", ref.getId());
-            gen.writeStringField("type", ref.getType().toString());
-            writeString("description", ref.getDescription());
+    private void writeReferences(Set<Reference> references) throws IOException {
+        if (references == null) {
+            gen.writeNullField("references");
+        } else {
+            gen.writeFieldName("references");
+            gen.writeStartArray();
+            for (Reference ref : references) {
+                gen.writeStartObject();
+                writeNumber("id", ref.getId());
+                gen.writeStringField("type", ref.getType().toString());
+                writeString("description", ref.getDescription());
 
-            writeUrl(ref);
+                writeUrl(ref.getUrl());
 
-            gen.writeEndObject();
+                gen.writeEndObject();
+            }
+            gen.writeEndArray();
         }
-        gen.writeEndArray();
     }
 
-    private void writeUrl(@NotNull Reference ref) throws IOException {
+    private void writeUrl(Url url) throws IOException {
         gen.writeFieldName("url");
         gen.writeStartObject();
-        writeNumber("id", ref.getUrl().getId());
-        gen.writeStringField("url", ref.getUrl().getUrl());
+        writeNumber("id", url.getId());
+        gen.writeStringField("url", url.getUrl());
         gen.writeEndObject();
     }
 

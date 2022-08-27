@@ -1,19 +1,14 @@
 package fr.syncrase.ecosyst.feature.add_plante.repository;
 
-import fr.syncrase.ecosyst.domain.Classification;
-import fr.syncrase.ecosyst.domain.NomVernaculaire;
-import fr.syncrase.ecosyst.domain.Plante;
+import fr.syncrase.ecosyst.domain.*;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.ClassificationConflict;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.CronquistConsistencyService;
 import fr.syncrase.ecosyst.feature.add_plante.consistency.InconsistencyResolverException;
-import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.ClassificationReconstructionException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.MoreThanOneResultException;
 import fr.syncrase.ecosyst.feature.add_plante.repository.exception.UnableToSaveClassificationException;
-import fr.syncrase.ecosyst.repository.ClassificationRepository;
-import fr.syncrase.ecosyst.repository.NomVernaculaireRepository;
-import fr.syncrase.ecosyst.repository.PlanteRepository;
+import fr.syncrase.ecosyst.repository.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,52 +34,73 @@ public class PlanteWriter {
 
     private final ClassificationRepository classificationRepository;
 
-    public PlanteWriter(CronquistWriter cronquistWriter, NomVernaculaireRepository nomVernaculaireRepository, CronquistConsistencyService cronquistConsistencyService, PlanteRepository planteRepository, ClassificationRepository classificationRepository) {
+    private final UrlRepository urlRepository;
+
+    private final ReferenceRepository referenceRepository;
+
+    private final CronquistRankRepository cronquistRankRepository;
+
+    public PlanteWriter(
+        CronquistWriter cronquistWriter,
+        NomVernaculaireRepository nomVernaculaireRepository,
+        CronquistConsistencyService cronquistConsistencyService,
+        PlanteRepository planteRepository,
+        ClassificationRepository classificationRepository,
+        UrlRepository urlRepository,
+        ReferenceRepository referenceRepository,
+        CronquistRankRepository cronquistRankRepository) {
         this.cronquistWriter = cronquistWriter;
         this.nomVernaculaireRepository = nomVernaculaireRepository;
         this.cronquistConsistencyService = cronquistConsistencyService;
         this.planteRepository = planteRepository;
         this.classificationRepository = classificationRepository;
+        this.urlRepository = urlRepository;
+        this.referenceRepository = referenceRepository;
+        this.cronquistRankRepository = cronquistRankRepository;
     }
 
     @Transactional
-    public Plante saveScrapedPlante(@NotNull ScrapedPlant plante) throws UnableToSaveClassificationException {
+    public Plante saveScrapedPlante(@NotNull Plante plante) throws UnableToSaveClassificationException {
 
+        plante.getClassification().setPlantes(Set.of(plante));
+        saveClassification(plante.getClassification());
+
+        plante.getReferences().forEach(reference -> reference.setPlantes(Set.of(plante)));
+        saveReferences(plante.getReferences());
+
+        plante.getNomsVernaculaires().forEach(nomVernaculaire -> nomVernaculaire.setPlantes(Set.of(plante)));
+        saveNomsVernaculaires(plante.getNomsVernaculaires());
+
+        return planteRepository.save(plante);
+    }
+
+    private void saveReferences(Set<Reference> references) {
+        if (references != null) {
+            references.forEach(reference -> {
+                urlRepository.save(reference.getUrl());
+                referenceRepository.save(reference);
+            });
+        }
+    }
+
+    private void saveClassification(@NotNull Classification classification) throws UnableToSaveClassificationException {
         // For each classification type
-        CronquistClassificationBranch savedCronquist = saveCronquist(plante.getCronquistClassificationBranch());
-        if (savedCronquist == null && plante.getCronquistClassificationBranch() != null) {
+        CronquistClassificationBranch cronquistClassificationBranch = saveCronquist(classification.getCronquist());
+        if (cronquistClassificationBranch != null) {
+            classification.setCronquist(cronquistClassificationBranch.getNestedLowestRank());
+            classificationRepository.save(classification);
+        } else {
             throw new UnableToSaveClassificationException();
         }
-        plante.setCronquistClassificationBranch(savedCronquist);
 
-        if (plante.getPlante().getClassification() == null) {
-            plante.getPlante().setClassification(new Classification());
-        }
-        Classification classification = plante.getPlante().getClassification()
-            .cronquist(plante.getCronquistClassificationBranch().getLowestRank());
-        classificationRepository.save(classification);
-
-        saveNomsVernaculaires(plante.getPlante().getNomsVernaculaires());
-
-        // TODO check if ids are here
-        Plante planteEntity = new Plante()
-            .id(plante.getPlante().getId())
-            .nomsVernaculaires(plante.getPlante().getNomsVernaculaires())
-            .classification(classification);
-
-        return planteRepository.save(planteEntity);
     }
 
     @Contract(pure = true)
     private void saveNomsVernaculaires(Set<NomVernaculaire> nomsVernaculaires) {
-        //private @NotNull List<NomVernaculaire> saveNomsVernaculaires(@NotNull ScrapedPlant plante) {
-        // TODO est-ce que les noms possède les nouveau id à la sortie de la méthode
         if (nomsVernaculaires == null) {
             return;
-            //return List.of();
         }
         synchronizeNomsVernaculaires(nomsVernaculaires);
-        //return
         nomVernaculaireRepository.saveAll(nomsVernaculaires);
     }
 
@@ -98,7 +114,7 @@ public class PlanteWriter {
     }
 
     @Contract(pure = true)
-    private @Nullable CronquistClassificationBranch saveCronquist(@NotNull CronquistClassificationBranch classification) {
+    private @Nullable CronquistClassificationBranch saveCronquist(CronquistRank classification) {
         /*
          * Accès en read only
          */
@@ -107,10 +123,10 @@ public class PlanteWriter {
         try {
             conflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(toSaveCronquistClassification);
         } catch (ClassificationReconstructionException e) {
-            log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.last().getNom());
+            log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.getNom());
             return null;
         } catch (MoreThanOneResultException e) {
-            log.warn("{}: the rank name {} seems to be in an inconsistent state in the database. More than one was found.", e.getClass(), classification.last().getNom());
+            log.warn("{}: the rank name {} seems to be in an inconsistent state in the database. More than one was found.", e.getClass(), classification.getNom());
             return null;
         }
 
@@ -123,7 +139,7 @@ public class PlanteWriter {
                 resolvedConflicts = cronquistConsistencyService.resolveInconsistencyInDatabase(conflicts);
                 resolvedConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
             } catch (InconsistencyResolverException | MoreThanOneResultException e) {
-                log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.last().getNom());
+                log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.getNom());
                 return null;
             } catch (ClassificationReconstructionException e) {
                 return null;
@@ -139,5 +155,13 @@ public class PlanteWriter {
             return cronquistWriter.save(conflicts.getNewClassification());
         }
         return null;
+    }
+
+    public void removeAll() {
+        nomVernaculaireRepository.deleteAll();
+        urlRepository.deleteAll();
+        referenceRepository.deleteAll();
+        cronquistRankRepository.deleteAll();
+        classificationRepository.deleteAll();
     }
 }

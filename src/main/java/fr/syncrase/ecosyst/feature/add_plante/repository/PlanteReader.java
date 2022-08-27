@@ -1,23 +1,15 @@
 package fr.syncrase.ecosyst.feature.add_plante.repository;
 
-import fr.syncrase.ecosyst.domain.Classification;
-import fr.syncrase.ecosyst.domain.CronquistRank;
-import fr.syncrase.ecosyst.domain.NomVernaculaire;
-import fr.syncrase.ecosyst.domain.Plante;
-import fr.syncrase.ecosyst.service.ClassificationQueryService;
-import fr.syncrase.ecosyst.service.CronquistRankQueryService;
-import fr.syncrase.ecosyst.service.NomVernaculaireQueryService;
-import fr.syncrase.ecosyst.service.PlanteQueryService;
-import fr.syncrase.ecosyst.service.criteria.ClassificationCriteria;
-import fr.syncrase.ecosyst.service.criteria.CronquistRankCriteria;
-import fr.syncrase.ecosyst.service.criteria.NomVernaculaireCriteria;
-import fr.syncrase.ecosyst.service.criteria.PlanteCriteria;
+import fr.syncrase.ecosyst.domain.*;
+import fr.syncrase.ecosyst.service.*;
+import fr.syncrase.ecosyst.service.criteria.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +23,13 @@ public class PlanteReader {
     private PlanteQueryService planteQueryService;
 
     private ClassificationQueryService classificationQueryService;
+
+    private ReferenceQueryService referenceQueryService;
+
+    @Autowired
+    public void setReferenceQueryService(ReferenceQueryService referenceQueryService) {
+        this.referenceQueryService = referenceQueryService;
+    }
 
     @Autowired
     public void setClassificationQueryService(ClassificationQueryService classificationQueryService) {
@@ -95,5 +94,36 @@ public class PlanteReader {
             nomVernaculaireIdFilter.setIn(nomVernaculaireIds);
             planteCriteria.setNomsVernaculairesId(nomVernaculaireIdFilter);
         }
+    }
+
+    /**
+     * Load all lists contained in the plante object
+     *
+     * @param plante will receive all list content
+     * @return the plante with loaded lists content
+     */
+    public Plante eagerLoad(@NotNull Plante plante) {
+
+        LongFilter planteIdFilter = new LongFilter();
+        planteIdFilter.setEquals(plante.getId());
+
+        NomVernaculaireCriteria nomCriteria = new NomVernaculaireCriteria();
+        nomCriteria.setPlantesId(planteIdFilter);
+        List<NomVernaculaire> nomsVernaculaires = nomVernaculaireQueryService.findByCriteria(nomCriteria);
+        if (nomsVernaculaires.size() != 0) {
+            plante.setNomsVernaculaires(new HashSet<>(nomsVernaculaires));
+        } else {
+            plante.setNomsVernaculaires(null);
+        }
+
+        ReferenceCriteria referenceCriteria = new ReferenceCriteria();
+        referenceCriteria.setPlantesId(planteIdFilter);
+        List<Reference> referencesByCriteria = referenceQueryService.findByCriteria(referenceCriteria);
+        if (referencesByCriteria.size() != 0) {
+            plante.setReferences(new HashSet<>(referencesByCriteria));
+        } else {
+            plante.setReferences(null);
+        }
+        return plante;
     }
 }

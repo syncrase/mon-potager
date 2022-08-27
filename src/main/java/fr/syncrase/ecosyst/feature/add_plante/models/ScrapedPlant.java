@@ -1,6 +1,7 @@
 package fr.syncrase.ecosyst.feature.add_plante.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import fr.syncrase.ecosyst.domain.Classification;
 import fr.syncrase.ecosyst.domain.Plante;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,12 @@ public class ScrapedPlant {
     }
 
     public Plante getPlante() {
+        if (plante.getClassification() == null) {
+            plante.setClassification(new Classification());
+        }
+
+        plante.getClassification().setCronquist(this.cronquistClassificationBranch.getNestedLowestRank());
+
         return plante;
     }
 

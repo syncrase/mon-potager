@@ -276,4 +276,25 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     public @NotNull NavigableSet<CronquistRank> subSet(CronquistRank fromElement, boolean fromInclusive, CronquistRank toElement, boolean toInclusive) {
         return classificationCronquist.subSet(fromElement, fromInclusive, toElement, toInclusive);
     }
+
+    public CronquistRank getNestedLowestRank() {
+
+        CronquistRank tmpRank = this.getLowestRank();
+        CronquistRank nestedLowestRank = tmpRank;
+
+        Iterator<CronquistRank> iterator = this.iterator();
+        CronquistRank currentRank = iterator.next();
+        tmpRank.setParent(currentRank);
+        currentRank.addChildren(tmpRank);
+        tmpRank = currentRank;
+
+        while (iterator.hasNext()) {
+            currentRank = iterator.next();
+            tmpRank.setParent(currentRank);
+            currentRank.addChildren(tmpRank);
+            tmpRank = currentRank;
+        }
+
+        return nestedLowestRank;
+    }
 }
