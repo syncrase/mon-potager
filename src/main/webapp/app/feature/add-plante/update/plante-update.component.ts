@@ -148,6 +148,7 @@ export class PlanteUpdateComponent implements OnInit {
   }
 
   protected onSaveSuccess(): void {
+    // TODO rediriger vers la page de visualisation de la plante
     this.previousState();
   }
 
@@ -185,7 +186,6 @@ export class PlanteUpdateComponent implements OnInit {
     this.planteInitiale = plante;
     this.editForm.patchValue({
       id: plante.plante?.id,
-      // TODO traiter les références, les images et les sources
     });
     if (plante.plante?.nomsVernaculaires) {
       for (const nv of plante.plante.nomsVernaculaires) {
@@ -201,6 +201,8 @@ export class PlanteUpdateComponent implements OnInit {
           (this.editForm.controls['sources'] as FormArray).push(this.fb.control(reference));
         }
       }
+      (this.editForm.controls['images'] as FormArray).disable();
+      (this.editForm.controls['sources'] as FormArray).disable();
     }
     if (plante.cronquistClassificationBranch) {
       this.editForm.setControl('cronquist', this.fb.group(this.formFriendlyCronquistRanks(plante.cronquistClassificationBranch)));

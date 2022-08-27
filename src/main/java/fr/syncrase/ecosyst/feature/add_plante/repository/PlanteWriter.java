@@ -55,19 +55,18 @@ public class PlanteWriter {
         if (savedCronquist == null && plante.getCronquistClassificationBranch() != null) {
             throw new UnableToSaveClassificationException();
         }
-        //if (savedCronquist != null) {
         plante.setCronquistClassificationBranch(savedCronquist);
-        //}
 
-        Classification classification = plante.getPlante().getClassification();
-        //Classification classification = new Classification().cronquist(plante.getCronquistClassificationBranch().getLowestRank());
+        if (plante.getPlante().getClassification() == null) {
+            plante.getPlante().setClassification(new Classification());
+        }
+        Classification classification = plante.getPlante().getClassification()
+            .cronquist(plante.getCronquistClassificationBranch().getLowestRank());
         classificationRepository.save(classification);
 
-
-        //List<NomVernaculaire> nomVernaculaires =
         saveNomsVernaculaires(plante.getPlante().getNomsVernaculaires());
-        //plante.setNomsVernaculaires(new HashSet<>(nomVernaculaires));
 
+        // TODO check if ids are here
         Plante planteEntity = new Plante()
             .id(plante.getPlante().getId())
             .nomsVernaculaires(plante.getPlante().getNomsVernaculaires())
@@ -84,12 +83,12 @@ public class PlanteWriter {
             return;
             //return List.of();
         }
-        synchronize(nomsVernaculaires);
+        synchronizeNomsVernaculaires(nomsVernaculaires);
         //return
         nomVernaculaireRepository.saveAll(nomsVernaculaires);
     }
 
-    private void synchronize(@NotNull Set<NomVernaculaire> nomsVernaculaires) {
+    private void synchronizeNomsVernaculaires(@NotNull Set<NomVernaculaire> nomsVernaculaires) {
         for (NomVernaculaire nomVernaculaire : nomsVernaculaires) {
             NomVernaculaire existingNomVernaculaire = nomVernaculaireRepository.findByNom(nomVernaculaire.getNom());
             if (existingNomVernaculaire != null) {

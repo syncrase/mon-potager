@@ -4,6 +4,7 @@ import fr.syncrase.ecosyst.domain.NomVernaculaire;
 import fr.syncrase.ecosyst.domain.Plante;
 import fr.syncrase.ecosyst.domain.Reference;
 import fr.syncrase.ecosyst.domain.Url;
+import fr.syncrase.ecosyst.domain.enumeration.ReferenceType;
 import fr.syncrase.ecosyst.feature.add_plante.classification.CronquistClassificationBranch;
 import fr.syncrase.ecosyst.feature.add_plante.models.ScrapedPlant;
 import fr.syncrase.ecosyst.feature.add_plante.scraper.wikipedia.WikipediaResolver;
@@ -43,11 +44,16 @@ public class WebScrapingService {
         CronquistClassificationBranch cronquistClassificationBranch = getCronquistClassificationFromDocument(pageContainingClassification);
         if (cronquistClassificationBranch != null) {
 
-            ScrapedPlant scrapedPlant = new ScrapedPlant()
+            Plante plante = new Plante()
+                .addNomsVernaculaires(new NomVernaculaire().nom(name))
+                .addReferences(
+                    new Reference()
+                        .url(
+                            new Url().url(wikiUrl))
+                        .type(ReferenceType.SOURCE)
+                );
+            return new ScrapedPlant(plante)
                 .cronquistClassificationBranch(cronquistClassificationBranch);
-            scrapedPlant.getPlante().addNomsVernaculaires(new NomVernaculaire().nom(name));
-            scrapedPlant.getPlante().addReferences(new Reference().url(new Url().url(wikiUrl)));
-            return scrapedPlant;
         }
         throw new PlantNotFoundException("Impossible de scraper la plante " + name);
     }

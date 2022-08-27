@@ -44,9 +44,20 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     public CronquistClassificationBranch(@NotNull CronquistRank cronquistRank) {
         this();
         CronquistRank currentRank = cronquistRank;
-        while (currentRank != null) {
-            add(currentRank);
-            currentRank = currentRank.getParent();
+        if (!cronquistRank.getRank().equals(CronquistTaxonomicRank.DOMAINE)) {
+            // Go up
+            while (currentRank != null) {
+                add(currentRank);
+                currentRank = currentRank.getParent();
+            }
+        } else {
+            // Go down
+            while (currentRank != null) {
+                add(currentRank);
+                Optional<CronquistRank> rankOptional = currentRank.getChildren().stream().filter(cronquistRank1 -> cronquistRank1.getRank() != null).findFirst();
+                currentRank = rankOptional.orElse(null);
+            }
+
         }
         this.clearTail();
     }
@@ -189,6 +200,9 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     @Override
     public boolean add(@NotNull CronquistRank cronquistRank) {
         CronquistRank thisCorrespondingRank = this.getRang(cronquistRank.getRank());
+        if (thisCorrespondingRank == null) {
+            throw new RuntimeException("Fail to get rank " + cronquistRank);
+        }
         boolean isListChanged = !Objects.equals(thisCorrespondingRank.getNom(), cronquistRank.getNom()) || !Objects.equals(thisCorrespondingRank.getId(), cronquistRank.getId());
         if (cronquistRank.getNom() != null) {
             thisCorrespondingRank.setNom(cronquistRank.getNom().toLowerCase());
@@ -254,12 +268,12 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     }
 
     @Override
-    public SortedSet<CronquistRank> subSet(CronquistRank fromElement, CronquistRank toElement) {
+    public @NotNull SortedSet<CronquistRank> subSet(CronquistRank fromElement, CronquistRank toElement) {
         return classificationCronquist.subSet(fromElement, toElement);
     }
 
     @Override
-    public NavigableSet<CronquistRank> subSet(CronquistRank fromElement, boolean fromInclusive, CronquistRank toElement, boolean toInclusive) {
+    public @NotNull NavigableSet<CronquistRank> subSet(CronquistRank fromElement, boolean fromInclusive, CronquistRank toElement, boolean toInclusive) {
         return classificationCronquist.subSet(fromElement, fromInclusive, toElement, toInclusive);
     }
 }
