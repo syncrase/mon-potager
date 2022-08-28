@@ -56,21 +56,19 @@ public class CronquistConsistencyService {
      * @param toSaveCronquistClassification Classification que l'on souhaite enregistrer en base de données, celle-ci est copiée et synchronisée avec la BDD afin de satisfaire tous les invariants
      * @return La classification dont les rangs ont été comparés avec la base de données. S'il n'y a aucun conflit, la classification peut être enregistrée telle qu'elle.
      */
-    @Contract(pure = true)
     public ClassificationConflict getSynchronizedClassificationAndConflicts(CronquistClassificationBranch toSaveCronquistClassification) throws ClassificationReconstructionException, MoreThanOneResultException {
         ClassificationConflict synchronizationResult = new ClassificationConflict();
-        CronquistClassificationBranch scrapedClassification = new CronquistClassificationBranch(toSaveCronquistClassification);
-        synchronizationResult.setNewClassification(scrapedClassification);
-        addConflictIfRankExistsAtAnotherLevel(synchronizationResult, scrapedClassification);
+        synchronizationResult.setNewClassification(toSaveCronquistClassification);
+        addConflictIfRankExistsAtAnotherLevel(synchronizationResult, toSaveCronquistClassification);
         if (synchronizationResult.getConflictedClassifications().size() != 0) {
             return synchronizationResult;// The same rank name already exists at another place. The conflict must be resolved before continue the synchronization
         }
 
-        CronquistClassificationBranch existingClassification = cronquistReader.findExistingPartOfThisClassification(scrapedClassification);
+        CronquistClassificationBranch existingClassification = cronquistReader.findExistingPartOfThisClassification(toSaveCronquistClassification);
         if (existingClassification != null) {
             for (CronquistRank existingRank : existingClassification) {
                 CronquistRank scrapedRank;
-                scrapedRank = scrapedClassification.getRang(existingRank.getRank());
+                scrapedRank = toSaveCronquistClassification.getRang(existingRank.getRank());
                 updateScrapedRankOrAddConflict(synchronizationResult, existingRank, scrapedRank);
             }
         }
@@ -167,6 +165,7 @@ public class CronquistConsistencyService {
         if (scrapedRankIsConnection || bothSignificativeWithTheSameName) {
             scrapedRank.setId(existingRank.getId());
             scrapedRank.setNom(existingRank.getNom());
+            scrapedRank.setClassification(existingRank.getClassification());
             return;
         }
 

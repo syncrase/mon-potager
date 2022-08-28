@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class ScrapedPlantSerializerTest {
 
@@ -55,7 +56,7 @@ class ScrapedPlantSerializerTest {
                             cronquistRank.setNom("Plantae");
                         }
                         nextRank = new CronquistRank();
-                        cronquistRank.setChildren(Set.of(nextRank));
+                        cronquistRank.setChildren(Stream.of(nextRank).collect(Collectors.toSet()));
                         cronquistRank = nextRank;
                     }
                     return classification1;

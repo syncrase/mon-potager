@@ -42,7 +42,8 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
      * Construit une classification à partir d'un rang
      */
     public CronquistClassificationBranch(@NotNull CronquistRank cronquistRank) {
-        this();
+        //this();
+        this.classificationCronquist = new TreeSet<>();
         CronquistRank currentRank = cronquistRank;
         if (!cronquistRank.getRank().equals(CronquistTaxonomicRank.DOMAINE)) {
             // Go up
@@ -201,7 +202,11 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
     public boolean add(@NotNull CronquistRank cronquistRank) {
         CronquistRank thisCorrespondingRank = this.getRang(cronquistRank.getRank());
         if (thisCorrespondingRank == null) {
-            throw new RuntimeException("Fail to get rank " + cronquistRank);
+            if (cronquistRank.getNom() != null) {
+                cronquistRank.setNom(cronquistRank.getNom().toLowerCase());
+            }
+            this.classificationCronquist.add(cronquistRank);
+            return true;
         }
         boolean isListChanged = !Objects.equals(thisCorrespondingRank.getNom(), cronquistRank.getNom()) || !Objects.equals(thisCorrespondingRank.getId(), cronquistRank.getId());
         if (cronquistRank.getNom() != null) {
@@ -279,22 +284,22 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
 
     public CronquistRank getNestedLowestRank() {
 
-        CronquistRank tmpRank = this.getLowestRank();
-        CronquistRank nestedLowestRank = tmpRank;
-
         Iterator<CronquistRank> iterator = this.iterator();
+        CronquistRank previousRank = iterator.next();
+        CronquistRank keepObjectReferenceToReturn = previousRank;
+
         CronquistRank currentRank = iterator.next();
-        tmpRank.setParent(currentRank);
-        currentRank.addChildren(tmpRank);
-        tmpRank = currentRank;
+        previousRank.setParent(currentRank);
+        currentRank.addChildren(previousRank);
+        previousRank = currentRank;
 
         while (iterator.hasNext()) {
             currentRank = iterator.next();
-            tmpRank.setParent(currentRank);
-            currentRank.addChildren(tmpRank);
-            tmpRank = currentRank;
+            previousRank.setParent(currentRank);
+            currentRank.addChildren(previousRank);
+            previousRank = currentRank;
         }
 
-        return nestedLowestRank;
+        return keepObjectReferenceToReturn;
     }
 }

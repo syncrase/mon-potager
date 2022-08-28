@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -59,74 +62,130 @@ public class PlanteWriter {
         this.cronquistRankRepository = cronquistRankRepository;
     }
 
+    private static void synchronizePlanteAndReferences(@NotNull Plante plante, Set<Plante> intersection) {
+        Plante existingPlanteForOneOfThisNameAndThisClassification = intersection.stream().findFirst().orElse(new Plante());
+        plante.setId(existingPlanteForOneOfThisNameAndThisClassification.getId());
+        for (Reference reference : plante.getReferences()) {
+            for (Reference existingReference : existingPlanteForOneOfThisNameAndThisClassification.getReferences()) {
+                // Si je trouve une référence qui correspond à l'une de celles existantes, j'en déduis que c'est la même
+                boolean isUrlsMatch = existingReference.getUrl() != null && reference.getUrl() != null && existingReference.getUrl().getUrl().equals(reference.getUrl().getUrl());
+                boolean isDescriptionMatch = Objects.equals(existingReference.getDescription(), reference.getDescription());
+                boolean isTypeMatch = existingReference.getType().equals(reference.getType());
+                if (isUrlsMatch && isDescriptionMatch && isTypeMatch) {
+                    reference.setId(existingReference.getId());
+                    break;
+                }
+            }
+        }
+    }
+
     @Transactional
     public Plante saveScrapedPlante(@NotNull Plante plante) throws UnableToSaveClassificationException {
 
-        plante.getClassification().setPlantes(Set.of(plante));
-        saveClassification(plante.getClassification());
-
+        plante.getNomsVernaculaires().forEach(nomVernaculaire -> nomVernaculaire.setPlantes(Set.of(plante)));
         plante.getReferences().forEach(reference -> reference.setPlantes(Set.of(plante)));
+
+        Set<Plante> plantesAlreadyAssociatedWithClassification = saveClassification(plante.getClassification());
+
+        Set<Plante> plantesAlreadyAssociatedWithNames = saveNomsVernaculaires(plante.getNomsVernaculaires());
+
+        inferTheCorrespondingPlante(plante, plantesAlreadyAssociatedWithClassification, plantesAlreadyAssociatedWithNames);
+
         saveReferences(plante.getReferences());
 
-        plante.getNomsVernaculaires().forEach(nomVernaculaire -> nomVernaculaire.setPlantes(Set.of(plante)));
-        saveNomsVernaculaires(plante.getNomsVernaculaires());
-
         return planteRepository.save(plante);
+    }
+
+    private void inferTheCorrespondingPlante(@NotNull Plante plante, Set<Plante> plantesAlreadyAssociatedWithClassification, Set<Plante> plantesAlreadyAssociatedWithNames) {
+        Set<Plante> intersection = new HashSet<>(plantesAlreadyAssociatedWithNames);
+        intersection.retainAll(plantesAlreadyAssociatedWithClassification);
+        if (intersection.size() == 0) {
+            log.info("No common plante for classification and names. This is a new plante");
+        } else if (intersection.size() == 1) {
+            log.info("Found a common plante for classification and names. We'll update this one");
+            synchronizePlanteAndReferences(plante, intersection);
+        } else {
+            log.error("Found multiple plante associated with the classification and names. How to determine which one update?\n" +
+                "Plante to save : " + plante + "\n" +
+                "Associated with classification : " + plantesAlreadyAssociatedWithClassification + "\n" +
+                "Associated with noms vernaculaires : " + plantesAlreadyAssociatedWithNames);
+        }
     }
 
     private void saveReferences(Set<Reference> references) {
         if (references != null) {
             references.forEach(reference -> {
+                Url existingUrl = urlRepository.findOneByUrl(reference.getUrl().getUrl());
+                if (existingUrl != null) {
+                    reference.getUrl().setId(existingUrl.getId());
+                }
                 urlRepository.save(reference.getUrl());
-                referenceRepository.save(reference);
+                referenceRepository.save(reference);// TODO comment déterminer si la référence est nouvelle?
             });
         }
     }
 
-    private void saveClassification(@NotNull Classification classification) throws UnableToSaveClassificationException {
-        // For each classification type
-        CronquistClassificationBranch cronquistClassificationBranch = saveCronquist(classification.getCronquist());
+    private @NotNull Set<Plante> saveClassification(@NotNull Classification classification) throws UnableToSaveClassificationException {
+
+        CronquistClassificationBranch toSaveCronquistClassification = new CronquistClassificationBranch(classification.getCronquist());
+        classification.setCronquist(toSaveCronquistClassification.getNestedLowestRank());
+        classification.getCronquist().setClassification(classification);
+
+        CronquistClassificationBranch cronquistClassificationBranch = saveCronquist(toSaveCronquistClassification);
         if (cronquistClassificationBranch != null) {
-            classification.setCronquist(cronquistClassificationBranch.getNestedLowestRank());
-            classificationRepository.save(classification);
+            CronquistRank lowestRank = cronquistClassificationBranch.getNestedLowestRank();
+            boolean isCronquistRankAlreadyAssociatedWithClassification = lowestRank.getClassification() != null && lowestRank.getClassification().getId() != null;
+            if (isCronquistRankAlreadyAssociatedWithClassification) {
+                classification.setId(lowestRank.getClassification().getId());
+                Classification classification1 = classificationRepository.findOneById(lowestRank.getClassification().getId());
+                return classification1.getPlantes();
+            } else {
+                classification.setCronquist(lowestRank);
+                classificationRepository.save(classification);
+                cronquistRankRepository.save(classification.getCronquist());// Save the classification in the cronquist rank
+            }
         } else {
             throw new UnableToSaveClassificationException();
         }
 
+        return Collections.emptySet();
     }
 
     @Contract(pure = true)
-    private void saveNomsVernaculaires(Set<NomVernaculaire> nomsVernaculaires) {
+    private @NotNull Set<Plante> saveNomsVernaculaires(Set<NomVernaculaire> nomsVernaculaires) {
         if (nomsVernaculaires == null) {
-            return;
+            return Collections.emptySet();
         }
-        synchronizeNomsVernaculaires(nomsVernaculaires);
+        Set<Plante> plantesAssociatedWithNames = synchronizeNomsVernaculaires(nomsVernaculaires);
         nomVernaculaireRepository.saveAll(nomsVernaculaires);
+        return plantesAssociatedWithNames;
     }
 
-    private void synchronizeNomsVernaculaires(@NotNull Set<NomVernaculaire> nomsVernaculaires) {
+    private @NotNull Set<Plante> synchronizeNomsVernaculaires(@NotNull Set<NomVernaculaire> nomsVernaculaires) {
+        Set<Plante> plantesAssociatedWithNames = new HashSet<>();
         for (NomVernaculaire nomVernaculaire : nomsVernaculaires) {
             NomVernaculaire existingNomVernaculaire = nomVernaculaireRepository.findByNom(nomVernaculaire.getNom());
             if (existingNomVernaculaire != null) {
                 nomVernaculaire.setId(existingNomVernaculaire.getId());
+                nomVernaculaire.setDescription(existingNomVernaculaire.getDescription());
+                nomVernaculaire.setNom(existingNomVernaculaire.getNom());
+                plantesAssociatedWithNames.addAll(existingNomVernaculaire.getPlantes());
             }
         }
+        return plantesAssociatedWithNames;
     }
 
     @Contract(pure = true)
-    private @Nullable CronquistClassificationBranch saveCronquist(CronquistRank classification) {
-        /*
-         * Accès en read only
-         */
-        CronquistClassificationBranch toSaveCronquistClassification = new CronquistClassificationBranch(classification);
+    private @Nullable CronquistClassificationBranch saveCronquist(@NotNull CronquistClassificationBranch toSaveCronquistClassification) {
         ClassificationConflict conflicts;
+        CronquistRank cronquistRank = toSaveCronquistClassification.getLowestRank();
         try {
             conflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(toSaveCronquistClassification);
         } catch (ClassificationReconstructionException e) {
-            log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.getNom());
+            log.warn("{}: Unable to construct a cronquistRank for {}", e.getClass(), cronquistRank.getNom());
             return null;
         } catch (MoreThanOneResultException e) {
-            log.warn("{}: the rank name {} seems to be in an inconsistent state in the database. More than one was found.", e.getClass(), classification.getNom());
+            log.warn("{}: the rank name {} seems to be in an inconsistent state in the database. More than one was found.", e.getClass(), cronquistRank.getNom());
             return null;
         }
 
@@ -139,7 +198,7 @@ public class PlanteWriter {
                 resolvedConflicts = cronquistConsistencyService.resolveInconsistencyInDatabase(conflicts);
                 resolvedConflicts = cronquistConsistencyService.getSynchronizedClassificationAndConflicts(resolvedConflicts.getNewClassification());
             } catch (InconsistencyResolverException | MoreThanOneResultException e) {
-                log.warn("{}: Unable to construct a classification for {}", e.getClass(), classification.getNom());
+                log.warn("{}: Unable to construct a cronquistRank for {}", e.getClass(), cronquistRank.getNom());
                 return null;
             } catch (ClassificationReconstructionException e) {
                 return null;
@@ -149,7 +208,7 @@ public class PlanteWriter {
         }
 
         /*
-         * Enregistrement de la nouvelle classification
+         * Enregistrement de la nouvelle cronquistRank
          */
         if (resolvedConflicts.getConflictedClassifications().size() == 0) {
             return cronquistWriter.save(conflicts.getNewClassification());

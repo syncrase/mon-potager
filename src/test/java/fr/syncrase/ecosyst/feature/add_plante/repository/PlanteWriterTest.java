@@ -35,7 +35,7 @@ class PlanteWriterTest {
         Assertions.assertNotNull(cronquistRank, "La classification de Cronquist doit exister");
         Assertions.assertNotNull(cronquistRank.getClassification(), "Cronquist doit être associée à une classification");
         Assertions.assertNotNull(cronquistRank.getClassification().getId(), "La classification associée doit posséder un ID");
-
+        Assertions.assertEquals(cronquistRank.getRank(), CronquistTaxonomicRank.ESPECE, "La classification doit être associé à l'espèce");
         //noinspection MismatchedQueryAndUpdateOfCollection
         final CronquistClassificationBranch porrumClassification = new CronquistClassificationBranch(cronquistRank);
         Assertions.assertEquals("allium ampeloprasum var. porrum", porrumClassification.getLowestRank().getNom());
@@ -97,6 +97,16 @@ class PlanteWriterTest {
         assertReferences(eagerLoadedPlante);
         assertNomsVernaculaires(eagerLoadedPlante);
         assertClassification(eagerLoadedPlante);
+
+        ScrapedPlant porrumScrapedPlante2 = ScrapedPlanteMockRepository.PORRUM.getPlante();
+        Plante porrumPlantePlante2 = porrumScrapedPlante2.getPlante();
+        Plante plante2 = planteWriter.saveScrapedPlante(porrumPlantePlante2);
+        // Asserts : all IDs must be equals
+        Assertions.assertEquals(plante.getId(), plante2.getId(), "Les IDs des plantes doivent être égaux");
+        Assertions.assertEquals(plante.getClassification().getId(), plante2.getClassification().getId(), "Les IDs des classifications doivent être égaux");
+
+        Assertions.assertTrue(plante2.getReferences().containsAll(plante.getReferences()), "Les références des plantes doivent être les mêmes");
+        Assertions.assertTrue(plante.getNomsVernaculaires().containsAll(plante2.getNomsVernaculaires()), "Les noms vernaculaires doivent être égaux");
 
     }
 }
