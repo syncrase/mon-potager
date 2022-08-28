@@ -17,6 +17,9 @@
           "edit": "Modifier source",
           "invalidUrl": "Le format de l'url est invalide"
         }
+      },
+      "fiche": {
+        "title": "Fiche plante"
       }
     }
   }

@@ -158,10 +158,27 @@ public class PlanteWriter {
     }
 
     public void removeAll() {
+        planteRepository.findAll().forEach(plante -> {
+            plante.setReferences(null);
+            plante.setNomsVernaculaires(null);
+            plante.setClassification(null);
+            planteRepository.save(plante);
+        });
         nomVernaculaireRepository.deleteAll();
+
+        referenceRepository.findAll().forEach(reference -> {
+            reference.setUrl(null);
+            referenceRepository.save(reference);
+        });
         urlRepository.deleteAll();
         referenceRepository.deleteAll();
+
+        classificationRepository.findAll().forEach(classification -> {
+            classification.setCronquist(null);
+            classificationRepository.save(classification);
+        });
         cronquistRankRepository.deleteAll();
         classificationRepository.deleteAll();
+        planteRepository.deleteAll();
     }
 }

@@ -89,7 +89,7 @@ public class AddPlanteResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} resulting plante.
      */
     @PostMapping("/plantes/save")
-    public ResponseEntity<Plante> savePlant(@RequestBody @NotNull ScrapedPlant plante) {
+    public ResponseEntity<ScrapedPlant> savePlant(@RequestBody @NotNull ScrapedPlant plante) {
         log.debug("REST request to save Plante : {}",
             plante.getPlante().getNomsVernaculaires() != null ?
                 plante.getPlante().getNomsVernaculaires().stream().map(NomVernaculaire::getNom).collect(Collectors.joining(", ")) :
@@ -103,7 +103,7 @@ public class AddPlanteResource {
             log.warn("Impossible de sauvegarder la classification");
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok().body(savedPlante);
+        return ResponseEntity.ok().body(new ScrapedPlant(savedPlante));
 
     }
 

@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpResponse} from '@angular/common/http';
 import {AbstractControl, FormArray, FormBuilder} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
-import {AddPlanteService} from "../service/add-plante.service";
+import {AddPlanteService, EntityResponseType} from "../service/add-plante.service";
 import {IScrapedPlante, ScrapedPlante} from "../scraped-plant.model";
 import {CronquistRank, ICronquistRank} from "../../../entities/cronquist-rank/cronquist-rank.model";
 import {CronquistTaxonomicRank} from "../../../entities/enumerations/cronquist-taxonomic-rank.model";
@@ -48,6 +47,7 @@ export class PlanteUpdateComponent implements OnInit {
   constructor(
     protected planteService: AddPlanteService,
     protected activatedRoute: ActivatedRoute,
+    protected router: Router,
     protected fb: FormBuilder,
     protected sessionContext: SessionContextService
   ) {
@@ -140,16 +140,18 @@ export class PlanteUpdateComponent implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IScrapedPlante>>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
+  protected subscribeToSaveResponse(result: Observable<EntityResponseType>): void {
+    result.pipe(
+      finalize(() => this.onSaveFinalize())
+    ).subscribe({
+      next: (savedPlante) => this.onSaveSuccess(savedPlante.body),
       error: () => this.onSaveError(),
     });
   }
 
-  protected onSaveSuccess(): void {
-    // TODO rediriger vers la page de visualisation de la plante
-    this.previousState();
+  protected onSaveSuccess(savedPlante: ScrapedPlante | null): void {
+    this.sessionContext.set('plante', savedPlante);
+    this.router.navigate(['/feature/add-plante/fiche']);
   }
 
   protected onSaveError(): void {
