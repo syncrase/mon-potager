@@ -290,13 +290,13 @@ public final class CronquistClassificationBranch extends TreeSet<CronquistRank> 
 
         CronquistRank currentRank = iterator.next();
         previousRank.setParent(currentRank);
-        currentRank.addChildren(previousRank);
+        //currentRank.addChildren(previousRank);// Not necessary because I get the lowest
         previousRank = currentRank;
 
         while (iterator.hasNext()) {
             currentRank = iterator.next();
             previousRank.setParent(currentRank);
-            currentRank.addChildren(previousRank);
+            //currentRank.addChildren(previousRank);
             previousRank = currentRank;
         }
 

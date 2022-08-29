@@ -65,6 +65,9 @@ class PlanteWriterTest {
                 .anyMatch(nomVernaculaire -> nomVernaculaire.getPlantes().stream()
                     .anyMatch(plante1 -> plante1.getId() == null)),
             "Aucun des noms vernaculaires ne doit posséder de plante sans ID");
+        Assertions.assertFalse(plante.getNomsVernaculaires().stream()
+                .anyMatch(nomVernaculaire -> nomVernaculaire.getDescription() == null),
+            "Les noms vernaculaires doivent posséder une description");
     }
 
     private static void assertReferences(@NotNull Plante plante) {
@@ -76,6 +79,9 @@ class PlanteWriterTest {
                 .anyMatch(reference -> reference.getPlantes().stream()
                     .anyMatch(plante1 -> plante1.getId() == null)),
             "Aucune des références ne doit posséder de plante sans ID");
+        Assertions.assertFalse(plante.getReferences().stream()
+                .anyMatch(reference -> reference.getDescription() == null),
+            "Les références doivent posséder une description");
     }
 
     @Test

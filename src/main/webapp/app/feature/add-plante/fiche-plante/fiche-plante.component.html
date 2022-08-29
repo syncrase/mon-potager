@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-center">
-  <div *ngIf="!!this.scrapedPlante === false; else plantForm">
+  <div *ngIf="!!this.plante === false; else plantForm">
     missing plante
   </div>
 
@@ -15,51 +15,24 @@
       <div class="row mb-3">
         <h1>Images</h1>
         <ul>
-          <li *ngFor="let image of scrapedPlante?.plante?.references; let i = index" data-cy="imageCarousel">
-            <ng-container *ngIf="image.type==='IMAGE'">
-              <input [attr.data-cy]="'image'+i" [ngModel]="image.url?.url" id="image{{i}}" name="image{{i}}"
-                     placeholder="Url de l'image" type="text"/>
-              <input [attr.data-cy]="'image'+i" [ngModel]="image.description" id="image{{i}}"
-                     name="image{{i}}"
-                     placeholder="Description de l'image" type="text"/>
-              <img
-                alt="Trulli"
-                height="333" src="{{image.url?.url}}" width="500">
-              {{image.url?.url}}
-            </ng-container>
+          <li *ngFor="let image of images; let i = index" data-cy="imageCarousel">
+            <img
+              id="image{{i}}"
+              alt="{{image.description}}"
+              title="{{image.description}}"
+              height="333" src="{{image.url?.url}}" width="500">
+            {{image.url?.url}}
           </li>
         </ul>
       </div>
 
       <div class="table-responsive" id="nomsVernaculaires">
-        <table aria-describedby="page-heading" class="table table-striped">
-          <thead>
-          <tr>
-            <th scope="col">
-              <span jhiTranslate="monolithApp.nomVernaculaire.nom">Nom vernaculaire</span>
-              <fa-icon icon="sort"></fa-icon>
-            </th>
-            <th scope="col"><span jhiTranslate="monolithApp.nomVernaculaire.description">Description</span>
-              <fa-icon icon="sort"></fa-icon>
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let nv of scrapedPlante?.plante?.nomsVernaculaires; let i = index"
-              data-cy="nomsVernaculairesTable">
-            <td>
-              <input [attr.data-cy]="'nom'+i" [ngModel]="nv.nom"
-                     id="nom{{i}}" name="nom{{i}}" type="text"/>
-            </td>
-            <td>
-              <input [attr.data-cy]="'description'+i" [ngModel]="nv.description"
-                     id="description{{i}}" name="description{{i}}"
-                     type="text"/>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
+        <h1 jhiTranslate="monolithApp.nomVernaculaire.nom"> Canada</h1>
+        <ng-container *ngFor="let nv of plante?.nomsVernaculaires; let i = index; let last = last;"
+                      data-cy="nomsVernaculairesList">
+          <span id="nomVernaculaire{{i}}" title="{{nv.description}}">{{nv.nom}}</span>
+          <span *ngIf="last===false">, </span>
+        </ng-container>
       </div>
 
       <div *ngIf="cronquistClassification?.length ?? 0 > 0" class="table-responsive" id="cronquist">
@@ -74,13 +47,12 @@
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let cronquistRank of cronquistClassification; let i = index" data-cy="entityTable">
+          <tr *ngFor="let cronquistRank of cronquistClassification; let i = index" data-cy="cronquistTable">
             <td jhiTranslate="{{ 'monolithApp.CronquistTaxonomicRank.' + cronquistRank.rank }}">
               {{ cronquistRank.rank }}
             </td>
             <td>
-              <input [ngModel]="cronquistRank.nom" class="form-control" data-cy="nom" id="field_{{cronquistRank.nom}}"
-                     name="{{cronquistRank.nom}}" type="text"/>
+              {{cronquistRank.nom}}
             </td>
           </tr>
           </tbody>
@@ -90,14 +62,15 @@
       <div class="row mb-3">
         <h1>Sources</h1>
         <ul>
-          <ng-container formArrayName="sources">
-            <li *ngFor="let source of scrapedPlante?.plante?.references; let i = index" data-cy="sourceCarousel">
-              <input [attr.data-cy]="'source'+i" [ngModel]="source.url?.url" id="source{{i}}"
-                     name="source{{i}}" type="text"/>
-              <input [attr.data-cy]="'source'+i" [ngModel]="source.description" id="source{{i}}" name="source{{i}}"
-                     type="text"/>
-            </li>
-          </ng-container>
+          <li *ngFor="let source of sources; let i = index" data-cy="sourceCarousel">
+            <a
+              id="source{{i}}"
+              href="{{source.url?.url}}"
+              title="{{source.description}}"
+            >
+              {{source.url?.url}}
+            </a>
+          </li>
         </ul>
       </div>
     </div>

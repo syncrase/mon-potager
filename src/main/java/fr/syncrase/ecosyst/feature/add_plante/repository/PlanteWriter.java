@@ -17,10 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PlanteWriter {
@@ -164,17 +161,29 @@ public class PlanteWriter {
     private @NotNull Set<Plante> synchronizeNomsVernaculaires(@NotNull Set<NomVernaculaire> nomsVernaculaires) {
         Set<Plante> plantesAssociatedWithNames = new HashSet<>();
         for (NomVernaculaire nomVernaculaire : nomsVernaculaires) {
-            NomVernaculaire existingNomVernaculaire = nomVernaculaireRepository.findByNom(nomVernaculaire.getNom());
-            if (existingNomVernaculaire != null) {
-                nomVernaculaire.setId(existingNomVernaculaire.getId());
-                nomVernaculaire.setDescription(existingNomVernaculaire.getDescription());
-                nomVernaculaire.setNom(existingNomVernaculaire.getNom());
-                plantesAssociatedWithNames.addAll(existingNomVernaculaire.getPlantes());
+            // TODO l'id existe ? oui ou non ce n'est pas la même logique!
+            if (nomVernaculaire.getId() == null) {
+                // TODO si je n'ai pas d'id => c'est une création. Supprimer le code ci-dessous + requête lors de la saisie dans le front
+                NomVernaculaire existingNomVernaculaire = nomVernaculaireRepository.findByNom(nomVernaculaire.getNom());
+                if (existingNomVernaculaire != null) {
+                    nomVernaculaire.setId(existingNomVernaculaire.getId());
+                    plantesAssociatedWithNames.addAll(existingNomVernaculaire.getPlantes());
+                }
+            } else {
+                Optional<NomVernaculaire> existingNomVernaculaire = nomVernaculaireRepository.findById(nomVernaculaire.getId());
+                existingNomVernaculaire.ifPresent(vernaculaire -> plantesAssociatedWithNames.addAll(vernaculaire.getPlantes()));
             }
         }
         return plantesAssociatedWithNames;
     }
 
+    /**
+     * Synchronize cronquist ranks with the database, if conflicts exist it try to resolve them.<br/>
+     * Warning : The return classification is not this one passed as parameter. Each rank is created based on the existing values.
+     *
+     * @param toSaveCronquistClassification Classification branch containing cronquist ranks to insert
+     * @return the saved classification. Not the same object that the one passed as parameter
+     */
     @Contract(pure = true)
     private @Nullable CronquistClassificationBranch saveCronquist(@NotNull CronquistClassificationBranch toSaveCronquistClassification) {
         ClassificationConflict conflicts;
