@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
+            "file": "README.md",
             "mode": "source",
             "source": false
           }
@@ -77,7 +77,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -94,7 +94,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -117,7 +117,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md"
+                "file": "README.md"
               }
             }
           }
@@ -130,11 +130,15 @@
   },
   "active": "cbe3aaa163047245",
   "lastOpenFiles": [
-    "README.md",
+    "Documentation/Gestion des branches.md",
+    "Documentation/Préparation en local.md",
     "Documentation/Develpment.md",
+    "README.md",
+    "Documentation/Erreurs courantes.md",
+    "Documentation/Project Structure.md",
+    "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
     "Documentation/Docker.md",
     "Documentation/CICD.md",
-    "Documentation/Testing.md",
-    "Documentation/Building for production.md"
+    "Documentation/Testing.md"
   ]
 }
