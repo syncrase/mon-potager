@@ -1,0 +1,140 @@
+{
+  "main": {
+    "id": "1b5fc596e8582901",
+    "type": "split",
+    "children": [
+      {
+        "id": "cbe3aaa163047245",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ac0f4eb17d39502e",
+    "type": "split",
+    "children": [
+      {
+        "id": "4f11af32ee285cd8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b58428fc49594095",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "58b9135c467ce30b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "fe2560e8254fed8f",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4908d5c8bb2bb541",
+    "type": "split",
+    "children": [
+      {
+        "id": "f0893ff688e7828b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "48e051adeaf4dc07",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "edcefae33eb42d79",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "b72dab8df4bea407",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "de5a4cbba7629a3d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "src/main/java/fr/syncrase/ecosyst/feature/add_plante/Add plante Feature.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "active": "cbe3aaa163047245",
+  "lastOpenFiles": [
+    "README.md",
+    "Documentation/Develpment.md",
+    "Documentation/Docker.md",
+    "Documentation/CICD.md",
+    "Documentation/Testing.md",
+    "Documentation/Building for production.md"
+  ]
+}

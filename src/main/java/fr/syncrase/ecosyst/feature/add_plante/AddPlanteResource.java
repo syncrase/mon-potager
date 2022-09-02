@@ -71,7 +71,7 @@ public class AddPlanteResource {
             );
         }
 
-        // plantesByCriteria.size() == 1 : true
+        // plantesByCriteria.size() == 0 : true
         ScrapedPlant plante;
         try {
             plante = webScrapingService.scrapPlant(name);
