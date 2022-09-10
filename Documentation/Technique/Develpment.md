@@ -8,6 +8,7 @@ Before you can build this project, you must install and configure the following 
 After installing Node, you should be able to run the following command to install development tools.
 You will only need to run this command when dependencies change in [package.json](package.json).
 
+#dev/dependencies/install
 ```
 npm install
 ```
@@ -17,6 +18,7 @@ We use npm scripts and [Angular CLI][] with [Webpack][] as our build system.
 If you are using hazelcast as a cache, you will have to launch a cache server.
 To start your cache server, run:
 
+#cicd/docker
 ```
 docker-compose -f src/main/docker/hazelcast-management-center.yml up -d
 ```
@@ -24,6 +26,7 @@ docker-compose -f src/main/docker/hazelcast-management-center.yml up -d
 Run the following commands in two separate terminals to create a blissful development experience where your browser
 auto-refreshes when files change on your hard drive.
 
+#dev/start
 ```
 ./mvnw
 npm start
@@ -38,8 +41,8 @@ The `npm run` command will list all of the scripts available to run for this pro
 
 ## PWA Support
 
-JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a
-PWA is a service worker.
+#dev/pwa
+JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a PWA is a service worker.
 
 The service worker initialization code is disabled by default. To enable it, uncomment the following code
 in `src/main/webapp/app/app.module.ts`:
@@ -49,7 +52,7 @@ ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
 ```
 
 ## Managing dependencies
-
+#dev/dependencies
 For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
 
 ```
@@ -82,7 +85,7 @@ Note: There are still a few other things remaining to do for Leaflet that we won
 For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
 
 ## Using Angular CLI
-
+#dev/angular
 You can also use [Angular CLI][] to generate some custom client code.
 
 For example, the following command:
@@ -100,6 +103,7 @@ update src/main/webapp/app/app.module.ts
 ```
 
 ## JHipster Control Center
+#dev/jhipster/control-center
 
 JHipster Control Center can help you manage and control your application(s). You can start a local control center
 server (accessible on http://localhost:7419) with:

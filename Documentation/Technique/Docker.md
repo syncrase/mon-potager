@@ -4,7 +4,7 @@ You can use Docker to improve your JHipster development experience. A number of 
 available in the [src/main/docker](src/main/docker) folder to launch required third party services.
 
 For example, to start a postgresql database in a docker container, run:
-
+#cicd/docker 
 ```
 docker-compose -f src/main/docker/postgresql.yml up -d
 ```

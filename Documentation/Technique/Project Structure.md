@@ -1,5 +1,5 @@
 ## Project Structure
-
+#dev/project-structure
 Node is required for generation and recommended for development. `package.json` is always generated for a better
 development experience with prettier, commit hooks, scripts and so on.
 

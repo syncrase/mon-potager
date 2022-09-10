@@ -1,6 +1,7 @@
 #jhipster #projet/potager
 
 # B.A.BA
+#dev/init-projet 
 
 ```bash
 # Génération du projet

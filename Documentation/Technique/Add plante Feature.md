@@ -1,7 +1,7 @@
 
 # Search plante
 
-#rest #search
+#rest/search
 
 Ce endpoint permet de récupérer une liste de plantes en fonction du nom passé en paramètre.
 Il y a d'abord une recherche en base de données :

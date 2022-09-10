@@ -1,5 +1,5 @@
 ## Continuous Integration (optional)
-
+#cicd
 To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate
 configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][]
 page for more information.

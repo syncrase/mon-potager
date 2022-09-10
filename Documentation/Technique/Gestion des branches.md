@@ -1,5 +1,5 @@
 # Organisation des branches
-
+#dev/git/branches
 Différentes branches permettent d'utiliser Jhipster sans avoir à cherry-pick les modification des fichiers générés.
 
 Les branches sont organisées de la manière suivante :
@@ -33,6 +33,7 @@ Le principe est le même pour la modification du socle.
 
 # Exemple de récupération de code
 
+## Reset --hard
 Parceque la gestion des branches se base sur des rebase successifs, il ne faut pas utiliser de git pull (fetch &&
 checkout), mais plutôt utiliser fetch && reset --force pour écraser l'index local.
 
@@ -47,4 +48,11 @@ git checkout jhipster-jdl # Postionnement sur la branche "supérieure"
 git reset --hard jhipster-jdl # Ecrasement de l'index local
 git checkout feature/add-plante # idem
 git reset --hard feature/add-plante # idem
+```
+
+## Pull --rebase
+
+```bash
+git fetch --all # Récupérer l'index du remote
+git pull --rebase # toutes les modifs locale sont ramemées en dernier
 ```
